@@ -13,19 +13,32 @@ try {
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  reactStrictMode: true,
+  images: {
+    domains: ['firebasestorage.googleapis.com'],
+    unoptimized: true,
+  },
+  webpack: (config) => {
+    config.externals = [...(config.externals || []), { canvas: 'canvas' }]; // needed for firestore
+    return config;
+  },
   eslint: {
     ignoreDuringBuilds: true,
   },
   typescript: {
     ignoreBuildErrors: true,
   },
-  images: {
-    unoptimized: true,
-  },
   experimental: {
-    webpackBuildWorker: true,
-    parallelServerBuildTraces: true,
-    parallelServerCompiles: true,
+    serverActions: {
+      bodySizeLimit: '10mb',
+    },
+    optimizePackageImports: ['@radix-ui/react-icons', 'lucide-react', 'date-fns', 'recharts'],
+  },
+  serverExternalPackages: [], // Moved from experimental.serverComponentsExternalPackages
+  modularizeImports: {
+    'lucide-react': {
+      transform: 'lucide-react/dist/esm/icons/{{ kebabCase member }}',
+    },
   },
 }
 
