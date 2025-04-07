@@ -1,0 +1,20 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Default rule - deny all
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+    
+    // Allow anyone to read public placeholder images
+    match /placeholders/{fileName} {
+      allow read: if true;
+    }
+    
+    // User-specific files (CV, project images, etc.)
+    match /users/{userId}/{allPaths=**} {
+      // Allow read/write if the user is authenticated and owns the data
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+  }
+} 

@@ -262,11 +262,14 @@ export default function DashboardPage() {
 
   // Add a utility function to compress images before upload
   const compressImage = async (file: File, maxSizeMB: number = 1): Promise<File> => {
-    // If it's not an image or already small enough, return the original file
+    // Early return if not an image or already small enough
     if (!file.type.startsWith('image/') || file.size <= maxSizeMB * 1024 * 1024) {
       return file;
     }
 
+    // Special handling for PNGs to preserve transparency
+    const isPNG = file.type === 'image/png';
+    
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.readAsDataURL(file);
@@ -280,9 +283,9 @@ export default function DashboardPage() {
           let width = img.width;
           let height = img.height;
           
-          // Maximum dimensions
-          const MAX_WIDTH = 1200;
-          const MAX_HEIGHT = 1200;
+          // Maximum dimensions - smaller for better performance
+          const MAX_WIDTH = 1000;
+          const MAX_HEIGHT = 1000;
           
           if (width > height) {
             if (width > MAX_WIDTH) {
@@ -306,14 +309,27 @@ export default function DashboardPage() {
             return;
           }
           
+          // For PNGs, preserve transparency
+          if (isPNG) {
+            ctx.clearRect(0, 0, width, height);
+          } else {
+            // For JPGs, fill with white background
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(0, 0, width, height);
+          }
+          
           ctx.drawImage(img, 0, 0, width, height);
           
-          // Convert to blob with reduced quality
+          // Convert to blob with optimized quality
+          // Use original format for PNG to preserve transparency
+          const outputFormat = isPNG ? 'image/png' : 'image/jpeg';
+          const quality = isPNG ? 0.85 : 0.75; // Higher quality for PNGs
+          
           canvas.toBlob((blob) => {
             if (blob) {
               // Create new file from blob
               const newFile = new File([blob], file.name, {
-                type: 'image/jpeg', // Convert all to JPEG for better compression
+                type: outputFormat,
                 lastModified: Date.now(),
               });
               
@@ -321,35 +337,66 @@ export default function DashboardPage() {
               resolve(newFile);
             } else {
               // If compression fails, return original
+              console.warn("Image compression failed, using original file");
               resolve(file);
             }
-          }, 'image/jpeg', 0.7); // 0.7 quality (70%) - adjust as needed
+          }, outputFormat, quality);
         };
         img.onerror = () => {
-          reject(new Error('Failed to load image'));
+          console.error('Failed to load image for compression');
+          resolve(file); // Return original on error
         };
       };
       reader.onerror = () => {
-        reject(new Error('Failed to read file'));
+        console.error('Failed to read file for compression');
+        resolve(file); // Return original on error
       };
     });
   };
 
-  // Update the handleFileUpload function to compress images
+  // Update the handleFileUpload function to better handle different file types
   const handleFileUpload = async (file: File, field: 'cv' | 'projectImage', projectIndex?: number) => {
     try {
-      // Check file size before accepting
-      const maxSize = 5 * 1024 * 1024; // 5 MB
+      // Check file size and type
+      const isImage = file.type.startsWith('image/');
+      const isPDF = file.type === 'application/pdf' || file.type === 'application/msword' || 
+                   file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+      
+      // Size limits based on file type
+      let maxSize;
+      let fileTypeMsg;
+      
+      if (field === 'cv' && !isPDF) {
+        toast.error(`Only PDF, DOC, or DOCX files are allowed for CV uploads.`);
+        return;
+      }
+      
+      if (field === 'projectImage' && !isImage) {
+        toast.error(`Only image files (PNG, JPG, JPEG, GIF) are allowed for project screenshots.`);
+        return;
+      }
+      
+      if (isImage) {
+        maxSize = 5 * 1024 * 1024; // 5MB for images
+        fileTypeMsg = "image";
+      } else if (isPDF) {
+        maxSize = 10 * 1024 * 1024; // 10MB for PDFs/documents
+        fileTypeMsg = "document";
+      } else {
+        maxSize = 3 * 1024 * 1024; // 3MB default
+        fileTypeMsg = "file";
+      }
+      
       if (file.size > maxSize) {
         toast.warning(
-          `The file "${file.name}" (${(file.size / (1024 * 1024)).toFixed(1)}MB) is larger than 5MB and may upload slowly.`,
+          `The ${fileTypeMsg} "${file.name}" (${(file.size / (1024 * 1024)).toFixed(1)}MB) exceeds the recommended size limit of ${(maxSize / (1024 * 1024))}MB. It may upload slowly.`,
           { duration: 5000 }
         );
       }
       
       // For images, try to compress them
       let processedFile = file;
-      if (field === 'projectImage' && file.type.startsWith('image/')) {
+      if (field === 'projectImage' && isImage) {
         toast.loading(`Optimizing image "${file.name}"...`, { id: `compress-${file.name}` });
         try {
           processedFile = await compressImage(file);
@@ -364,11 +411,13 @@ export default function DashboardPage() {
         }
       }
       
+      // Update the appropriate state with the processed file
       if (field === 'cv') {
         setPortfolioData({
           ...portfolioData,
           cv: processedFile
         });
+        toast.success(`CV file "${file.name}" selected`);
       } else if (field === 'projectImage' && typeof projectIndex === 'number') {
         const newProjects = [...portfolioData.projects];
         newProjects[projectIndex] = { 
@@ -379,10 +428,11 @@ export default function DashboardPage() {
           ...portfolioData,
           projects: newProjects
         });
+        toast.success(`Project image "${file.name}" selected`);
       }
     } catch (error) {
       console.error("Error handling file upload:", error);
-      toast.error("There was a problem processing the file. Please try again with a smaller file.");
+      toast.error("There was a problem processing the file. Please try again.");
     }
   };
 

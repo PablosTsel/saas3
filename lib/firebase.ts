@@ -197,96 +197,72 @@ export const uploadFile = async (
     return { url: "", error: "No file provided" };
   }
 
-  // Set file size limit to 2MB for better performance
-  const MAX_FILE_SIZE = 2 * 1024 * 1024;
-  if (file.size > MAX_FILE_SIZE) {
-    console.warn(`File ${file.name} is ${(file.size / (1024 * 1024)).toFixed(2)}MB, which exceeds recommended size of 2MB.`);
-  }
+  try {
+    // Determine file type for custom handling
+    const isPNG = file.type === 'image/png';
+    const isPDF = file.type === 'application/pdf';
 
-  // Set up metadata with original filename and content type
-  const customMetadata = {
-    ...metadata,
-    originalFilename: file.name,
-    contentType: file.type,
-    uploadTimestamp: Date.now().toString(),
-  };
+    // Size limits based on file type
+    const MAX_PNG_SIZE = 5 * 1024 * 1024; // 5MB for PNGs (they can be larger)
+    const MAX_PDF_SIZE = 10 * 1024 * 1024; // 10MB for PDFs
+    const MAX_OTHER_SIZE = 3 * 1024 * 1024; // 3MB for other files
 
-  // Get storage reference
-  const storageRef = ref(storage, path);
-
-  // Implement retry logic
-  let attempts = 0;
-  const MAX_ATTEMPTS = 2;
-  let lastError = null;
-
-  while (attempts < MAX_ATTEMPTS) {
-    attempts++;
+    let maxAllowedSize = MAX_OTHER_SIZE;
+    if (isPNG) maxAllowedSize = MAX_PNG_SIZE;
+    if (isPDF) maxAllowedSize = MAX_PDF_SIZE;
     
-    try {
-      // Improve the uploadWithTimeout implementation
-      const uploadWithTimeout = () => {
-        // Use AbortController for better timeout management
-        const controller = new AbortController();
-        const signal = controller.signal;
-        
-        // Create a promise that aborts the upload after 45 seconds
-        const timeoutId = setTimeout(() => {
-          controller.abort();
-        }, 45000); // Reduced from 60 seconds to 45 seconds
-        
-        // Create the upload promise
-        const uploadPromise = uploadBytes(storageRef, file, { 
-          customMetadata,
-          // Pass the signal to make it abortable
-          ...(typeof signal !== 'undefined' ? { signal } : {})
-        }).then(snapshot => {
-          // Clear the timeout as upload completed successfully
-          clearTimeout(timeoutId);
-          return snapshot;
-        }).catch(error => {
-          clearTimeout(timeoutId);
-          
-          if (error.name === 'AbortError' || error.code === 'storage/canceled') {
-            throw new Error("Upload timed out after 45 seconds");
-          }
-          
-          throw error;
-        });
-        
-        return uploadPromise;
-      };
+    // Warn if file is large
+    if (file.size > maxAllowedSize) {
+      console.warn(`File ${file.name} is ${(file.size / (1024 * 1024)).toFixed(2)}MB, which exceeds the recommended size of ${(maxAllowedSize / (1024 * 1024))}MB and may upload slowly.`);
+    }
 
-      // Attempt the upload with timeout
-      const snapshot = await uploadWithTimeout() as UploadResult;
-      
-      // Get download URL
-      const downloadURL = await getDownloadURL(snapshot.ref);
-      
-      return { url: downloadURL };
-    } catch (error: any) {
-      lastError = error;
-      console.error(`Upload attempt ${attempts} failed:`, error);
+    // Enhanced metadata with content type explicitly set
+    const customMetadata = {
+      ...metadata,
+      originalFilename: file.name,
+      uploadTimestamp: Date.now().toString(),
+      fileSize: file.size.toString(),
+      contentType: file.type,
+    };
 
-      // Check for specific errors
-      if (error.code === "storage/unauthorized") {
-        return { url: "", error: "You are not authorized to upload files" };
-      } else if (error.code === "storage/canceled") {
-        return { url: "", error: "Upload was canceled" };
-      } else if (error.code === "storage/unknown" || error.message?.includes("timed out")) {
-        if (attempts < MAX_ATTEMPTS) {
-          console.log(`Retrying upload (attempt ${attempts + 1}/${MAX_ATTEMPTS})...`);
-          await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1 second before retry
-          continue;
-        } else {
-          return { url: "", error: "Upload failed after multiple attempts" };
-        }
-      } else {
-        return { url: "", error: "Error uploading file: " + error.message };
-      }
+    // Get storage reference
+    const storageRef = ref(storage, path);
+    
+    console.log(`Starting upload of ${file.name} (${file.type}) to ${path}...`);
+
+    // Upload with progress tracking
+    const uploadTask = uploadBytes(storageRef, file, { 
+      contentType: file.type, // Explicitly set content type
+      customMetadata 
+    });
+    
+    // Wait for upload to complete
+    const snapshot = await uploadTask;
+    console.log(`Upload completed for ${file.name}: ${snapshot.metadata.fullPath}`);
+    
+    // Get download URL
+    const downloadURL = await getDownloadURL(snapshot.ref);
+    console.log(`File URL available at: ${downloadURL}`);
+    
+    return { url: downloadURL };
+  } catch (error: any) {
+    console.error(`Upload failed for ${file.name}:`, error);
+
+    // Detailed error messages based on error code
+    if (error.code === "storage/unauthorized") {
+      return { url: "", error: "You are not authorized to upload files. Please check your Firebase permissions." };
+    } else if (error.code === "storage/canceled") {
+      return { url: "", error: "Upload was canceled" };
+    } else if (error.code === "storage/quota-exceeded") {
+      return { url: "", error: "Storage quota exceeded. Please contact the administrator." };
+    } else if (error.code === "storage/retry-limit-exceeded") {
+      return { url: "", error: "Upload failed after multiple attempts. Please check your connection and try again." };
+    } else if (error.code === "storage/invalid-checksum") {
+      return { url: "", error: "File upload failed due to data corruption. Please try again with the original file." };
+    } else {
+      return { url: "", error: `Error uploading file: ${error.message}` };
     }
   }
-
-  return { url: "", error: `Upload failed after ${MAX_ATTEMPTS} attempts: ${lastError?.message}` };
 };
 
 export const deleteFile = async (path: string) => {
@@ -345,76 +321,106 @@ export const createPortfolio = async (
     await setDoc(portfolioRef, portfolioDataForFirestore);
     console.log(`Created portfolio document with ID: ${portfolioId}`);
 
-    // Since all uploads are optional, we'll just try them in the background
-    // but return success even if they fail
+    // Create an array to store all upload promises
+    const uploadPromises = [];
     
     // CV upload (if exists)
     if (portfolioData.hasCv && portfolioData.cv) {
-      try {
-        const uploadResult = await uploadFile(
-          portfolioData.cv,
-          `users/${userId}/portfolios/${portfolioId}/cv/${Date.now()}-${portfolioData.cv.name}`
-        );
+      const cvUploadPromise = (async () => {
+        try {
+          console.log(`Starting CV upload for portfolio ${portfolioId}`);
+          const uploadPath = `users/${userId}/portfolios/${portfolioId}/cv/${Date.now()}-${portfolioData.cv.name}`;
+          
+          const uploadResult = await uploadFile(
+            portfolioData.cv,
+            uploadPath,
+            { portfolioId, fileType: 'cv' }
+          );
 
-        if (uploadResult.url) {
-          // Update the portfolio with CV URL
-          await updateDoc(portfolioRef, { cvUrl: uploadResult.url });
-          console.log("CV uploaded successfully");
-        } else {
+          if (uploadResult.url) {
+            // Update the portfolio with CV URL
+            await updateDoc(portfolioRef, { cvUrl: uploadResult.url });
+            console.log("CV uploaded successfully:", uploadResult.url);
+            return { success: true, type: 'cv' };
+          } else {
+            hasFileUploadIssues = true;
+            const errorMsg = `CV upload failed: ${uploadResult.error || "Unknown error"}`;
+            fileErrorMessages.push(errorMsg);
+            console.error(errorMsg);
+            return { success: false, type: 'cv', error: errorMsg };
+          }
+        } catch (err) {
           hasFileUploadIssues = true;
-          fileErrorMessages.push("CV upload failed: " + (uploadResult.error || "Unknown error"));
-          console.error("CV upload failed:", uploadResult.error);
+          const errorMsg = `CV upload error: ${err instanceof Error ? err.message : "Unknown error"}`;
+          fileErrorMessages.push(errorMsg);
+          console.error(errorMsg);
+          return { success: false, type: 'cv', error: errorMsg };
         }
-      } catch (err) {
-        hasFileUploadIssues = true;
-        fileErrorMessages.push("CV upload error: " + (err instanceof Error ? err.message : "Unknown error"));
-        console.error("Error uploading CV:", err);
-      }
+      })();
+      
+      uploadPromises.push(cvUploadPromise);
     }
 
-    // Try to upload project images, but don't wait for them all
+    // Project image uploads
     if (portfolioData.projects?.length > 0) {
       for (let i = 0; i < portfolioData.projects.length; i++) {
         const project = portfolioData.projects[i];
         if (!project.image) continue;
         
-        try {
-          const uploadResult = await uploadFile(
-            project.image,
-            `users/${userId}/portfolios/${portfolioId}/projects/${i}/${Date.now()}-${project.image.name}`
-          );
-
-          if (uploadResult.url) {
-            // Update this specific project's imageUrl in the projects array
-            const portfolioDoc = await getDoc(portfolioRef);
-            if (portfolioDoc.exists()) {
-              const currentData = portfolioDoc.data();
-              const updatedProjects = [...(currentData.projects || [])];
-              
-              // Make sure the project index exists
-              if (updatedProjects[i]) {
-                updatedProjects[i].imageUrl = uploadResult.url;
-                
-                // Only update the projects array
-                await updateDoc(portfolioRef, { projects: updatedProjects });
-                console.log(`Project ${i} image uploaded successfully`);
-              }
-            }
-          } else {
-            hasFileUploadIssues = true;
-            fileErrorMessages.push(
-              `Project "${project.name}" image upload failed: ${uploadResult.error || "Unknown error"}`
+        const projectUploadPromise = (async () => {
+          try {
+            console.log(`Starting project ${i} image upload for portfolio ${portfolioId}`);
+            const uploadPath = `users/${userId}/portfolios/${portfolioId}/projects/${i}/${Date.now()}-${project.image.name}`;
+            
+            const uploadResult = await uploadFile(
+              project.image,
+              uploadPath,
+              { portfolioId, projectIndex: i.toString(), fileType: 'projectImage' }
             );
-            console.error(`Project ${i} image upload failed:`, uploadResult.error);
+
+            if (uploadResult.url) {
+              // Update this specific project's imageUrl in the projects array
+              const portfolioDoc = await getDoc(portfolioRef);
+              if (portfolioDoc.exists()) {
+                const currentData = portfolioDoc.data();
+                const updatedProjects = [...(currentData.projects || [])];
+                
+                // Make sure the project index exists
+                if (updatedProjects[i]) {
+                  updatedProjects[i].imageUrl = uploadResult.url;
+                  
+                  // Only update the projects array
+                  await updateDoc(portfolioRef, { projects: updatedProjects });
+                  console.log(`Project ${i} image uploaded successfully: ${uploadResult.url}`);
+                  return { success: true, type: 'project', index: i };
+                }
+              }
+              return { success: true, type: 'project', index: i };
+            } else {
+              hasFileUploadIssues = true;
+              const errorMsg = `Project "${project.name}" image upload failed: ${uploadResult.error || "Unknown error"}`;
+              fileErrorMessages.push(errorMsg);
+              console.error(errorMsg);
+              return { success: false, type: 'project', index: i, error: errorMsg };
+            }
+          } catch (err) {
+            hasFileUploadIssues = true;
+            const errorMsg = `Project "${project.name}" image error: ${err instanceof Error ? err.message : "Unknown error"}`;
+            fileErrorMessages.push(errorMsg);
+            console.error(errorMsg);
+            return { success: false, type: 'project', index: i, error: errorMsg };
           }
-        } catch (err) {
-          hasFileUploadIssues = true;
-          fileErrorMessages.push(
-            `Project "${project.name}" image error: ${err instanceof Error ? err.message : "Unknown error"}`
-          );
-          console.error(`Error uploading project ${i} image:`, err);
-        }
+        })();
+        
+        uploadPromises.push(projectUploadPromise);
       }
+    }
+
+    // Wait for all uploads to complete or fail
+    if (uploadPromises.length > 0) {
+      console.log(`Waiting for ${uploadPromises.length} file uploads to complete...`);
+      const results = await Promise.allSettled(uploadPromises);
+      console.log(`Upload results:`, results);
     }
 
     // Always return success since the portfolio document was created
@@ -422,7 +428,7 @@ export const createPortfolio = async (
       success: true,
       id: portfolioId,
       error: hasFileUploadIssues
-        ? `Portfolio created successfully, but some file uploads failed. Default images will be used.`
+        ? `Portfolio created successfully, but some file uploads failed. Default images will be used for failed uploads.${fileErrorMessages.length > 0 ? ' Errors: ' + fileErrorMessages.join('; ') : ''}`
         : undefined,
     };
   } catch (error: any) {
