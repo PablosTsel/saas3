@@ -127,3 +127,14 @@ body {
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
   transform: translateY(-2px);
 }
+
+/* Add styling for the Progress component */
+.progress::-webkit-progress-value {
+  background-image: linear-gradient(to right, #4f46e5, #a855f7);
+  transition: width 0.3s ease;
+}
+
+.progress::-moz-progress-bar {
+  background-image: linear-gradient(to right, #4f46e5, #a855f7);
+  transition: width 0.3s ease;
+}
