@@ -8,7 +8,11 @@ import {
   onAuthStateChanged,
   User,
   updateProfile,
-  connectAuthEmulator
+  connectAuthEmulator,
+  GoogleAuthProvider,
+  signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult
 } from "firebase/auth";
 
 // Your web app's Firebase configuration
@@ -26,6 +30,12 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
 const auth = getAuth(app);
+const googleProvider = new GoogleAuthProvider();
+
+// Configure Google provider
+googleProvider.setCustomParameters({
+  prompt: 'select_account'
+});
 
 // If in development, connect to Firebase emulator if available
 // if (process.env.NODE_ENV === 'development') {
@@ -52,6 +62,12 @@ const formatFirebaseError = (errorCode: string): string => {
       return 'Incorrect password. Please check your password and try again.';
     case 'auth/too-many-requests':
       return 'Too many failed attempts. Please try again later.';
+    case 'auth/popup-closed-by-user':
+      return 'Sign-in popup was closed before completing the sign in.';
+    case 'auth/cancelled-popup-request':
+      return 'The authentication request was cancelled.';
+    case 'auth/popup-blocked':
+      return 'The authentication popup was blocked by the browser. Please allow popups for this site.';
     default:
       return errorCode || 'An error occurred. Please try again.';
   }
@@ -96,6 +112,36 @@ export const loginUser = async (email: string, password: string) => {
   }
 };
 
+export const signInWithGoogle = async () => {
+  try {
+    console.log("Attempting Google sign-in");
+    const result = await signInWithPopup(auth, googleProvider);
+    const user = result.user;
+    console.log("Google sign-in successful:", user.uid);
+    return { user, error: null };
+  } catch (error: any) {
+    console.error("Google sign-in error:", error);
+    const errorMessage = formatFirebaseError(error.code);
+    return { user: null, error: errorMessage };
+  }
+};
+
+export const handleRedirectResult = async () => {
+  try {
+    const result = await getRedirectResult(auth);
+    if (result) {
+      const user = result.user;
+      console.log("Google sign-in redirect successful:", user.uid);
+      return { user, error: null };
+    }
+    return { user: null, error: null };
+  } catch (error: any) {
+    console.error("Google sign-in redirect error:", error);
+    const errorMessage = formatFirebaseError(error.code);
+    return { user: null, error: errorMessage };
+  }
+};
+
 export const logoutUser = async () => {
   try {
     console.log("Logging out user");
@@ -116,4 +162,4 @@ export const onAuthStateChange = (callback: (user: User | null) => void) => {
   });
 };
 
-export { auth }; 
+export { auth, googleProvider }; 

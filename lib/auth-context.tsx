@@ -2,13 +2,22 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User } from 'firebase/auth';
-import { auth, onAuthStateChange, loginUser, registerUser, logoutUser } from './firebase';
+import { 
+  auth, 
+  onAuthStateChange, 
+  loginUser, 
+  registerUser, 
+  logoutUser,
+  signInWithGoogle,
+  handleRedirectResult 
+} from './firebase';
 
 interface AuthContextType {
   user: User | null;
   loading: boolean;
   login: (email: string, password: string) => Promise<{ user: User | null; error: string | null }>;
   signup: (email: string, password: string, name: string) => Promise<{ user: User | null; error: string | null }>;
+  loginWithGoogle: () => Promise<{ user: User | null; error: string | null }>;
   logout: () => Promise<{ success: boolean; error: string | null }>;
 }
 
@@ -20,6 +29,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     try {
+      // Check for Google redirect result
+      const checkRedirectResult = async () => {
+        try {
+          const { user: redirectUser, error } = await handleRedirectResult();
+          if (error) {
+            console.error("Redirect error:", error);
+          }
+        } catch (error) {
+          console.error("Failed to handle redirect result:", error);
+        }
+      };
+
+      checkRedirectResult();
+
       const unsubscribe = onAuthStateChange((user) => {
         setUser(user);
         setLoading(false);
@@ -52,6 +75,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const loginWithGoogle = async () => {
+    try {
+      return await signInWithGoogle();
+    } catch (error) {
+      console.error("Google login error:", error);
+      return { user: null, error: "An unexpected error occurred" };
+    }
+  };
+
   const logout = async () => {
     try {
       return await logoutUser();
@@ -66,6 +98,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     loading,
     login,
     signup,
+    loginWithGoogle,
     logout,
   };
 

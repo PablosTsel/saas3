@@ -4,8 +4,8 @@ import { AuthProvider } from '@/lib/auth-context'
 import { AnalyticsProvider } from '@/components/analytics-provider'
 
 export const metadata: Metadata = {
-  title: 'v0 App',
-  description: 'Created with v0',
+  title: 'MakePortfolio',
+  description: 'Create stunning portfolio websites in minutes',
   generator: 'v0.dev',
 }
 
