@@ -528,4 +528,28 @@ export const deletePortfolio = async (portfolioId: string) => {
   }
 };
 
+export const checkCvProcessingStatus = async (portfolioId: string) => {
+  try {
+    console.log("Checking CV processing status for portfolio:", portfolioId);
+    const docRef = doc(db, "portfolios", portfolioId);
+    const docSnap = await getDoc(docRef);
+    
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      return { 
+        processed: data.cvProcessed === true,
+        education: data.education || [],
+        experience: data.experience || [],
+        skills: data.skills || [],
+        languages: data.languages || []
+      };
+    }
+    
+    return { processed: false, education: [], experience: [], skills: [], languages: [] };
+  } catch (error) {
+    console.error("Error checking CV processing status:", error);
+    return { processed: false, education: [], experience: [], skills: [], languages: [], error: "Failed to check processing status" };
+  }
+};
+
 export { auth, googleProvider, db, storage }; 
