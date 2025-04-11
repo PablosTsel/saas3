@@ -12,7 +12,9 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
   signInWithRedirect,
-  getRedirectResult
+  getRedirectResult,
+  browserLocalPersistence,
+  setPersistence
 } from "firebase/auth";
 import {
   getFirestore,
@@ -53,6 +55,11 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
 const auth = getAuth(app);
+// Set persistence to LOCAL (browser will remember user between sessions)
+setPersistence(auth, browserLocalPersistence).catch(error => {
+  console.error("Error setting auth persistence:", error);
+});
+
 const db = getFirestore(app);
 const storage = getStorage(app);
 const googleProvider = new GoogleAuthProvider();
@@ -93,6 +100,8 @@ const formatFirebaseError = (errorCode: string): string => {
       return 'The authentication request was cancelled.';
     case 'auth/popup-blocked':
       return 'The authentication popup was blocked by the browser. Please allow popups for this site.';
+    case 'auth/invalid-credential':
+      return 'Invalid login credentials. Please check your email and password and try again.';
     default:
       return errorCode || 'An error occurred. Please try again.';
   }
@@ -123,15 +132,55 @@ export const registerUser = async (email: string, password: string, name: string
   }
 };
 
+// Function to force refresh auth token
+export const refreshAuthToken = async () => {
+  try {
+    const currentUser = auth.currentUser;
+    if (currentUser) {
+      await currentUser.getIdToken(true);
+      console.log("Auth token refreshed successfully");
+      return { success: true, error: null };
+    }
+    return { success: false, error: "No user is currently logged in" };
+  } catch (error: any) {
+    console.error("Error refreshing auth token:", error);
+    return { success: false, error: error.message };
+  }
+};
+
 export const loginUser = async (email: string, password: string) => {
   try {
     console.log("Attempting login:", email);
-    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    
+    // Validate inputs before attempting login
+    if (!email || !email.trim()) {
+      console.error("Login error: Empty email provided");
+      return { user: null, error: "Please enter your email address" };
+    }
+    
+    if (!password || !password.trim()) {
+      console.error("Login error: Empty password provided");
+      return { user: null, error: "Please enter your password" };
+    }
+    
+    // Attempt login with validated credentials
+    const userCredential = await signInWithEmailAndPassword(auth, email.trim(), password);
     const user = userCredential.user;
     console.log("Login successful:", user.uid);
+    
+    // Force refresh the token to ensure it's valid
+    await user.getIdToken(true);
+    
     return { user, error: null };
   } catch (error: any) {
     console.error("Login error:", error);
+    
+    // Check for network errors first
+    if (!navigator.onLine) {
+      return { user: null, error: "Network error. Please check your internet connection and try again." };
+    }
+    
+    // Handle known Firebase error codes
     const errorMessage = formatFirebaseError(error.code);
     return { user: null, error: errorMessage };
   }

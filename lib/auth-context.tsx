@@ -59,6 +59,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = async (email: string, password: string) => {
     try {
+      // Clear any stale Firebase auth data from browser storage
+      if (typeof window !== 'undefined') {
+        // Clear local/session storage items related to Firebase
+        const keysToRemove = Object.keys(localStorage).filter(
+          key => key.startsWith('firebase:') || key.includes('firebaseui:')
+        );
+        
+        keysToRemove.forEach(key => {
+          localStorage.removeItem(key);
+        });
+        
+        console.log("Cleared stale Firebase auth data from browser storage");
+      }
+      
       return await loginUser(email, password);
     } catch (error) {
       console.error("Login error:", error);
