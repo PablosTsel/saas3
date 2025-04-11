@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{name}} - Portfolio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <meta name="description" content="{{name}}'s professional portfolio showcasing projects and skills in {{title}}">
+</head>
+<body class="template1">
+    <header>
+        <div class="container">
+            <div class="profile-info">
+                <div class="profile-image-container">
+                    <!-- If the user uploaded a profile image, it would go here -->
+                    <div class="profile-image">{{initials}}</div>
+                </div>
+                <div class="profile-text">
+                    <h1 class="name">{{name}}</h1>
+                    <h2 class="title">{{title}}</h2>
+                </div>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#skills">Skills</a></li>
+                    <li><a href="#experience">Experience</a></li>
+                    <li><a href="#education">Education</a></li>
+                    <li><a href="#projects">Projects</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section id="about" class="about-section">
+            <div class="container">
+                <h2 class="section-title">About Me</h2>
+                <div class="about-content">
+                    <p>{{about}}</p>
+                    {{#if hasCv}}
+                    <div class="cv-download">
+                        <a href="{{cvUrl}}" target="_blank" class="btn btn-primary">Download CV</a>
+                    </div>
+                    {{/if}}
+                </div>
+            </div>
+        </section>
+
+        <section id="skills" class="skills-section">
+            <div class="container">
+                <h2 class="section-title">Skills</h2>
+                <div class="skills-grid">
+                    {{#each skills}}
+                    <div class="skill-item">
+                        <div class="skill-name">{{name}}</div>
+                    </div>
+                    {{/each}}
+                </div>
+            </div>
+        </section>
+
+        <section id="experience" class="experience-section">
+            <div class="container">
+                <h2 class="section-title">Work Experience</h2>
+                <div class="timeline">
+                    {{#each experience}}
+                    <div class="timeline-item">
+                        <div class="timeline-content">
+                            <h3 class="position">{{position}}</h3>
+                            <h4 class="company">{{company}}</h4>
+                            <p class="description">{{description}}</p>
+                        </div>
+                    </div>
+                    {{/each}}
+                </div>
+            </div>
+        </section>
+
+        <section id="education" class="education-section">
+            <div class="container">
+                <h2 class="section-title">Education</h2>
+                <div class="timeline">
+                    {{#each education}}
+                    <div class="timeline-item">
+                        <div class="timeline-content">
+                            <h3 class="degree">{{degree}}</h3>
+                            <h4 class="institution">{{institution}}</h4>
+                        </div>
+                    </div>
+                    {{/each}}
+                </div>
+            </div>
+        </section>
+
+        <section id="projects" class="projects-section">
+            <div class="container">
+                <h2 class="section-title">Projects</h2>
+                <div class="projects-grid">
+                    {{#each projects}}
+                    <div class="project-item">
+                        <div class="project-image">
+                            <img src="{{imageUrl}}" alt="{{name}}">
+                        </div>
+                        <div class="project-info">
+                            <h3 class="project-name">{{name}}</h3>
+                            <p class="project-description">{{description}}</p>
+                        </div>
+                    </div>
+                    {{/each}}
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; {{currentYear}} {{name}}. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="js/script.js"></script>
+</body>
+</html> 

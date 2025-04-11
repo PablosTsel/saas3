@@ -230,7 +230,7 @@ export default function DashboardPage() {
     if (currentStep === 4 && !selectedTemplate) {
       toast.warning("Please select a template")
       // Continue anyway with default template
-      setSelectedTemplate("minimal")
+      setSelectedTemplate("template1")
     }
     
     if (currentStep < totalSteps) {
@@ -467,13 +467,13 @@ export default function DashboardPage() {
 
       // If no template is selected, use the default
       if (!selectedTemplate) {
-        setSelectedTemplate("minimal");
+        setSelectedTemplate("template1");
       }
       
       // Create a copy with all the necessary data
       const portfolioToCreate = {
         ...portfolioData,
-        templateId: selectedTemplate || "minimal" // Default to minimal
+        templateId: selectedTemplate || "template1" // Default to template1
       };
       
       // Create the portfolio
@@ -531,7 +531,7 @@ export default function DashboardPage() {
           ...portfolioData,
           cv: null,
           projects: portfolioData.projects.map(project => ({...project, image: null})),
-          templateId: selectedTemplate || "minimal"
+          templateId: selectedTemplate || "template1"
         };
         
         const retryResult = await createPortfolio(user.uid, portfolioWithoutFiles);
@@ -1437,50 +1437,134 @@ export default function DashboardPage() {
                   <div className="grid grid-cols-2 gap-4 mt-2">
                     <div 
                       className={`border rounded-lg overflow-hidden cursor-pointer transition-all ${
-                        selectedTemplate === "minimal" 
+                        selectedTemplate === "template1" 
                           ? "border-indigo-500 ring-2 ring-indigo-200" 
                           : "border-gray-200 hover:border-indigo-300"
                       }`}
-                      onClick={() => handleTemplateSelect("minimal")}
+                      onClick={() => handleTemplateSelect("template1")}
                     >
                       <div className="aspect-[3/4] bg-gradient-to-r from-indigo-50 to-purple-50 flex items-center justify-center">
                         <div className="text-center">
                           <div className="h-16 w-16 bg-white rounded-full shadow-sm flex items-center justify-center mx-auto">
-                            <User className="h-8 w-8 text-indigo-400" />
+                            <div className="text-indigo-400 font-semibold">01</div>
                           </div>
                         </div>
                       </div>
                       <div className="p-3 bg-white text-center">
-                        <div className="font-medium text-gray-800">Minimal</div>
-                        <div className="text-xs text-gray-500">Clean and focused</div>
+                        <div className="font-medium text-gray-800">Template 1</div>
+                        <div className="text-xs text-gray-500">Modern Minimal</div>
                       </div>
                     </div>
                     
                     <div 
                       className={`border rounded-lg overflow-hidden cursor-pointer transition-all ${
-                        selectedTemplate === "creative" 
+                        selectedTemplate === "template2" 
                           ? "border-indigo-500 ring-2 ring-indigo-200" 
                           : "border-gray-200 hover:border-indigo-300"
                       }`}
-                      onClick={() => handleTemplateSelect("creative")}
+                      onClick={() => handleTemplateSelect("template2")}
                     >
                       <div className="aspect-[3/4] bg-gradient-to-r from-purple-50 to-pink-50 flex items-center justify-center">
                         <div className="text-center">
                           <div className="h-16 w-16 bg-white rounded-full shadow-sm flex items-center justify-center mx-auto">
-                            <Sparkles className="h-8 w-8 text-purple-400" />
+                            <div className="text-purple-400 font-semibold">02</div>
                           </div>
                         </div>
                       </div>
                       <div className="p-3 bg-white text-center">
-                        <div className="font-medium text-gray-800">Creative</div>
-                        <div className="text-xs text-gray-500">Vibrant and modern</div>
+                        <div className="font-medium text-gray-800">Template 2</div>
+                        <div className="text-xs text-gray-500">Professional Dark</div>
+                      </div>
+                    </div>
+
+                    <div 
+                      className={`border rounded-lg overflow-hidden cursor-pointer transition-all ${
+                        selectedTemplate === "template3" 
+                          ? "border-indigo-500 ring-2 ring-indigo-200" 
+                          : "border-gray-200 hover:border-indigo-300"
+                      }`}
+                      onClick={() => handleTemplateSelect("template3")}
+                    >
+                      <div className="aspect-[3/4] bg-gradient-to-r from-blue-50 to-cyan-50 flex items-center justify-center">
+                        <div className="text-center">
+                          <div className="h-16 w-16 bg-white rounded-full shadow-sm flex items-center justify-center mx-auto">
+                            <div className="text-blue-400 font-semibold">03</div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="p-3 bg-white text-center">
+                        <div className="font-medium text-gray-800">Template 3</div>
+                        <div className="text-xs text-gray-500">Creative Bold</div>
+                      </div>
+                    </div>
+
+                    <div 
+                      className={`border rounded-lg overflow-hidden cursor-pointer transition-all ${
+                        selectedTemplate === "template4" 
+                          ? "border-indigo-500 ring-2 ring-indigo-200" 
+                          : "border-gray-200 hover:border-indigo-300"
+                      }`}
+                      onClick={() => handleTemplateSelect("template4")}
+                    >
+                      <div className="aspect-[3/4] bg-gradient-to-r from-green-50 to-emerald-50 flex items-center justify-center">
+                        <div className="text-center">
+                          <div className="h-16 w-16 bg-white rounded-full shadow-sm flex items-center justify-center mx-auto">
+                            <div className="text-emerald-400 font-semibold">04</div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="p-3 bg-white text-center">
+                        <div className="font-medium text-gray-800">Template 4</div>
+                        <div className="text-xs text-gray-500">Technical Focus</div>
+                      </div>
+                    </div>
+
+                    <div 
+                      className={`border rounded-lg overflow-hidden cursor-pointer transition-all ${
+                        selectedTemplate === "template5" 
+                          ? "border-indigo-500 ring-2 ring-indigo-200" 
+                          : "border-gray-200 hover:border-indigo-300"
+                      }`}
+                      onClick={() => handleTemplateSelect("template5")}
+                    >
+                      <div className="aspect-[3/4] bg-gradient-to-r from-orange-50 to-amber-50 flex items-center justify-center">
+                        <div className="text-center">
+                          <div className="h-16 w-16 bg-white rounded-full shadow-sm flex items-center justify-center mx-auto">
+                            <div className="text-amber-400 font-semibold">05</div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="p-3 bg-white text-center">
+                        <div className="font-medium text-gray-800">Template 5</div>
+                        <div className="text-xs text-gray-500">Visual Portfolio</div>
+                      </div>
+                    </div>
+
+                    <div 
+                      className={`border rounded-lg overflow-hidden cursor-pointer transition-all ${
+                        selectedTemplate === "template6" 
+                          ? "border-indigo-500 ring-2 ring-indigo-200" 
+                          : "border-gray-200 hover:border-indigo-300"
+                      }`}
+                      onClick={() => handleTemplateSelect("template6")}
+                    >
+                      <div className="aspect-[3/4] bg-gradient-to-r from-red-50 to-rose-50 flex items-center justify-center">
+                        <div className="text-center">
+                          <div className="h-16 w-16 bg-white rounded-full shadow-sm flex items-center justify-center mx-auto">
+                            <div className="text-rose-400 font-semibold">06</div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="p-3 bg-white text-center">
+                        <div className="font-medium text-gray-800">Template 6</div>
+                        <div className="text-xs text-gray-500">Interactive Resume</div>
                       </div>
                     </div>
                   </div>
                   
                   <div className="mt-4 p-4 bg-indigo-50 rounded-lg border border-indigo-100">
                     <p className="text-sm text-indigo-700">
-                      You'll be able to customize colors, fonts, and layout after creating your portfolio.
+                      Each template features a single-page design with progressive disclosure for a smooth user experience.
                     </p>
                   </div>
                 </div>

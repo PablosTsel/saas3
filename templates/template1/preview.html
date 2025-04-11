@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Template 1 Preview</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .preview-container {
+            width: 300px;
+            height: 400px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        .preview-header {
+            background-color: white;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .profile-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4f46e5, #8b5cf6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .preview-name {
+            font-weight: bold;
+            font-size: 16px;
+        }
+        .preview-title {
+            font-size: 12px;
+            color: #666;
+        }
+        .preview-nav {
+            display: flex;
+            gap: 10px;
+            padding: 8px 15px;
+            background-color: white;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .nav-item {
+            font-size: 11px;
+            color: #666;
+        }
+        .preview-section {
+            padding: 15px;
+            background-color: white;
+            margin-bottom: 1px;
+        }
+        .section-title {
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 10px;
+            color: #333;
+            position: relative;
+        }
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 30px;
+            height: 3px;
+            background-color: #4f46e5;
+        }
+        .preview-content {
+            font-size: 11px;
+            color: #666;
+            line-height: 1.4;
+        }
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-top: 15px;
+        }
+        .skill-box {
+            background-color: #f9f9f9;
+            border-radius: 4px;
+            padding: 8px;
+            text-align: center;
+            font-size: 10px;
+            border: 1px solid #eee;
+        }
+        .project-card {
+            margin-top: 15px;
+            border-radius: 4px;
+            overflow: hidden;
+            border: 1px solid #eee;
+        }
+        .project-img {
+            height: 60px;
+            background: linear-gradient(45deg, #e0e7ff, #c7d2fe);
+        }
+        .project-info {
+            padding: 8px;
+            background-color: white;
+        }
+        .project-name {
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 3px;
+        }
+        .project-desc {
+            font-size: 10px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="preview-container">
+        <div class="preview-header">
+            <div class="profile-circle">JD</div>
+            <div>
+                <div class="preview-name">John Doe</div>
+                <div class="preview-title">Full Stack Developer</div>
+            </div>
+        </div>
+        <div class="preview-nav">
+            <div class="nav-item">About</div>
+            <div class="nav-item">Skills</div>
+            <div class="nav-item">Projects</div>
+        </div>
+        <div class="preview-section">
+            <div class="section-title">About Me</div>
+            <div class="preview-content">
+                Passionate developer with 5+ years of experience building web applications.
+            </div>
+        </div>
+        <div class="preview-section">
+            <div class="section-title">Skills</div>
+            <div class="skills-grid">
+                <div class="skill-box">React</div>
+                <div class="skill-box">Node.js</div>
+                <div class="skill-box">Python</div>
+                <div class="skill-box">Firebase</div>
+                <div class="skill-box">MongoDB</div>
+                <div class="skill-box">TypeScript</div>
+            </div>
+        </div>
+        <div class="preview-section">
+            <div class="section-title">Projects</div>
+            <div class="project-card">
+                <div class="project-img"></div>
+                <div class="project-info">
+                    <div class="project-name">E-Commerce App</div>
+                    <div class="project-desc">Built with React, Firebase and Stripe</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 
