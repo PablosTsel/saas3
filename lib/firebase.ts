@@ -567,9 +567,72 @@ export const updatePortfolio = async (portfolioId: string, portfolioData: any) =
 
 export const deletePortfolio = async (portfolioId: string) => {
   try {
+    // First, get the portfolio data to get the userId
     const docRef = doc(db, "portfolios", portfolioId);
+    const docSnap = await getDoc(docRef);
+    
+    if (!docSnap.exists()) {
+      console.log("Portfolio not found:", portfolioId);
+      return { success: false, error: "Portfolio not found" };
+    }
+    
+    const portfolioData = docSnap.data();
+    const userId = portfolioData.userId;
+    
+    if (!userId) {
+      console.error("Portfolio has no userId:", portfolioId);
+      return { success: false, error: "Portfolio data is corrupted" };
+    }
+    
+    console.log(`Deleting portfolio ${portfolioId} for user ${userId}`);
+    
+    // Delete files in storage - we can't list files directly from client SDK
+    // But we know the structure: users/{userId}/portfolios/{portfolioId}/
+    
+    try {
+      // 1. Delete CV if it exists
+      if (portfolioData.cvUrl) {
+        // Extract the path from the URL
+        // The URL is like: https://firebasestorage.googleapis.com/v0/b/bucket/o/encoded-path?token
+        const urlPath = portfolioData.cvUrl.split('/o/')[1]?.split('?')[0];
+        if (urlPath) {
+          const decodedPath = decodeURIComponent(urlPath);
+          console.log("Deleting CV file:", decodedPath);
+          await deleteFile(decodedPath);
+        }
+      }
+      
+      // 2. Delete all project images
+      if (portfolioData.projects && Array.isArray(portfolioData.projects)) {
+        for (const project of portfolioData.projects) {
+          if (project.imageUrl) {
+            const urlPath = project.imageUrl.split('/o/')[1]?.split('?')[0];
+            if (urlPath) {
+              const decodedPath = decodeURIComponent(urlPath);
+              // Only delete if it's not the default placeholder
+              if (!decodedPath.includes('placeholders/project-placeholder.png')) {
+                console.log("Deleting project image:", decodedPath);
+                await deleteFile(decodedPath);
+              }
+            }
+          }
+        }
+      }
+      
+      // 3. Delete the portfolio directory
+      // Note: Firebase Storage doesn't have a direct way to delete directories
+      // But we'll create a Cloud Function to handle this (see deployment instructions)
+      // For now, we've deleted the known files
+      
+    } catch (storageError: any) {
+      console.warn("Some files could not be deleted:", storageError);
+      // Continue with portfolio deletion even if some storage operations fail
+    }
+    
+    // Delete the Firestore document
     await deleteDoc(docRef);
-    console.log("Portfolio deleted:", portfolioId);
+    console.log("Portfolio deleted from Firestore:", portfolioId);
+    
     return { success: true, error: null };
   } catch (error: any) {
     console.error("Error deleting portfolio:", error);

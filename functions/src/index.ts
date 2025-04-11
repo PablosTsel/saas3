@@ -282,4 +282,49 @@ async function updateFirestoreWithCvData(portfolioId: string, cvData: ExtractedC
     console.error(`Error updating Firestore: ${error}`);
     throw error;
   }
-} 
+}
+
+// Add a new Cloud Function to clean up all storage files when a portfolio document is deleted
+export const cleanupPortfolioStorage = functions.firestore
+  .document('portfolios/{portfolioId}')
+  .onDelete(async (snapshot, context) => {
+    const portfolioId = context.params.portfolioId;
+    const portfolioData = snapshot.data();
+    
+    if (!portfolioData || !portfolioData.userId) {
+      console.log('Missing portfolio data or userId, skipping storage cleanup');
+      return null;
+    }
+    
+    const userId = portfolioData.userId;
+    console.log(`Portfolio ${portfolioId} was deleted, cleaning up storage files for user ${userId}`);
+    
+    try {
+      // Use Storage Admin SDK to list and delete all files in the portfolio directory
+      const portfolioPath = `users/${userId}/portfolios/${portfolioId}`;
+      const bucket = admin.storage().bucket();
+      
+      // List all files in this directory
+      const [files] = await bucket.getFiles({ prefix: portfolioPath });
+      console.log(`Found ${files.length} files to delete in ${portfolioPath}`);
+      
+      if (files.length === 0) {
+        console.log('No files to delete');
+        return null;
+      }
+      
+      // Delete each file
+      const deletePromises = files.map(file => {
+        console.log(`Deleting file: ${file.name}`);
+        return file.delete();
+      });
+      
+      await Promise.all(deletePromises);
+      console.log(`Successfully deleted ${files.length} files from storage for portfolio ${portfolioId}`);
+      
+      return null;
+    } catch (error) {
+      console.error('Error cleaning up storage files:', error);
+      return null;
+    }
+  }); 
