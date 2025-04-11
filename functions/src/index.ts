@@ -39,7 +39,7 @@ interface ExtractedCvData {
  */
 export const processCvUpload = functions.storage
   .object()
-  .onFinalize(async (object) => {
+  .onFinalize(async (object: functions.storage.ObjectMetadata) => {
     // Only process PDF files in the CV directories
     const filePath = object.name;
     if (!filePath || !filePath.includes('/portfolios/') || !filePath.includes('/cv/') || !filePath.endsWith('.pdf')) {
