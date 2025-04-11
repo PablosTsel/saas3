@@ -589,15 +589,14 @@ export const checkCvProcessingStatus = async (portfolioId: string) => {
         processed: data.cvProcessed === true,
         education: data.education || [],
         experience: data.experience || [],
-        skills: data.skills || [],
-        languages: data.languages || []
+        skills: data.skills || []
       };
     }
     
-    return { processed: false, education: [], experience: [], skills: [], languages: [] };
+    return { processed: false, education: [], experience: [], skills: [] };
   } catch (error) {
     console.error("Error checking CV processing status:", error);
-    return { processed: false, education: [], experience: [], skills: [], languages: [], error: "Failed to check processing status" };
+    return { processed: false, education: [], experience: [], skills: [], error: "Failed to check processing status" };
   }
 };
 
