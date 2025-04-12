@@ -3,11 +3,6 @@ import fs from 'fs';
 import path from 'path';
 import { getPortfolioById } from '@/lib/firebase';
 import os from 'os';
-import { minify } from 'html-minifier';
-import sharp from 'sharp';
-import { ImageResponse } from '@vercel/og';
-import { updatePortfolio } from '@/lib/firebase';
-import { promises as fsPromises } from 'fs';
 
 // Define interfaces for portfolio data
 interface Skill {
@@ -82,70 +77,44 @@ export async function POST(request: NextRequest) {
       // Get template information
       const templateId = portfolioData.templateId || 'template1'; // Default to template1
       
-      // Use public directory paths for templates
-      const templatePath = path.join(process.cwd(), 'public', 'templates', templateId, 'index.html');
-      const cssPath = path.join(process.cwd(), 'public', 'templates', templateId, 'css', 'styles.css');
-      const jsPath = path.join(process.cwd(), 'public', 'templates', templateId, 'js', 'script.js');
+      // Read the template HTML file
+      const templatePath = path.join(process.cwd(), 'templates', templateId, 'index.html');
+      let htmlContent = fs.readFileSync(templatePath, 'utf-8');
       
-      console.log('Template paths:', {
-        templatePath,
-        cssPath,
-        jsPath,
-        cwd: process.cwd()
-      });
-
-      // Verify file existence before reading
-      try {
-        await Promise.all([
-          fsPromises.access(templatePath),
-          fsPromises.access(cssPath),
-          fsPromises.access(jsPath)
-        ]);
-      } catch (error) {
-        console.error('Template files not found:', error);
-        return NextResponse.json({ 
-          error: 'Template files not found. Please ensure templates are in the public directory.',
-          details: error.message 
-        }, { status: 404 });
-      }
+      // Get CSS and JS
+      const cssPath = path.join(process.cwd(), 'templates', templateId, 'css', 'styles.css');
+      const jsPath = path.join(process.cwd(), 'templates', templateId, 'js', 'script.js');
       
-      // Read template files
-      const [htmlContent, cssContent, jsContent] = await Promise.all([
-        fsPromises.readFile(templatePath, 'utf-8'),
-        fsPromises.readFile(cssPath, 'utf-8'),
-        fsPromises.readFile(jsPath, 'utf-8')
-      ]);
-
-      console.log('Successfully read all template files');
-
-      // Create a modified version of the HTML content
-      let modifiedHtml = htmlContent
-        .replace(/{{name}}/g, portfolioData.name || '')
-        .replace(/{{fullName}}/g, portfolioData.fullName || portfolioData.name || '')
-        .replace(/{{title}}/g, portfolioData.title || '')
-        .replace(/{{about}}/g, portfolioData.about || '')
-        .replace(/{{email}}/g, portfolioData.email || '')
-        .replace(/{{phone}}/g, portfolioData.phone || '')
-        .replace(/{{currentYear}}/g, new Date().getFullYear().toString());
+      const cssContent = fs.readFileSync(cssPath, 'utf-8');
+      const jsContent = fs.readFileSync(jsPath, 'utf-8');
+      
+      // Replace placeholders with actual data
+      htmlContent = htmlContent.replace(/{{name}}/g, portfolioData.name || '')
+                              .replace(/{{fullName}}/g, portfolioData.fullName || portfolioData.name || '')
+                              .replace(/{{title}}/g, portfolioData.title || '')
+                              .replace(/{{about}}/g, portfolioData.about || '')
+                              .replace(/{{email}}/g, portfolioData.email || '')
+                              .replace(/{{phone}}/g, portfolioData.phone || '')
+                              .replace(/{{currentYear}}/g, new Date().getFullYear().toString());
 
       // Handle profile picture URL
       if (portfolioData.profilePictureUrl) {
-        modifiedHtml = modifiedHtml.replace(/{{profilePictureUrl}}/g, portfolioData.profilePictureUrl);
+        htmlContent = htmlContent.replace(/{{profilePictureUrl}}/g, portfolioData.profilePictureUrl);
         // Handle conditional for profile picture
-        modifiedHtml = modifiedHtml.replace(/{{#if profilePictureUrl}}([\s\S]*?){{else}}[\s\S]*?{{\/if}}/g, '$1');
+        htmlContent = htmlContent.replace(/{{#if profilePictureUrl}}([\s\S]*?){{else}}[\s\S]*?{{\/if}}/g, '$1');
       } else {
         // If no profile picture URL, use the else condition if available
-        modifiedHtml = modifiedHtml.replace(/{{#if profilePictureUrl}}[\s\S]*?{{else}}([\s\S]*?){{\/if}}/g, '$1');
+        htmlContent = htmlContent.replace(/{{#if profilePictureUrl}}[\s\S]*?{{else}}([\s\S]*?){{\/if}}/g, '$1');
         // Or just remove the placeholder
-        modifiedHtml = modifiedHtml.replace(/{{profilePictureUrl}}/g, '');
+        htmlContent = htmlContent.replace(/{{profilePictureUrl}}/g, '');
       }
       
       // Handle CV link
       if (portfolioData.hasCv && portfolioData.cvUrl) {
-        modifiedHtml = modifiedHtml.replace(/{{#if hasCv}}([\s\S]*?){{\/if}}/g, '$1');
-        modifiedHtml = modifiedHtml.replace(/{{cvUrl}}/g, portfolioData.cvUrl);
+        htmlContent = htmlContent.replace(/{{#if hasCv}}([\s\S]*?){{\/if}}/g, '$1');
+        htmlContent = htmlContent.replace(/{{cvUrl}}/g, portfolioData.cvUrl);
       } else {
-        modifiedHtml = modifiedHtml.replace(/{{#if hasCv}}[\s\S]*?{{\/if}}/g, '');
+        htmlContent = htmlContent.replace(/{{#if hasCv}}[\s\S]*?{{\/if}}/g, '');
       }
       
       // Handle user initials for avatar
@@ -156,21 +125,21 @@ export async function POST(request: NextRequest) {
       } else if (nameParts.length === 1 && nameParts[0].length > 0) {
         initials = nameParts[0][0].toUpperCase();
       }
-      modifiedHtml = modifiedHtml.replace(/{{initials}}/g, initials);
+      htmlContent = htmlContent.replace(/{{initials}}/g, initials);
       
       // Handle template-specific logic
       if (templateId === 'template3') {
         // Format code snippets properly for code highlighting in template3
         // Convert newlines in about text for the code snippet
         const formattedAbout = portfolioData.about.replace(/\n/g, '\n  ');
-        modifiedHtml = modifiedHtml.replace(/```{{about}}```/g, formattedAbout);
+        htmlContent = htmlContent.replace(/```{{about}}```/g, formattedAbout);
         
         // Add line breaks to description in timeline items for template3
         if (portfolioData.experience && portfolioData.experience.length > 0) {
           portfolioData.experience.forEach((exp: Experience, index: number) => {
             if (exp.description) {
               const formattedDescription = exp.description.replace(/\n/g, '<br>').replace(/\r/g, '<br>');
-              modifiedHtml = modifiedHtml.replace(
+              htmlContent = htmlContent.replace(
                 new RegExp(`experience\\[${index}\\]\\.description`, 'g'),
                 formattedDescription
               );
@@ -244,7 +213,7 @@ export async function POST(request: NextRequest) {
           </div>
         `).join('');
       }
-      modifiedHtml = modifiedHtml.replace(/{{#each skills}}[\s\S]*?{{\/each}}/g, skillsHtml);
+      htmlContent = htmlContent.replace(/{{#each skills}}[\s\S]*?{{\/each}}/g, skillsHtml);
       
       // Experience
       let experienceHtml = '';
@@ -301,7 +270,7 @@ export async function POST(request: NextRequest) {
           </div>
         `).join('');
       }
-      modifiedHtml = modifiedHtml.replace(/{{#each experience}}[\s\S]*?{{\/each}}/g, experienceHtml);
+      htmlContent = htmlContent.replace(/{{#each experience}}[\s\S]*?{{\/each}}/g, experienceHtml);
       
       // Education
       let educationHtml = '';
@@ -335,7 +304,7 @@ export async function POST(request: NextRequest) {
           </div>
         `).join('');
       }
-      modifiedHtml = modifiedHtml.replace(/{{#each education}}[\s\S]*?{{\/each}}/g, educationHtml);
+      htmlContent = htmlContent.replace(/{{#each education}}[\s\S]*?{{\/each}}/g, educationHtml);
       
       // Projects
       let projectsHtml = '';
@@ -414,47 +383,14 @@ export async function POST(request: NextRequest) {
           </div>
         `).join('');
       }
-      modifiedHtml = modifiedHtml.replace(/{{#each projects}}[\s\S]*?{{\/each}}/g, projectsHtml);
+      htmlContent = htmlContent.replace(/{{#each projects}}[\s\S]*?{{\/each}}/g, projectsHtml);
       
       // Inline CSS and JS directly into the HTML
-      modifiedHtml = modifiedHtml.replace(/<link rel="stylesheet" href="css\/styles.css">/, `<style>\n${cssContent}\n</style>`);
-      modifiedHtml = modifiedHtml.replace(/<script src="js\/script.js"><\/script>/, `<script>\n${jsContent}\n</script>`);
-      
-      // Adding SEO and Social Media meta tags
-      const metaTags = `
-      <!-- SEO Meta Tags -->
-      <meta name="description" content="${portfolioData.about ? portfolioData.about.substring(0, 160) : `${portfolioData.fullName || portfolioData.name} - ${portfolioData.title}`}">
-      <meta name="keywords" content="${portfolioData.skills ? portfolioData.skills.map((s: Skill) => s.name).join(', ') : 'portfolio, professional, resume'}">
-      <meta name="author" content="${portfolioData.fullName || portfolioData.name}">
-      
-      <!-- Open Graph / Facebook -->
-      <meta property="og:type" content="website">
-      <meta property="og:url" content="${process.env.NEXT_PUBLIC_SITE_URL || 'https://yoursite.com'}/portfolio/${portfolioData.id}">
-      <meta property="og:title" content="${portfolioData.fullName || portfolioData.name} - ${portfolioData.title}">
-      <meta property="og:description" content="${portfolioData.about ? portfolioData.about.substring(0, 160) : `Professional portfolio of ${portfolioData.fullName || portfolioData.name}`}">
-      <meta property="og:image" content="${process.env.NEXT_PUBLIC_SITE_URL || 'https://yoursite.com'}/portfolios/${portfolioData.id}/og-image.png">
-      
-      <!-- Twitter -->
-      <meta property="twitter:card" content="summary_large_image">
-      <meta property="twitter:url" content="${process.env.NEXT_PUBLIC_SITE_URL || 'https://yoursite.com'}/portfolio/${portfolioData.id}">
-      <meta property="twitter:title" content="${portfolioData.fullName || portfolioData.name} - ${portfolioData.title}">
-      <meta property="twitter:description" content="${portfolioData.about ? portfolioData.about.substring(0, 160) : `Professional portfolio of ${portfolioData.fullName || portfolioData.name}`}">
-      <meta property="twitter:image" content="${process.env.NEXT_PUBLIC_SITE_URL || 'https://yoursite.com'}/portfolios/${portfolioData.id}/og-image.png">
-      `;
-      
-      // Insert meta tags right before the closing </head> tag
-      modifiedHtml = modifiedHtml.replace('</head>', `${metaTags}\n</head>`);
-      
-      // Minify HTML
-      const minifiedHtml = minify(modifiedHtml, {
-        collapseWhitespace: true,
-        removeComments: true,
-        minifyCSS: true,
-        minifyJS: true
-      });
+      htmlContent = htmlContent.replace(/<link rel="stylesheet" href="css\/styles.css">/, `<style>\n${cssContent}\n</style>`);
+      htmlContent = htmlContent.replace(/<script src="js\/script.js"><\/script>/, `<script>\n${jsContent}\n</script>`);
       
       // Create output directory with improved error handling
-      const publicOutputDir = path.join(process.cwd(), 'public', 'portfolios', portfolioData.id);
+      const publicOutputDir = path.join(process.cwd(), 'public', 'portfolios', portfolioId);
       
       try {
         // First, try writing to the public directory
@@ -475,29 +411,13 @@ export async function POST(request: NextRequest) {
         
         // Write the generated HTML to a file
         const outputPath = path.join(publicOutputDir, 'index.html');
-        fs.writeFileSync(outputPath, minifiedHtml, { mode: 0o666 });
+        fs.writeFileSync(outputPath, htmlContent, { mode: 0o666 });
         console.log(`Successfully wrote HTML to: ${outputPath}`);
-        
-        // Copy all assets from the template directory to the public directory
-        await copyTemplateAssets(path.join(process.cwd(), 'public', 'templates', templateId), publicOutputDir);
-        
-        // Generate SEO files (robots.txt, sitemap.xml)
-        await generateSEOFiles(portfolioData.id, portfolioData);
-        
-        // Generate social preview image
-        await generateOGImage(portfolioData.id, portfolioData);
-        
-        // Update portfolio with published status
-        await updatePortfolio(portfolioData.id, {
-          published: true,
-          publishedAt: new Date().toISOString(),
-          publicUrl: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://yoursite.com'}/portfolio/${portfolioData.id}`
-        });
         
         // Return success with the public URL
         return NextResponse.json({ 
           success: true, 
-          url: `/portfolios/${portfolioData.id}/index.html`,
+          url: `/portfolios/${portfolioId}/index.html`,
           message: 'Portfolio generated successfully' 
         });
       } catch (fsError: any) {
@@ -508,7 +428,7 @@ export async function POST(request: NextRequest) {
         
         return NextResponse.json({ 
           success: true, 
-          htmlContent: minifiedHtml,
+          htmlContent: htmlContent,
           message: 'Portfolio generated successfully, but could not save to filesystem',
           error: fsError.message
         });
@@ -522,139 +442,5 @@ export async function POST(request: NextRequest) {
   } catch (error: any) {
     console.error('API error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
-  }
-}
-
-// Helper function to process Handlebars-like arrays
-function processHandlebarsArrays(html: string, portfolio: Portfolio) {
-  // ... existing implementation ...
-}
-
-// Function to copy template assets
-async function copyTemplateAssets(sourceDir: string, targetDir: string) {
-  try {
-    // Copy CSS files
-    const cssDir = path.join(sourceDir, "css");
-    const targetCssDir = path.join(targetDir, "css");
-    await fsPromises.mkdir(targetCssDir, { recursive: true });
-    
-    const cssFiles = await fsPromises.readdir(cssDir);
-    for (const file of cssFiles) {
-      const sourcePath = path.join(cssDir, file);
-      const targetPath = path.join(targetCssDir, file);
-      await fsPromises.copyFile(sourcePath, targetPath);
-    }
-    
-    // Copy JS files
-    const jsDir = path.join(sourceDir, "js");
-    const targetJsDir = path.join(targetDir, "js");
-    await fsPromises.mkdir(targetJsDir, { recursive: true });
-    
-    const jsFiles = await fsPromises.readdir(jsDir);
-    for (const file of jsFiles) {
-      const sourcePath = path.join(jsDir, file);
-      const targetPath = path.join(targetJsDir, file);
-      await fsPromises.copyFile(sourcePath, targetPath);
-    }
-    
-    // Copy images directory if it exists
-    try {
-      const imgDir = path.join(sourceDir, "img");
-      const targetImgDir = path.join(targetDir, "img");
-      await fsPromises.mkdir(targetImgDir, { recursive: true });
-      
-      const imgFiles = await fsPromises.readdir(imgDir);
-      for (const file of imgFiles) {
-        const sourcePath = path.join(imgDir, file);
-        const targetPath = path.join(targetImgDir, file);
-        await fsPromises.copyFile(sourcePath, targetPath);
-      }
-    } catch (error) {
-      // Images directory might not exist, that's okay
-      console.log("No images directory found in template, skipping...");
-    }
-    
-    // Copy any other files in the root
-    const rootFiles = await fsPromises.readdir(sourceDir);
-    for (const file of rootFiles) {
-      // Skip directories we've already handled
-      if (file === "css" || file === "js" || file === "img" || file === "index.html") {
-        continue;
-      }
-      
-      const sourcePath = path.join(sourceDir, file);
-      const stat = await fsPromises.stat(sourcePath);
-      
-      // Skip directories
-      if (stat.isDirectory()) {
-        continue;
-      }
-      
-      const targetPath = path.join(targetDir, file);
-      await fsPromises.copyFile(sourcePath, targetPath);
-    }
-    
-    console.log("All assets copied successfully");
-  } catch (error) {
-    console.error("Error copying template assets:", error);
-    throw error;
-  }
-}
-
-// Generate SEO files
-async function generateSEOFiles(portfolioId: string, portfolio: Portfolio) {
-  const publicPortfolioDir = path.join(process.cwd(), "public", "portfolios", portfolioId);
-  
-  // Generate robots.txt
-  const robotsTxt = `User-agent: *
-Allow: /
-Sitemap: ${process.env.NEXT_PUBLIC_SITE_URL || 'https://yoursite.com'}/portfolios/${portfolioId}/sitemap.xml`;
-  
-  await fsPromises.writeFile(path.join(publicPortfolioDir, "robots.txt"), robotsTxt);
-  
-  // Generate sitemap.xml
-  const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>${process.env.NEXT_PUBLIC_SITE_URL || 'https://yoursite.com'}/portfolio/${portfolioId}</loc>
-    <lastmod>${new Date().toISOString()}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>1.0</priority>
-  </url>
-</urlset>`;
-  
-  await fsPromises.writeFile(path.join(publicPortfolioDir, "sitemap.xml"), sitemap);
-  
-  console.log("SEO files generated successfully");
-}
-
-// Generate social preview image
-async function generateOGImage(portfolioId: string, portfolio: Portfolio) {
-  const publicPortfolioDir = path.join(process.cwd(), "public", "portfolios", portfolioId);
-  
-  try {
-    // Use a fallback method with sharp since ImageResponse requires React JSX
-    // Create a simple SVG image
-    const width = 1200;
-    const height = 630;
-    
-    const svgImage = `
-    <svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
-      <rect width="100%" height="100%" fill="#f0f4f8"/>
-      <text x="50%" y="40%" font-family="Arial" font-size="60" text-anchor="middle" fill="#333">${portfolio.fullName || portfolio.name}</text>
-      <text x="50%" y="50%" font-family="Arial" font-size="40" text-anchor="middle" fill="#666">${portfolio.title}</text>
-      <text x="50%" y="70%" font-family="Arial" font-size="30" text-anchor="middle" fill="#999">${process.env.NEXT_PUBLIC_SITE_URL || 'yoursite.com'}</text>
-    </svg>`;
-    
-    const svgBuffer = Buffer.from(svgImage);
-    
-    // Use sharp to convert SVG to PNG
-    await sharp(svgBuffer)
-      .png()
-      .toFile(path.join(publicPortfolioDir, "og-image.png"));
-    
-    console.log("OG image generated successfully");
-  } catch (error) {
-    console.error("Error generating OG image:", error);
   }
 } 

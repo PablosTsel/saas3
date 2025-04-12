@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "node scripts/copy-templates.js && next build",
+    "build": "next build",
     "start": "next start",
     "lint": "next lint"
   },
@@ -65,8 +65,7 @@
     "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7",
     "vaul": "^0.9.6",
-    "zod": "^3.24.1",
-    "fs-extra": "^11.2.0"
+    "zod": "^3.24.1"
   },
   "devDependencies": {
     "@types/html-minifier": "^4.0.5",
