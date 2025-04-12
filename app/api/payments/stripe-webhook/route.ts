@@ -27,15 +27,18 @@ export async function POST(request: NextRequest) {
       const portfolioId = session.metadata.portfolioId;
       
       if (portfolioId) {
+        console.log(`Payment completed for portfolio: ${portfolioId}`);
         const { portfolio } = await getPortfolioById(portfolioId);
         
         if (portfolio) {
           // Update portfolio payment status
           await updatePortfolio(portfolioId, {
             ...portfolio,
+            isPreviewPaid: true,
             paymentStatus: 'paid',
             paidAt: new Date().toISOString(),
           });
+          console.log(`Updated payment status for portfolio ${portfolioId} - isPreviewPaid: true`);
         }
       }
     }

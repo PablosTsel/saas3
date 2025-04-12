@@ -32,25 +32,52 @@ export default function PortfolioViewPage() {
       const updatePaymentStatus = async () => {
         setCheckingPayment(true);
         try {
-          if (portfolio) {
-            // Only update if we haven't already marked as paid
-            if (!portfolio.isPreviewPaid) {
+          console.log("Payment success detected, updating portfolio status");
+          
+          // Fetch fresh portfolio data to ensure we have the latest state
+          const { portfolio: freshPortfolio } = await getPortfolioById(portfolioId);
+          
+          if (freshPortfolio) {
+            // Type assertion for freshPortfolio
+            const typedFreshPortfolio = freshPortfolio as {
+              id: string;
+              isPreviewPaid?: boolean;
+              paymentStatus?: string;
+              [key: string]: any;
+            };
+            
+            // Check if it's already marked as paid in the database
+            if (!typedFreshPortfolio.isPreviewPaid && 
+                typedFreshPortfolio.paymentStatus !== 'paid' && 
+                typedFreshPortfolio.paymentStatus !== 'completed') {
+              console.log("Portfolio not yet marked as paid, updating...");
+              // Update the portfolio payment status
               await updatePortfolio(portfolioId, {
-                ...portfolio,
+                ...freshPortfolio,
                 isPreviewPaid: true,
                 paymentStatus: 'completed',
                 paymentCompletedAt: new Date().toISOString(),
               });
               
-              // Refresh portfolio data
-              const { portfolio: updatedPortfolio } = await getPortfolioById(portfolioId);
-              if (updatedPortfolio) {
-                setPortfolio(updatedPortfolio);
-              }
+              console.log("Portfolio payment status updated successfully");
+            } else {
+              console.log("Portfolio already marked as paid, skipping update");
             }
+            
+            // Set the portfolio with payment completed to trigger page refresh
+            setPortfolio({
+              ...freshPortfolio,
+              isPreviewPaid: true,
+              paymentStatus: 'completed'
+            });
             
             // Clear the query params to avoid reprocessing on refresh
             router.replace(`/portfolio/${portfolioId}`);
+            
+            // Force a portfolio generation
+            setTimeout(() => {
+              generatePortfolio(portfolioId);
+            }, 500);
           }
         } catch (err) {
           console.error('Error updating payment status:', err);
@@ -61,7 +88,7 @@ export default function PortfolioViewPage() {
       
       updatePaymentStatus();
     }
-  }, [portfolioId, searchParams, portfolio, router]);
+  }, [portfolioId, searchParams, router]);
 
   useEffect(() => {
     const fetchPortfolio = async () => {
@@ -84,16 +111,23 @@ export default function PortfolioViewPage() {
           id: string;
           name: string;
           isPreviewPaid: boolean;
+          paymentStatus?: string;
           [key: string]: any;
         };
         
         // Check if payment is required and not yet paid
-        const needsPayment = !typedPortfolioData.isPreviewPaid;
+        // Account for both isPreviewPaid flag and paymentStatus fields
+        const isPaid = typedPortfolioData.isPreviewPaid === true || 
+                      ['paid', 'completed'].includes(typedPortfolioData.paymentStatus || '');
         
-        if (needsPayment) {
+        if (!isPaid) {
+          console.log("Portfolio requires payment");
           setLoading(false);
           return; // Don't proceed to load portfolio if payment is required
         }
+        
+        // Payment is confirmed, proceed to load/generate the portfolio
+        console.log("Payment verified, proceeding to load portfolio");
         
         // Check if portfolio HTML exists
         try {
@@ -248,7 +282,11 @@ export default function PortfolioViewPage() {
   }
   
   // Show payment screen if portfolio exists but is not paid
-  if (portfolio && !portfolio.isPreviewPaid) {
+  // Check both isPreviewPaid flag and paymentStatus fields
+  const isPaid = portfolio && (portfolio.isPreviewPaid === true || 
+                            ['paid', 'completed'].includes(portfolio.paymentStatus || ''));
+  
+  if (portfolio && !isPaid) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-50">
         <div className="text-center max-w-md p-8 bg-white rounded-xl shadow-sm border border-indigo-100">
