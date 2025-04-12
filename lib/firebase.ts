@@ -368,6 +368,10 @@ export const createPortfolio = async (
       templateId: portfolioData.templateId,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
+      // Payment related fields
+      isPreviewPaid: false,
+      paymentSessionId: null,
+      paymentStatus: "unpaid"
     };
 
     // First save the portfolio with placeholder images

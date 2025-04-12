@@ -1,13 +1,16 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { useParams } from 'next/navigation';
-import { getPortfolioById } from '@/lib/firebase';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import { getPortfolioById, updatePortfolio } from '@/lib/firebase';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
+import PaymentModal from '@/components/payment-modal';
 
 export default function PortfolioViewPage() {
   const params = useParams();
+  const searchParams = useSearchParams();
+  const router = useRouter();
   const portfolioId = params.id as string;
   const [portfolio, setPortfolio] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -16,6 +19,49 @@ export default function PortfolioViewPage() {
   const [portfolioUrl, setPortfolioUrl] = useState<string | null>(null);
   const [htmlContent, setHtmlContent] = useState<string | null>(null);
   const [detailedError, setDetailedError] = useState<any>(null);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [checkingPayment, setCheckingPayment] = useState(false);
+
+  // Check for payment success from query params
+  useEffect(() => {
+    const paymentStatus = searchParams.get('payment');
+    const sessionId = searchParams.get('session_id');
+    
+    if (paymentStatus === 'success' && sessionId && portfolioId) {
+      // Update the portfolio payment status
+      const updatePaymentStatus = async () => {
+        setCheckingPayment(true);
+        try {
+          if (portfolio) {
+            // Only update if we haven't already marked as paid
+            if (!portfolio.isPreviewPaid) {
+              await updatePortfolio(portfolioId, {
+                ...portfolio,
+                isPreviewPaid: true,
+                paymentStatus: 'completed',
+                paymentCompletedAt: new Date().toISOString(),
+              });
+              
+              // Refresh portfolio data
+              const { portfolio: updatedPortfolio } = await getPortfolioById(portfolioId);
+              if (updatedPortfolio) {
+                setPortfolio(updatedPortfolio);
+              }
+            }
+            
+            // Clear the query params to avoid reprocessing on refresh
+            router.replace(`/portfolio/${portfolioId}`);
+          }
+        } catch (err) {
+          console.error('Error updating payment status:', err);
+        } finally {
+          setCheckingPayment(false);
+        }
+      };
+      
+      updatePaymentStatus();
+    }
+  }, [portfolioId, searchParams, portfolio, router]);
 
   useEffect(() => {
     const fetchPortfolio = async () => {
@@ -32,6 +78,22 @@ export default function PortfolioViewPage() {
         }
         
         setPortfolio(portfolioData);
+        
+        // Add type assertion for the portfolio data
+        const typedPortfolioData = portfolioData as {
+          id: string;
+          name: string;
+          isPreviewPaid: boolean;
+          [key: string]: any;
+        };
+        
+        // Check if payment is required and not yet paid
+        const needsPayment = !typedPortfolioData.isPreviewPaid;
+        
+        if (needsPayment) {
+          setLoading(false);
+          return; // Don't proceed to load portfolio if payment is required
+        }
         
         // Check if portfolio HTML exists
         try {
@@ -142,8 +204,13 @@ export default function PortfolioViewPage() {
       generatePortfolio(portfolioId);
     }
   };
+
+  // Handle payment
+  const handleStartPayment = () => {
+    setShowPaymentModal(true);
+  };
   
-  if (loading) {
+  if (loading || checkingPayment) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-50">
         <div className="text-center">
@@ -176,6 +243,48 @@ export default function PortfolioViewPage() {
             </Button>
           </div>
         </div>
+      </div>
+    );
+  }
+  
+  // Show payment screen if portfolio exists but is not paid
+  if (portfolio && !portfolio.isPreviewPaid) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-50">
+        <div className="text-center max-w-md p-8 bg-white rounded-xl shadow-sm border border-indigo-100">
+          <h1 className="text-2xl font-bold text-gray-800 mb-4">Preview Your Portfolio</h1>
+          <p className="text-gray-600 mb-6">
+            To view your portfolio "{portfolio.name}", a one-time payment of €1 is required.
+          </p>
+          <Button 
+            onClick={handleStartPayment}
+            className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
+          >
+            Pay €1 to View Portfolio
+          </Button>
+          
+          <div className="mt-6 text-sm text-gray-500">
+            <p>• Secure payment via Stripe</p>
+            <p>• One-time payment, no subscription</p>
+            <p>• Immediate access after payment</p>
+          </div>
+          
+          <Button 
+            variant="outline" 
+            className="mt-4" 
+            onClick={() => router.push('/dashboard')}
+          >
+            Return to Dashboard
+          </Button>
+        </div>
+        
+        {/* Payment Modal */}
+        <PaymentModal 
+          isOpen={showPaymentModal}
+          onClose={() => setShowPaymentModal(false)}
+          portfolioId={portfolioId}
+          portfolioName={portfolio.name || 'Your Portfolio'}
+        />
       </div>
     );
   }
