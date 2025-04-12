@@ -24,6 +24,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Progress } from "@/components/ui/progress"
 import { createPortfolio, getUserPortfolios, deletePortfolio } from "@/lib/firebase"
+import PortfolioCard from "@/components/portfolio-card"
 
 // Define types for our portfolio data
 interface Skill {
@@ -917,47 +918,16 @@ export default function DashboardPage() {
                   </CardContent>
                 </Card>
               ) : (
-                // Portfolio cards
+                // Portfolio cards - Using our new PortfolioCard component
                 portfolios.map((portfolio) => (
-                  <Card key={portfolio.id} className="overflow-hidden transition-all duration-300 hover:shadow-xl bg-white border border-indigo-100 rounded-xl group">
-                    <CardHeader className="pb-2 border-b">
-                      <CardTitle className="text-gray-800">{portfolio.name}</CardTitle>
-                      <CardDescription className="text-indigo-500">
-                        {portfolio.templateId === "minimal" ? "Minimal template" : 
-                         portfolio.templateId === "creative" ? "Creative template" : 
-                         `Template ${portfolio.templateId.replace('template', '')}`}
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent className="aspect-video bg-white flex items-center justify-center p-0 relative overflow-hidden">
-                      <img 
-                        src={`/templates/${portfolio.templateId}/thumbnail_dash.svg`}
-                        alt={`${portfolio.name} Preview`}
-                        className="w-full h-full object-contain"
-                      />
-                    </CardContent>
-                    <CardFooter className="flex justify-between py-4 border-t">
-                      <div className="flex gap-2">
-                        <Button variant="outline" size="sm" asChild className="border-indigo-200 hover:border-indigo-300 hover:bg-indigo-50 text-gray-700">
-                          <Link href={`/editor/${portfolio.id}`} className="flex items-center gap-2">
-                            <Edit className="h-4 w-4 text-indigo-500" /> Edit
-                          </Link>
-                        </Button>
-                        <Button 
-                          variant="outline" 
-                          size="sm" 
-                          className="border-red-200 hover:border-red-300 hover:bg-red-50 text-red-600"
-                          onClick={() => handleDeletePortfolio(portfolio.id, portfolio.name)}
-                        >
-                          <X className="h-4 w-4 mr-1" /> Delete
-                        </Button>
-                      </div>
-                      <Button size="sm" asChild className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white">
-                        <Link href={`/portfolio/${portfolio.id}`} className="flex items-center gap-2">
-                          <Eye className="h-4 w-4" /> View Live
-                        </Link>
-                      </Button>
-                    </CardFooter>
-                  </Card>
+                  <PortfolioCard
+                    key={portfolio.id}
+                    id={portfolio.id}
+                    name={portfolio.name}
+                    title={portfolio.title}
+                    templateId={portfolio.templateId}
+                    onDelete={handleDeletePortfolio}
+                  />
                 ))
               )}
 

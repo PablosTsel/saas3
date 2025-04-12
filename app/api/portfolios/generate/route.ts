@@ -325,7 +325,7 @@ export async function POST(request: NextRequest) {
               <h3 class="project-title">${project.name || ''}</h3>
               <p class="project-description">${project.description || ''}</p>
               <div class="project-tech">
-                <img src="${project.imageUrl || ''}" alt="${project.name || ''}" class="project-image">
+                <img src="${project.imageUrl || ''}" alt="${project.name || ''}" class="project-image" onerror="this.src='https://placehold.co/600x400/e2e8f0/1e293b?text=Project+Image'">
               </div>
             </div>
           </div>
@@ -334,7 +334,7 @@ export async function POST(request: NextRequest) {
         projectsHtml = portfolioData.projects.map((project: Project) => `
           <div class="project-card-t4 all">
             <div class="project-image">
-              <img src="${project.imageUrl || ''}" alt="${project.name || ''}">
+              <img src="${project.imageUrl || ''}" alt="${project.name || ''}" onerror="this.src='https://placehold.co/600x400/e2e8f0/1e293b?text=Project+Image'">
             </div>
             <div class="project-content">
               <h3 class="project-title neon-text">${project.name || ''}</h3>
@@ -349,7 +349,7 @@ export async function POST(request: NextRequest) {
         projectsHtml = portfolioData.projects.map((project: Project) => `
           <div class="project-card all">
             <div class="project-image">
-              <img src="${project.imageUrl || ''}" alt="${project.name || ''}">
+              <img src="${project.imageUrl || ''}" alt="${project.name || ''}" onerror="this.src='https://placehold.co/600x400/e2e8f0/1e293b?text=Project+Image'">
               <div class="project-overlay">
                 <div class="project-buttons">
                   <a href="#" class="project-link">View Details</a>
@@ -366,7 +366,7 @@ export async function POST(request: NextRequest) {
         projectsHtml = portfolioData.projects.map((project: Project) => `
           <div class="project-card" data-category="all">
             <div class="project-image">
-              <img src="${project.imageUrl || ''}" alt="${project.name || ''}">
+              <img src="${project.imageUrl || ''}" alt="${project.name || ''}" onerror="this.src='https://placehold.co/600x400/e2e8f0/1e293b?text=Project+Image'">
             </div>
             <div class="project-content">
               <h3 class="project-title">${project.name || ''}</h3>

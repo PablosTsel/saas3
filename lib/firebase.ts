@@ -451,7 +451,14 @@ export const createPortfolio = async (
       uploadPromises.push(cvUploadPromise);
     }
 
-    // Project image uploads
+    // Project image uploads - ADD A BATCH MECHANISM
+    const projectImageResults: Array<{
+      index: number;
+      url: string;
+      success: boolean;
+    }> = [];
+    const projectUpdates = [];
+    
     if (portfolioData.projects?.length > 0) {
       for (let i = 0; i < portfolioData.projects.length; i++) {
         const project = portfolioData.projects[i];
@@ -469,23 +476,15 @@ export const createPortfolio = async (
             );
 
             if (uploadResult.url) {
-              // Update this specific project's imageUrl in the projects array
-              const portfolioDoc = await getDoc(portfolioRef);
-              if (portfolioDoc.exists()) {
-                const currentData = portfolioDoc.data();
-                const updatedProjects = [...(currentData.projects || [])];
-                
-                // Make sure the project index exists
-                if (updatedProjects[i]) {
-                  updatedProjects[i].imageUrl = uploadResult.url;
-                  
-                  // Only update the projects array
-                  await updateDoc(portfolioRef, { projects: updatedProjects });
-                  console.log(`Project ${i} image uploaded successfully: ${uploadResult.url}`);
-                  return { success: true, type: 'project', index: i };
-                }
-              }
-              return { success: true, type: 'project', index: i };
+              // Store the result for batch update later
+              projectImageResults.push({
+                index: i,
+                url: uploadResult.url,
+                success: true
+              });
+              
+              console.log(`Project ${i} image uploaded successfully: ${uploadResult.url}`);
+              return { success: true, type: 'project', index: i, url: uploadResult.url };
             } else {
               hasFileUploadIssues = true;
               const errorMsg = `Project "${project.name}" image upload failed: ${uploadResult.error || "Unknown error"}`;
@@ -509,8 +508,29 @@ export const createPortfolio = async (
     // Wait for all uploads to complete or fail
     if (uploadPromises.length > 0) {
       console.log(`Waiting for ${uploadPromises.length} file uploads to complete...`);
-      const results = await Promise.allSettled(uploadPromises);
+      const results = await Promise.all(uploadPromises);
       console.log(`Upload results:`, results);
+      
+      // Now batch update all project images at once
+      const portfolioDoc = await getDoc(portfolioRef);
+      if (portfolioDoc.exists()) {
+        const currentData = portfolioDoc.data();
+        const updatedProjects = [...(currentData.projects || [])];
+        
+        // Update all project images in one batch
+        for (const result of projectImageResults) {
+          if (result.success && updatedProjects[result.index]) {
+            updatedProjects[result.index].imageUrl = result.url;
+          }
+        }
+        
+        // Single update for all projects
+        if (projectImageResults.length > 0) {
+          console.log('Batch updating all project images...');
+          await updateDoc(portfolioRef, { projects: updatedProjects });
+          console.log('All project images updated successfully');
+        }
+      }
     }
 
     // Always return success since the portfolio document was created
@@ -577,29 +597,156 @@ export const getPortfolioById = async (portfolioId: string) => {
 export const updatePortfolio = async (portfolioId: string, portfolioData: any) => {
   try {
     const docRef = doc(db, "portfolios", portfolioId);
+    const portfolioDoc = await getDoc(docRef);
     
-    // Clean portfolio data for Firestore
+    if (!portfolioDoc.exists()) {
+      return { success: false, error: "Portfolio not found" };
+    }
+    
+    const currentData = portfolioDoc.data();
+    
+    // Track file uploads
+    const uploadPromises = [];
+    let hasFileUploadIssues = false;
+    let fileErrorMessages: string[] = [];
+    
+    // Handle CV file if it exists and is a File object
+    if (portfolioData.hasCv && portfolioData.cv instanceof File) {
+      const cvUploadPromise = (async () => {
+        try {
+          console.log(`Updating CV for portfolio ${portfolioId}`);
+          const uploadPath = `users/${currentData.userId}/portfolios/${portfolioId}/cv/${Date.now()}-${portfolioData.cv.name}`;
+          
+          const uploadResult = await uploadFile(
+            portfolioData.cv,
+            uploadPath,
+            { portfolioId, fileType: 'cv' }
+          );
+
+          if (uploadResult.url) {
+            // We'll update this at the end
+            console.log("CV uploaded successfully:", uploadResult.url);
+            return { success: true, type: 'cv', url: uploadResult.url };
+          } else {
+            hasFileUploadIssues = true;
+            const errorMsg = `CV upload failed: ${uploadResult.error || "Unknown error"}`;
+            fileErrorMessages.push(errorMsg);
+            console.error(errorMsg);
+            return { success: false, type: 'cv', error: errorMsg };
+          }
+        } catch (err) {
+          hasFileUploadIssues = true;
+          const errorMsg = `CV upload error: ${err instanceof Error ? err.message : "Unknown error"}`;
+          fileErrorMessages.push(errorMsg);
+          console.error(errorMsg);
+          return { success: false, type: 'cv', error: errorMsg };
+        }
+      })();
+      
+      uploadPromises.push(cvUploadPromise);
+    }
+    
+    // Process project image uploads
+    const projectImageResults: Array<{
+      index: number;
+      url: string;
+      success: boolean;
+    }> = [];
+    
+    if (portfolioData.projects?.length > 0) {
+      for (let i = 0; i < portfolioData.projects.length; i++) {
+        const project = portfolioData.projects[i];
+        if (!(project.image instanceof File)) continue;
+        
+        const projectUploadPromise = (async () => {
+          try {
+            console.log(`Updating project ${i} image for portfolio ${portfolioId}`);
+            const uploadPath = `users/${currentData.userId}/portfolios/${portfolioId}/projects/${i}/${Date.now()}-${project.image.name}`;
+            
+            const uploadResult = await uploadFile(
+              project.image,
+              uploadPath,
+              { portfolioId, projectIndex: i.toString(), fileType: 'projectImage' }
+            );
+
+            if (uploadResult.url) {
+              // Store the result for batch update later
+              projectImageResults.push({
+                index: i,
+                url: uploadResult.url,
+                success: true
+              });
+              
+              console.log(`Project ${i} image uploaded successfully: ${uploadResult.url}`);
+              return { success: true, type: 'project', index: i, url: uploadResult.url };
+            } else {
+              hasFileUploadIssues = true;
+              const errorMsg = `Project "${project.name}" image upload failed: ${uploadResult.error || "Unknown error"}`;
+              fileErrorMessages.push(errorMsg);
+              console.error(errorMsg);
+              return { success: false, type: 'project', index: i, error: errorMsg };
+            }
+          } catch (err) {
+            hasFileUploadIssues = true;
+            const errorMsg = `Project "${project.name}" image error: ${err instanceof Error ? err.message : "Unknown error"}`;
+            fileErrorMessages.push(errorMsg);
+            console.error(errorMsg);
+            return { success: false, type: 'project', index: i, error: errorMsg };
+          }
+        })();
+        
+        uploadPromises.push(projectUploadPromise);
+      }
+    }
+    
+    // Wait for all uploads to complete
+    let cvUrl = portfolioData.cvUrl || "";
+    if (uploadPromises.length > 0) {
+      console.log(`Waiting for ${uploadPromises.length} file uploads to complete...`);
+      const results = await Promise.all(uploadPromises);
+      console.log(`Upload results:`, results);
+      
+      // Extract CV URL if it was uploaded
+      const cvResult = results.find(r => r.type === 'cv' && r.success);
+      if (cvResult && 'url' in cvResult) {
+        cvUrl = cvResult.url;
+      }
+    }
+    
+    // Prepare clean portfolio data for Firestore
     const cleanedPortfolio = {
       ...portfolioData,
       updatedAt: serverTimestamp(),
+      // Set the CV URL if it was uploaded
+      cvUrl: cvUrl,
       // Remove actual File objects as they can't be stored directly in Firestore
-      cv: portfolioData.cv && portfolioData.cv instanceof File 
-        ? { name: portfolioData.cv.name, type: portfolioData.cv.type } 
-        : portfolioData.cv,
-      projects: portfolioData.projects.map((project: any) => ({
-        ...project,
-        image: project.image && project.image instanceof File 
-          ? { name: project.image.name, type: project.image.type } 
-          : project.image,
-        report: project.report && project.report instanceof File 
-          ? { name: project.report.name, type: project.report.type } 
-          : project.report
-      }))
+      cv: null,
+      projects: portfolioData.projects.map((project: any, index: number) => {
+        // Find if this project has a newly uploaded image
+        const uploadedImage = projectImageResults.find(r => r.index === index);
+        
+        return {
+          name: project.name,
+          description: project.description,
+          // Use the new image URL if uploaded, or keep the existing one
+          imageUrl: uploadedImage ? uploadedImage.url : (project.imageUrl || ""),
+          // Remove the file objects
+          image: null,
+          report: null
+        };
+      })
     };
     
+    // Update the portfolio document
     await updateDoc(docRef, cleanedPortfolio);
     console.log("Portfolio updated:", portfolioId);
-    return { success: true, error: null };
+    
+    return { 
+      success: true, 
+      error: hasFileUploadIssues 
+        ? `Portfolio updated, but some file uploads failed: ${fileErrorMessages.join('; ')}` 
+        : null 
+    };
   } catch (error: any) {
     console.error("Error updating portfolio:", error);
     return { success: false, error: error.message };
