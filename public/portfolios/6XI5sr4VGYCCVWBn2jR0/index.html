@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pablos1 - Portfolio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+/* Template 1 - Modern Minimal */
+/* Base styles */
+:root {
+    --primary-color: #4f46e5;
+    --primary-light: #818cf8;
+    --primary-dark: #3730a3;
+    --text-dark: #1f2937;
+    --text-medium: #4b5563;
+    --text-light: #9ca3af;
+    --background-light: #f9fafb;
+    --background-white: #ffffff;
+    --accent-color: #8b5cf6;
+    --border-color: #e5e7eb;
+    --section-spacing: 5rem;
+    --border-radius: 8px;
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --transition: 0.3s ease-in-out;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 80px;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    line-height: 1.6;
+    color: var(--text-dark);
+    background-color: var(--background-light);
+}
+
+.container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+}
+
+a {
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+a:hover {
+    color: var(--primary-dark);
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--border-radius);
+}
+
+.btn {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--border-radius);
+    font-weight: 500;
+    text-align: center;
+    transition: var(--transition);
+    cursor: pointer;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-dark);
+    color: white;
+}
+
+.section-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    color: var(--text-dark);
+    position: relative;
+    display: inline-block;
+}
+
+.section-title::after {
+    content: '';
+    position: absolute;
+    width: 60px;
+    height: 4px;
+    background-color: var(--primary-color);
+    bottom: -10px;
+    left: 0;
+}
+
+/* Header Styles */
+header {
+    background-color: var(--background-white);
+    box-shadow: var(--shadow-sm);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.profile-info {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.profile-image-container {
+    flex-shrink: 0;
+}
+
+.profile-image {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.profile-text .name {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 0.25rem;
+}
+
+.profile-text .title {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--text-medium);
+}
+
+nav ul {
+    display: flex;
+    list-style: none;
+    gap: 2rem;
+}
+
+nav a {
+    color: var(--text-medium);
+    font-weight: 500;
+    position: relative;
+}
+
+nav a:hover {
+    color: var(--primary-color);
+}
+
+nav a::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -5px;
+    width: 0;
+    height: 2px;
+    background-color: var(--primary-color);
+    transition: var(--transition);
+}
+
+nav a:hover::after {
+    width: 100%;
+}
+
+/* Section Styles */
+section {
+    padding: var(--section-spacing) 0;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+section.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* About Section */
+.about-content {
+    max-width: 800px;
+    font-size: 1.1rem;
+    color: var(--text-medium);
+}
+
+.cv-download {
+    margin-top: 2rem;
+}
+
+/* Skills Section */
+.skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1.5rem;
+}
+
+.skill-item {
+    background-color: var(--background-white);
+    border-radius: var(--border-radius);
+    padding: 1.25rem;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
+    transition: var(--transition);
+    text-align: center;
+}
+
+.skill-item:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--primary-light);
+}
+
+.skill-name {
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+/* Timeline Styles for Experience & Education */
+.timeline {
+    position: relative;
+    max-width: 800px;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    width: 2px;
+    background-color: var(--border-color);
+    top: 0;
+    bottom: 0;
+    left: 0;
+    margin-left: 7px;
+}
+
+.timeline-item {
+    padding-left: 2.5rem;
+    margin-bottom: 2.5rem;
+    position: relative;
+}
+
+.timeline-item:last-child {
+    margin-bottom: 0;
+}
+
+.timeline-item::before {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+    left: 0;
+    top: 5px;
+}
+
+.timeline-content {
+    background-color: var(--background-white);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
+    transition: var(--transition);
+}
+
+.timeline-content:hover {
+    box-shadow: var(--shadow-md);
+    border-color: var(--primary-light);
+}
+
+.timeline-content h3 {
+    margin-bottom: 0.5rem;
+    color: var(--text-dark);
+    font-weight: 600;
+}
+
+.timeline-content h4 {
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+    font-weight: 500;
+}
+
+/* Projects Section */
+.projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.project-item {
+    background-color: var(--background-white);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
+    transition: var(--transition);
+}
+
+.project-item:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--primary-light);
+}
+
+.project-image {
+    height: 200px;
+    overflow: hidden;
+}
+
+.project-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: var(--transition);
+}
+
+.project-item:hover .project-image img {
+    transform: scale(1.05);
+}
+
+.project-info {
+    padding: 1.5rem;
+}
+
+.project-name {
+    margin-bottom: 0.75rem;
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+.project-description {
+    color: var(--text-medium);
+    font-size: 0.95rem;
+}
+
+/* Footer */
+footer {
+    background-color: var(--background-white);
+    padding: 2rem 0;
+    text-align: center;
+    border-top: 1px solid var(--border-color);
+    color: var(--text-medium);
+    font-size: 0.9rem;
+}
+
+/* Progressive Disclosure Effects */
+section {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+section.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Media Queries */
+@media (max-width: 768px) {
+    header {
+        padding: 1rem 0;
+    }
+    
+    .profile-info {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+    }
+    
+    .profile-image-container {
+        margin: 0 auto;
+    }
+    
+    nav ul {
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 1rem 1.5rem;
+    }
+    
+    .section-title {
+        font-size: 1.75rem;
+    }
+    
+    .projects-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .timeline::before {
+        left: 7px;
+    }
+    
+    .timeline-item {
+        padding-left: 2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .skills-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .section-title {
+        font-size: 1.5rem;
+    }
+} 
+</style>
+    <meta name="description" content="Pablos1's professional portfolio showcasing projects and skills in AI Engineer">
+</head>
+<body class="template1">
+    <header>
+        <div class="container">
+            <div class="profile-info">
+                <div class="profile-image-container">
+                    <!-- If the user uploaded a profile image, it would go here -->
+                    <div class="profile-image">P</div>
+                </div>
+                <div class="profile-text">
+                    <h1 class="name">Pablos1</h1>
+                    <h2 class="title">AI Engineer</h2>
+                </div>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#skills">Skills</a></li>
+                    <li><a href="#experience">Experience</a></li>
+                    <li><a href="#education">Education</a></li>
+                    <li><a href="#projects">Projects</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section id="about" class="about-section">
+            <div class="container">
+                <h2 class="section-title">About Me</h2>
+                <div class="about-content">
+                    <p>I'm Pablos Tselioudis Garmendia, a dedicated Data Scientist currently studying the bachelor of "Data Science and Engineering" at UC3M and Northeastern University.</p>
+                    
+                    <div class="cv-download">
+                        <a href="https://firebasestorage.googleapis.com/v0/b/makeportfolio-2bd67.firebasestorage.app/o/users%2FIEn3lXLfA5MwVO5K2icpC3WTnxV2%2Fportfolios%2F6XI5sr4VGYCCVWBn2jR0%2Fcv%2F1744482488445-PablosTselioudis(ENG).pdf?alt=media&token=09f64a91-172a-4edb-8e6a-f5a29bfaa92f" target="_blank" class="btn btn-primary">Download CV</a>
+                    </div>
+                    
+                </div>
+            </div>
+        </section>
+
+        <section id="skills" class="skills-section">
+            <div class="container">
+                <h2 class="section-title">Skills</h2>
+                <div class="skills-grid">
+                    
+          <div class="skill-item">
+            <div class="skill-info">
+              <span class="skill-name">Python</span>
+              <span class="skill-percentage">90%</span>
+            </div>
+            <div class="skill-bar">
+              <div class="skill-progress" style="width: 90%"></div>
+            </div>
+          </div>
+        
+          <div class="skill-item">
+            <div class="skill-info">
+              <span class="skill-name">Excel</span>
+              <span class="skill-percentage">90%</span>
+            </div>
+            <div class="skill-bar">
+              <div class="skill-progress" style="width: 90%"></div>
+            </div>
+          </div>
+        
+          <div class="skill-item">
+            <div class="skill-info">
+              <span class="skill-name">R</span>
+              <span class="skill-percentage">90%</span>
+            </div>
+            <div class="skill-bar">
+              <div class="skill-progress" style="width: 90%"></div>
+            </div>
+          </div>
+        
+          <div class="skill-item">
+            <div class="skill-info">
+              <span class="skill-name">SQL</span>
+              <span class="skill-percentage">90%</span>
+            </div>
+            <div class="skill-bar">
+              <div class="skill-progress" style="width: 90%"></div>
+            </div>
+          </div>
+        
+          <div class="skill-item">
+            <div class="skill-info">
+              <span class="skill-name">HTML/CSS</span>
+              <span class="skill-percentage">90%</span>
+            </div>
+            <div class="skill-bar">
+              <div class="skill-progress" style="width: 90%"></div>
+            </div>
+          </div>
+        
+          <div class="skill-item">
+            <div class="skill-info">
+              <span class="skill-name">MongoDB</span>
+              <span class="skill-percentage">90%</span>
+            </div>
+            <div class="skill-bar">
+              <div class="skill-progress" style="width: 90%"></div>
+            </div>
+          </div>
+        
+          <div class="skill-item">
+            <div class="skill-info">
+              <span class="skill-name">Docker</span>
+              <span class="skill-percentage">90%</span>
+            </div>
+            <div class="skill-bar">
+              <div class="skill-progress" style="width: 90%"></div>
+            </div>
+          </div>
+        
+          <div class="skill-item">
+            <div class="skill-info">
+              <span class="skill-name">Langchain</span>
+              <span class="skill-percentage">90%</span>
+            </div>
+            <div class="skill-bar">
+              <div class="skill-progress" style="width: 90%"></div>
+            </div>
+          </div>
+        
+          <div class="skill-item">
+            <div class="skill-info">
+              <span class="skill-name">Firebase</span>
+              <span class="skill-percentage">90%</span>
+            </div>
+            <div class="skill-bar">
+              <div class="skill-progress" style="width: 90%"></div>
+            </div>
+          </div>
+        
+                </div>
+            </div>
+        </section>
+
+        <section id="experience" class="experience-section">
+            <div class="container">
+                <h2 class="section-title">Work Experience</h2>
+                <div class="timeline">
+                    
+          <div class="timeline-item">
+            <div class="timeline-marker"></div>
+            <div class="timeline-content">
+              <div class="timeline-date"></div>
+              <h3 class="timeline-title">Summer Intern</h3>
+              <h4 class="timeline-company">MOTIX CONNECTED (TOYOTA)</h4>
+              <p class="timeline-description">AI and Machine Learning Summer Intern Jun 2023-Aug 2023 
+• Strengthened image processing skills through 40+ hours of specialized training, contributing to internal knowledge development for computer vision applications in automotive technologies. 
+• Developed an AI chatbot for customer support using Flowise AI and LangChain, reducing response time by 13% and improving query accuracy. Integrated NLP capabilities and existing knowledge bases. </p>
+            </div>
+          </div>
+        
+          <div class="timeline-item">
+            <div class="timeline-marker"></div>
+            <div class="timeline-content">
+              <div class="timeline-date"></div>
+              <h3 class="timeline-title">AI and Machine Learning Intern</h3>
+              <h4 class="timeline-company">Aioi Nissay Dowa</h4>
+              <p class="timeline-description">• Employed by Aioi in the UK, working onsite at Toyota Madrid's offices on a 6-month internship 
+• Spearheading improvements on the churn model of the company to enhance customer retention. </p>
+            </div>
+          </div>
+        
+          <div class="timeline-item">
+            <div class="timeline-marker"></div>
+            <div class="timeline-content">
+              <div class="timeline-date"></div>
+              <h3 class="timeline-title">Referee</h3>
+              <h4 class="timeline-company">Official Basketball</h4>
+              <p class="timeline-description">Refereefor the Federation of Basketball in Madrid Dec 2022-Present 
+• Officiated as a referee for over 70 basketball games maintaining a 100% attendance record 
+• Promoted to officiate competitive basketball games for older youth racking up 100+ hours of work. </p>
+            </div>
+          </div>
+        
+                </div>
+            </div>
+        </section>
+
+        <section id="education" class="education-section">
+            <div class="container">
+                <h2 class="section-title">Education</h2>
+                <div class="timeline">
+                    
+          <div class="timeline-item">
+            <div class="timeline-marker"></div>
+            <div class="timeline-content">
+              <div class="timeline-date"></div>
+              <h3 class="timeline-title">Bachelor of Science in Engineering</h3>
+              <h4 class="timeline-company">University Carlos III of Madrid</h4>
+            </div>
+          </div>
+        
+          <div class="timeline-item">
+            <div class="timeline-marker"></div>
+            <div class="timeline-content">
+              <div class="timeline-date"></div>
+              <h3 class="timeline-title">Bachelor of Science</h3>
+              <h4 class="timeline-company">Northeastern University</h4>
+            </div>
+          </div>
+        
+          <div class="timeline-item">
+            <div class="timeline-marker"></div>
+            <div class="timeline-content">
+              <div class="timeline-date"></div>
+              <h3 class="timeline-title">European Baccalaureate</h3>
+              <h4 class="timeline-company">European School of Brussels III</h4>
+            </div>
+          </div>
+        
+                </div>
+            </div>
+        </section>
+
+        <section id="projects" class="projects-section">
+            <div class="container">
+                <h2 class="section-title">Projects</h2>
+                <div class="projects-grid">
+                    
+          <div class="project-card" data-category="all">
+            <div class="project-image">
+              <img src="https://firebasestorage.googleapis.com/v0/b/makeportfolio-2bd67.appspot.com/o/placeholders%2Fproject-placeholder.png?alt=media" alt="UCSAS 2024 USOPC DATA CHALLENGE">
+            </div>
+            <div class="project-content">
+              <h3 class="project-title">UCSAS 2024 USOPC DATA CHALLENGE</h3>
+              <p class="project-description">The objective of the challenge is to identify the group of 5 athletes and 3 individual ones who will enable the Team USA Olympic Men's and Women's Artistic Gymnastics teams to optimize success in Paris 2024.</p>
+              <div class="project-tags">
+                <span class="tag">Project</span>
+              </div>
+              <div class="project-links">
+                <a href="#" class="project-link" aria-label="View Project Details">
+                  <i class="fas fa-external-link-alt"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+        
+          <div class="project-card" data-category="all">
+            <div class="project-image">
+              <img src="https://firebasestorage.googleapis.com/v0/b/makeportfolio-2bd67.appspot.com/o/placeholders%2Fproject-placeholder.png?alt=media" alt="Spotify Song Recommender">
+            </div>
+            <div class="project-content">
+              <h3 class="project-title">Spotify Song Recommender</h3>
+              <p class="project-description">Machine learning model that personalizes music playlists to enhance user satisfaction by accurately reflecting individual music preferences.</p>
+              <div class="project-tags">
+                <span class="tag">Project</span>
+              </div>
+              <div class="project-links">
+                <a href="#" class="project-link" aria-label="View Project Details">
+                  <i class="fas fa-external-link-alt"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+        
+          <div class="project-card" data-category="all">
+            <div class="project-image">
+              <img src="https://firebasestorage.googleapis.com/v0/b/makeportfolio-2bd67.firebasestorage.app/o/users%2FIEn3lXLfA5MwVO5K2icpC3WTnxV2%2Fportfolios%2F6XI5sr4VGYCCVWBn2jR0%2Fprojects%2F2%2F1744482488448-FOOTBALL.png?alt=media&token=1277c728-546f-4ec0-85cd-6f0d580e2e9c" alt="Football Fantasy Predictive Model">
+            </div>
+            <div class="project-content">
+              <h3 class="project-title">Football Fantasy Predictive Model</h3>
+              <p class="project-description">ML model to predict the adequate transfer signings in Football Fantasy</p>
+              <div class="project-tags">
+                <span class="tag">Project</span>
+              </div>
+              <div class="project-links">
+                <a href="#" class="project-link" aria-label="View Project Details">
+                  <i class="fas fa-external-link-alt"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+        
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Pablos1. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+// Progressive Disclosure Animation
+document.addEventListener('DOMContentLoaded', function() {
+    // Check if we need to fill in dynamic content
+    updateCurrentYear();
+    
+    // Set up intersection observer for animations
+    setupSectionAnimations();
+    
+    // Activate the first section by default
+    document.querySelector('section').classList.add('active');
+});
+
+// Update the current year in the footer
+function updateCurrentYear() {
+    const yearElement = document.querySelector('footer .container p');
+    const currentYear = new Date().getFullYear();
+    if (yearElement && yearElement.textContent.includes('{{currentYear}}')) {
+        yearElement.textContent = yearElement.textContent.replace('{{currentYear}}', currentYear);
+    }
+}
+
+// Set up intersection observer for section animations
+function setupSectionAnimations() {
+    const sections = document.querySelectorAll('section');
+    
+    // If IntersectionObserver is supported
+    if ('IntersectionObserver' in window) {
+        const sectionObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                // If the section is intersecting (visible)
+                if (entry.isIntersecting) {
+                    // Add the active class to trigger the animation
+                    entry.target.classList.add('active');
+                    
+                    // Once it's animated in, no need to observe anymore
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, {
+            root: null, // Use the viewport
+            threshold: 0.15, // Trigger when 15% of the element is visible
+            rootMargin: '-50px 0px' // Trigger slightly before the element is visible
+        });
+        
+        // Observe each section
+        sections.forEach(section => {
+            sectionObserver.observe(section);
+        });
+    } else {
+        // Fallback for browsers that don't support IntersectionObserver
+        sections.forEach(section => {
+            section.classList.add('active');
+        });
+    }
+}
+
+// Handle active navigation state
+document.addEventListener('scroll', function() {
+    const sections = document.querySelectorAll('section');
+    const navItems = document.querySelectorAll('nav a');
+    
+    let currentSectionId = '';
+    
+    // Determine which section is currently in view
+    sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        const sectionHeight = section.offsetHeight;
+        
+        if (window.scrollY >= sectionTop - 150 && 
+            window.scrollY < sectionTop + sectionHeight - 150) {
+            currentSectionId = section.getAttribute('id');
+        }
+    });
+    
+    // Update navigation active state
+    navItems.forEach(item => {
+        // Remove active class from all items
+        item.classList.remove('active');
+        
+        // Add active class to current section's nav item
+        const href = item.getAttribute('href').substring(1); // Remove the #
+        if (href === currentSectionId) {
+            item.classList.add('active');
+        }
+    });
+}); 
+</script>
+</body>
+</html> 

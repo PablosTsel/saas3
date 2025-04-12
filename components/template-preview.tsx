@@ -13,7 +13,7 @@ export default function TemplatePreview({ name, imageSrc, className = "" }: Temp
   return (
     <Card className={className}>
       <CardContent className="p-0 overflow-hidden">
-        <div className="relative aspect-[3/4] w-full">
+        <div className="relative aspect-[16/9] w-full">
           <Image src={imageSrc || "/placeholder.svg"} alt={`${name} template preview`} fill className="object-cover" />
         </div>
       </CardContent>

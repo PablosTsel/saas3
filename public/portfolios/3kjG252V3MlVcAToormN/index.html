@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pablos Tselioudis Garmendia | Portfolio</title>
+    <meta name="description" content="I'm Pablos Tselioudis Garmendia, a dedicated Data Scientist currently studying the bachelor of "Data Science and Engineering" at UC3M and Northeastern University.">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="images/favicon.png">
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Page Loader -->
+    <div class="page-loader">
+        <div class="loader"></div>
+    </div>
+
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="logo">
+                <a href="#hero">
+                    <span>Pablos Tselioudis Garmendia</span>
+                </a>
+            </div>
+            
+            <nav class="desktop-nav">
+                <ul>
+                    <li><a href="#hero" class="active">Home</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#experience">Experience</a></li>
+                    <li><a href="#education">Education</a></li>
+                    <li><a href="#skills">Skills</a></li>
+                    <li><a href="#projects">Projects</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </nav>
+            
+            <div class="header-buttons">
+                <button class="theme-toggle">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <button class="menu-toggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu">
+        <div class="menu-header">
+            <div class="logo">
+                <span>Pablos Tselioudis Garmendia</span>
+            </div>
+            <button class="menu-close">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <nav>
+            <ul>
+                <li><a href="#hero" class="active">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#experience">Experience</a></li>
+                <li><a href="#education">Education</a></li>
+                <li><a href="#skills">Skills</a></li>
+                <li><a href="#projects">Projects</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </nav>
+        
+        <div class="social-icons">
+            {{#if linkedin}}
+            <a href="{{linkedin}}" target="_blank"><i class="fab fa-linkedin"></i></a>
+            {{/if}}
+            {{#if github}}
+            <a href="{{github}}" target="_blank"><i class="fab fa-github"></i></a>
+            {{/if}}
+            {{#if twitter}}
+            <a href="{{twitter}}" target="_blank"><i class="fab fa-twitter"></i></a>
+            {{/if}}
+            {{#if instagram}}
+            <a href="{{instagram}}" target="_blank"><i class="fab fa-instagram"></i></a>
+            {{/if}}
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Hero Section -->
+        <section id="hero" class="hero-section">
+            <div class="container">
+                <div class="hero-content animate-on-scroll">
+                    <h1>Hi, I'm <span class="highlight">Pablos Tselioudis Garmendia</span></h1>
+                    <h2>AI Engineer</h2>
+                    <p>{{#if subtitle}}{{subtitle}}{{else}}Passionate about creating amazing experiences{{/if}}</p>
+                    <div class="hero-buttons">
+                        <a href="#contact" class="primary-btn">Get in Touch</a>
+                        {{#if cvLink}}
+                        <a href="{{cvLink}}" target="_blank" class="secondary-btn">Download CV</a>
+                        {{/if}}
+                    </div>
+                    <div class="hero-social">
+                        {{#if linkedin}}
+                        <a href="{{linkedin}}" target="_blank"><i class="fab fa-linkedin"></i></a>
+                        {{/if}}
+                        {{#if github}}
+                        <a href="{{github}}" target="_blank"><i class="fab fa-github"></i></a>
+                        {{/if}}
+                        {{#if twitter}}
+                        <a href="{{twitter}}" target="_blank"><i class="fab fa-twitter"></i></a>
+                        {{/if}}
+                        {{#if instagram}}
+                        <a href="{{instagram}}" target="_blank"><i class="fab fa-instagram"></i></a>
+                        {{/if}}
+                    </div>
+                </div>
+                <div class="hero-image animate-on-scroll">
+                    <div class="glass-card profile-card">
+                        {{#if profileImage}}
+                        <img src="{{profileImage}}" alt="Pablos Tselioudis Garmendia">
+                        {{else}}
+                        <div class="placeholder-image">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        {{/if}}
+                        <div class="profile-info">
+                            <h3>Pablos Tselioudis Garmendia</h3>
+                            <p>AI Engineer</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about" class="about-section">
+            <div class="container">
+                <div class="section-header animate-on-scroll">
+                    <h2>About Me</h2>
+                    <p>Get to know me better</p>
+                </div>
+                
+                <div class="about-content">
+                    <div class="about-text glass-card animate-on-scroll">
+                        <div class="about-description">
+                            I'm Pablos Tselioudis Garmendia, a dedicated Data Scientist currently studying the bachelor of "Data Science and Engineering" at UC3M and Northeastern University.
+                        </div>
+                        
+                        <div class="info-items">
+                            {{#if email}}
+                            <div class="info-item">
+                                <span class="info-title"><i class="fas fa-envelope"></i> Email:</span>
+                                <span class="info-value">pablos.tselioudis@gmail.com</span>
+                            </div>
+                            {{/if}}
+                            
+                            {{#if phone}}
+                            <div class="info-item">
+                                <span class="info-title"><i class="fas fa-phone"></i> Phone:</span>
+                                <span class="info-value"></span>
+                            </div>
+                            {{/if}}
+                            
+                            {{#if location}}
+                            <div class="info-item">
+                                <span class="info-title"><i class="fas fa-map-marker-alt"></i> Location:</span>
+                                <span class="info-value">{{location}}</span>
+                            </div>
+                            {{/if}}
+                            
+                            {{#if website}}
+                            <div class="info-item">
+                                <span class="info-title"><i class="fas fa-globe"></i> Website:</span>
+                                <span class="info-value">{{website}}</span>
+                            </div>
+                            {{/if}}
+                        </div>
+                    </div>
+                    
+                    <div class="about-stats animate-on-scroll">
+                        <div class="glass-card stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-briefcase"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>{{#if experience}}{{experience.length}}+{{else}}5+{{/if}}</h3>
+                                <p>Years of<br>Experience</p>
+                            </div>
+                        </div>
+                        
+                        <div class="glass-card stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-code-branch"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>{{#if projects}}{{projects.length}}+{{else}}20+{{/if}}</h3>
+                                <p>Projects<br>Completed</p>
+                            </div>
+                        </div>
+                        
+                        <div class="glass-card stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-graduation-cap"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>{{#if education}}{{education.length}}+{{else}}2+{{/if}}</h3>
+                                <p>Educational<br>Milestones</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Experience Section -->
+        <section id="experience" class="experience-section">
+            <div class="container">
+                <div class="section-header animate-on-scroll">
+                    <h2>Experience</h2>
+                    <p>My professional journey</p>
+                </div>
+                
+                <div class="timeline animate-on-scroll">
+                    
+          <div class="timeline-item">
+            <div class="timeline-marker"></div>
+            <div class="timeline-content">
+              <div class="timeline-date"></div>
+              <h3 class="timeline-title">Summer Intern</h3>
+              <h4 class="timeline-company">MOTIX CONNECTED (TOYOTA)</h4>
+              <p class="timeline-description">AI and Machine Learning Summer Intern Jun 2023-Aug 2023 
+• Strengthened image processing skills through 40+ hours of specialized training, contributing to internal knowledge development for computer vision applications in automotive technologies. 
+• Developed an AI chatbot for customer support using Flowise AI and LangChain, reducing response time by 13% and improving query accuracy. Integrated NLP capabilities and existing knowledge bases. </p>
+            </div>
+          </div>
+        
+          <div class="timeline-item">
+            <div class="timeline-marker"></div>
+            <div class="timeline-content">
+              <div class="timeline-date"></div>
+              <h3 class="timeline-title">AI and Machine Learning Intern</h3>
+              <h4 class="timeline-company">Aioi Nissay Dowa</h4>
+              <p class="timeline-description">• Employed by Aioi in the UK, working onsite at Toyota Madrid's offices on a 6-month internship 
+• Spearheading improvements on the churn model of the company to enhance customer retention. </p>
+            </div>
+          </div>
+        
+          <div class="timeline-item">
+            <div class="timeline-marker"></div>
+            <div class="timeline-content">
+              <div class="timeline-date"></div>
+              <h3 class="timeline-title">Referee</h3>
+              <h4 class="timeline-company">Official Basketball</h4>
+              <p class="timeline-description">Refereefor the Federation of Basketball in Madrid Dec 2022-Present 
+• Officiated as a referee for over 70 basketball games maintaining a 100% attendance record 
+• Promoted to officiate competitive basketball games for older youth racking up 100+ hours of work. </p>
+            </div>
+          </div>
+        
+                </div>
+            </div>
+        </section>
+
+        <!-- Education Section -->
+        <section id="education" class="education-section">
+            <div class="container">
+                <div class="section-header animate-on-scroll">
+                    <h2>Education</h2>
+                    <p>My academic background</p>
+                </div>
+                
+                <div class="education-grid animate-on-scroll">
+                    
+          <div class="timeline-item">
+            <div class="timeline-marker"></div>
+            <div class="timeline-content">
+              <div class="timeline-date"></div>
+              <h3 class="timeline-title">Bachelor of Science in Engineering</h3>
+              <h4 class="timeline-company">University Carlos III of Madrid</h4>
+            </div>
+          </div>
+        
+          <div class="timeline-item">
+            <div class="timeline-marker"></div>
+            <div class="timeline-content">
+              <div class="timeline-date"></div>
+              <h3 class="timeline-title">Bachelor of Science</h3>
+              <h4 class="timeline-company">Northeastern University</h4>
+            </div>
+          </div>
+        
+          <div class="timeline-item">
+            <div class="timeline-marker"></div>
+            <div class="timeline-content">
+              <div class="timeline-date"></div>
+              <h3 class="timeline-title">European Baccalaureate</h3>
+              <h4 class="timeline-company">European School of Brussels III</h4>
+            </div>
+          </div>
+        
+                </div>
+            </div>
+        </section>
+
+        <!-- Skills Section -->
+        <section id="skills" class="skills-section">
+            <div class="container">
+                <div class="section-header animate-on-scroll">
+                    <h2>Skills</h2>
+                    <p>My technical expertise</p>
+                </div>
+                
+                <div class="skills-grid animate-on-scroll">
+                    
+          <div class="skill-item">
+            <div class="skill-info">
+              <span class="skill-name">Python</span>
+              <span class="skill-percentage">90%</span>
+            </div>
+            <div class="skill-bar">
+              <div class="skill-progress" style="width: 90%"></div>
+            </div>
+          </div>
+        
+          <div class="skill-item">
+            <div class="skill-info">
+              <span class="skill-name">Excel</span>
+              <span class="skill-percentage">90%</span>
+            </div>
+            <div class="skill-bar">
+              <div class="skill-progress" style="width: 90%"></div>
+            </div>
+          </div>
+        
+          <div class="skill-item">
+            <div class="skill-info">
+              <span class="skill-name">R</span>
+              <span class="skill-percentage">90%</span>
+            </div>
+            <div class="skill-bar">
+              <div class="skill-progress" style="width: 90%"></div>
+            </div>
+          </div>
+        
+          <div class="skill-item">
+            <div class="skill-info">
+              <span class="skill-name">SQL</span>
+              <span class="skill-percentage">90%</span>
+            </div>
+            <div class="skill-bar">
+              <div class="skill-progress" style="width: 90%"></div>
+            </div>
+          </div>
+        
+          <div class="skill-item">
+            <div class="skill-info">
+              <span class="skill-name">HTML/CSS</span>
+              <span class="skill-percentage">90%</span>
+            </div>
+            <div class="skill-bar">
+              <div class="skill-progress" style="width: 90%"></div>
+            </div>
+          </div>
+        
+          <div class="skill-item">
+            <div class="skill-info">
+              <span class="skill-name">MongoDB</span>
+              <span class="skill-percentage">90%</span>
+            </div>
+            <div class="skill-bar">
+              <div class="skill-progress" style="width: 90%"></div>
+            </div>
+          </div>
+        
+          <div class="skill-item">
+            <div class="skill-info">
+              <span class="skill-name">Docker</span>
+              <span class="skill-percentage">90%</span>
+            </div>
+            <div class="skill-bar">
+              <div class="skill-progress" style="width: 90%"></div>
+            </div>
+          </div>
+        
+          <div class="skill-item">
+            <div class="skill-info">
+              <span class="skill-name">Langchain</span>
+              <span class="skill-percentage">90%</span>
+            </div>
+            <div class="skill-bar">
+              <div class="skill-progress" style="width: 90%"></div>
+            </div>
+          </div>
+        
+          <div class="skill-item">
+            <div class="skill-info">
+              <span class="skill-name">Firebase</span>
+              <span class="skill-percentage">90%</span>
+            </div>
+            <div class="skill-bar">
+              <div class="skill-progress" style="width: 90%"></div>
+            </div>
+          </div>
+        
+                </div>
+            </div>
+        </section>
+
+        <!-- Projects Section -->
+        <section id="projects" class="projects-section">
+            <div class="container">
+                <div class="section-header animate-on-scroll">
+                    <h2>Projects</h2>
+                    <p>My recent work</p>
+                </div>
+                
+                <div class="filter-buttons animate-on-scroll">
+                    <button class="glass-card filter-btn active" data-filter="all">All</button>
+                    <button class="glass-card filter-btn" data-filter="web">Web</button>
+                    <button class="glass-card filter-btn" data-filter="mobile">Mobile</button>
+                    <button class="glass-card filter-btn" data-filter="design">Design</button>
+                </div>
+                
+                <div class="projects-grid animate-on-scroll">
+                    
+          <div class="project-card" data-category="all">
+            <div class="project-image">
+              <img src="https://firebasestorage.googleapis.com/v0/b/makeportfolio-2bd67.firebasestorage.app/o/users%2FIEn3lXLfA5MwVO5K2icpC3WTnxV2%2Fportfolios%2F3kjG252V3MlVcAToormN%2Fprojects%2F0%2F1744486157024-USOPC.png?alt=media&token=6582edd5-6470-4fd9-8948-319e8909542a" alt="UCSAS 2024 USOPC DATA CHALLENGE">
+            </div>
+            <div class="project-content">
+              <h3 class="project-title">UCSAS 2024 USOPC DATA CHALLENGE</h3>
+              <p class="project-description">The objective of the challenge is to identify the group of 5 athletes and 3 individual ones who will enable the Team USA Olympic Men's and Women's Artistic Gymnastics teams to optimize success in Paris 2024.</p>
+              <div class="project-tags">
+                <span class="tag">Project</span>
+              </div>
+              <div class="project-links">
+                <a href="#" class="project-link" aria-label="View Project Details">
+                  <i class="fas fa-external-link-alt"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+        
+          <div class="project-card" data-category="all">
+            <div class="project-image">
+              <img src="https://firebasestorage.googleapis.com/v0/b/makeportfolio-2bd67.firebasestorage.app/o/users%2FIEn3lXLfA5MwVO5K2icpC3WTnxV2%2Fportfolios%2F3kjG252V3MlVcAToormN%2Fprojects%2F1%2F1744486157025-SPOTIFY.png?alt=media&token=327a97d7-b149-4657-9630-cce9ecd3bd03" alt="Spotify Song Recommender">
+            </div>
+            <div class="project-content">
+              <h3 class="project-title">Spotify Song Recommender</h3>
+              <p class="project-description">Machine learning model that personalizes music playlists to enhance user satisfaction by accurately reflecting individual music preferences.</p>
+              <div class="project-tags">
+                <span class="tag">Project</span>
+              </div>
+              <div class="project-links">
+                <a href="#" class="project-link" aria-label="View Project Details">
+                  <i class="fas fa-external-link-alt"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+        
+          <div class="project-card" data-category="all">
+            <div class="project-image">
+              <img src="https://firebasestorage.googleapis.com/v0/b/makeportfolio-2bd67.appspot.com/o/placeholders%2Fproject-placeholder.png?alt=media" alt="Football Fantasy Predictive Model">
+            </div>
+            <div class="project-content">
+              <h3 class="project-title">Football Fantasy Predictive Model</h3>
+              <p class="project-description">ML model to predict the adequate transfer signings in Football Fantasy</p>
+              <div class="project-tags">
+                <span class="tag">Project</span>
+              </div>
+              <div class="project-links">
+                <a href="#" class="project-link" aria-label="View Project Details">
+                  <i class="fas fa-external-link-alt"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+        
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="contact-section">
+            <div class="container">
+                <div class="section-header animate-on-scroll">
+                    <h2>Contact</h2>
+                    <p>Get in touch with me</p>
+                </div>
+                
+                <div class="contact-content">
+                    <div class="contact-info glass-card animate-on-scroll">
+                        <h3>Contact Information</h3>
+                        <div class="contact-details">
+                            {{#if email}}
+                            <div class="contact-item">
+                                <div class="contact-icon">
+                                    <i class="fas fa-envelope"></i>
+                                </div>
+                                <div class="contact-text">
+                                    <h4>Email</h4>
+                                    <p><a href="mailto:pablos.tselioudis@gmail.com">pablos.tselioudis@gmail.com</a></p>
+                                </div>
+                            </div>
+                            {{/if}}
+                            
+                            {{#if phone}}
+                            <div class="contact-item">
+                                <div class="contact-icon">
+                                    <i class="fas fa-phone"></i>
+                                </div>
+                                <div class="contact-text">
+                                    <h4>Phone</h4>
+                                    <p><a href="tel:"></a></p>
+                                </div>
+                            </div>
+                            {{/if}}
+                            
+                            {{#if location}}
+                            <div class="contact-item">
+                                <div class="contact-icon">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                </div>
+                                <div class="contact-text">
+                                    <h4>Location</h4>
+                                    <p>{{location}}</p>
+                                </div>
+                            </div>
+                            {{/if}}
+                        </div>
+                        
+                        <div class="social-links">
+                            <h4>Social Profiles</h4>
+                            <div class="social-icons">
+                                {{#if linkedin}}
+                                <a href="{{linkedin}}" target="_blank"><i class="fab fa-linkedin"></i></a>
+                                {{/if}}
+                                {{#if github}}
+                                <a href="{{github}}" target="_blank"><i class="fab fa-github"></i></a>
+                                {{/if}}
+                                {{#if twitter}}
+                                <a href="{{twitter}}" target="_blank"><i class="fab fa-twitter"></i></a>
+                                {{/if}}
+                                {{#if instagram}}
+                                <a href="{{instagram}}" target="_blank"><i class="fab fa-instagram"></i></a>
+                                {{/if}}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-form glass-card animate-on-scroll">
+                        <h3>Send Me a Message</h3>
+                        <form id="contact-form">
+                            <div class="form-group">
+                                <input type="text" name="name" placeholder="Your Name" required>
+                            </div>
+                            <div class="form-group">
+                                <input type="email" name="email" placeholder="Your Email" required>
+                            </div>
+                            <div class="form-group">
+                                <input type="text" name="subject" placeholder="Subject">
+                            </div>
+                            <div class="form-group">
+                                <textarea name="message" placeholder="Your Message" required></textarea>
+                            </div>
+                            <button type="submit" class="primary-btn">Send Message</button>
+                        </form>
+                        <div class="success-message">
+                            <i class="fas fa-check-circle"></i>
+                            <p>Your message has been sent successfully!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <span>Pablos Tselioudis Garmendia</span>
+                </div>
+                <nav class="footer-nav">
+                    <ul>
+                        <li><a href="#hero">Home</a></li>
+                        <li><a href="#about">About</a></li>
+                        <li><a href="#experience">Experience</a></li>
+                        <li><a href="#education">Education</a></li>
+                        <li><a href="#skills">Skills</a></li>
+                        <li><a href="#projects">Projects</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                    </ul>
+                </nav>
+                <div class="copyright">
+                    <p>&copy; {{#if currentYear}}2025{{else}}2023{{/if}} Pablos Tselioudis Garmendia. All Rights Reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Back to Top Button -->
+    <button class="back-to-top">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- Custom JavaScript -->
+    <script>
+/*
+* Template 6 - Modern Glassmorphism Portfolio
+* Created by SaaS3
+*/
+
+// DOM Elements
+const body = document.querySelector('body');
+const header = document.querySelector('header');
+const menuToggle = document.querySelector('.menu-toggle');
+const mobileMenu = document.querySelector('.mobile-menu');
+const menuClose = document.querySelector('.menu-close');
+const themeToggle = document.querySelector('.theme-toggle');
+const backToTop = document.querySelector('.back-to-top');
+const navLinks = document.querySelectorAll('.nav-link');
+const mobileNavLinks = document.querySelectorAll('.mobile-nav-link');
+const skillBars = document.querySelectorAll('.skill-progress');
+const animatedElements = document.querySelectorAll('.animate-on-scroll');
+const filterButtons = document.querySelectorAll('.filter-btn');
+const projectItems = document.querySelectorAll('.project-item');
+
+// Initialize the portfolio
+function initPortfolio() {
+    setupEventListeners();
+    setupTheme();
+    setupAnimations();
+    setupScrollSpy();
+    setupFilterProjects();
+}
+
+// Set up event listeners
+function setupEventListeners() {
+    // Mobile menu toggle
+    if (menuToggle) {
+        menuToggle.addEventListener('click', () => {
+            mobileMenu.classList.add('active');
+        });
+    }
+
+    // Mobile menu close
+    if (menuClose) {
+        menuClose.addEventListener('click', () => {
+            mobileMenu.classList.remove('active');
+        });
+    }
+
+    // Theme toggle
+    if (themeToggle) {
+        themeToggle.addEventListener('click', toggleTheme);
+    }
+
+    // Smooth scrolling for navigation links
+    navLinks.forEach(link => {
+        link.addEventListener('click', smoothScroll);
+    });
+
+    mobileNavLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            smoothScroll(e);
+            mobileMenu.classList.remove('active');
+        });
+    });
+
+    // Back to top button
+    if (backToTop) {
+        window.addEventListener('scroll', toggleBackToTopButton);
+        backToTop.addEventListener('click', scrollToTop);
+    }
+
+    // Header scroll effect
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 50) {
+            header.classList.add('scrolled');
+        } else {
+            header.classList.remove('scrolled');
+        }
+    });
+
+    // Contact form validation
+    const contactForm = document.querySelector('#contact-form');
+    if (contactForm) {
+        contactForm.addEventListener('submit', handleFormSubmit);
+    }
+}
+
+// Theme setup and toggle
+function setupTheme() {
+    const savedTheme = localStorage.getItem('theme');
+    
+    if (savedTheme === 'dark') {
+        body.classList.add('dark-theme');
+        if (themeToggle) {
+            themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+            themeToggle.setAttribute('aria-label', 'Switch to light theme');
+        }
+    } else {
+        if (themeToggle) {
+            themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+            themeToggle.setAttribute('aria-label', 'Switch to dark theme');
+        }
+    }
+}
+
+function toggleTheme() {
+    body.classList.toggle('dark-theme');
+    
+    if (body.classList.contains('dark-theme')) {
+        localStorage.setItem('theme', 'dark');
+        themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+        themeToggle.setAttribute('aria-label', 'Switch to light theme');
+    } else {
+        localStorage.setItem('theme', 'light');
+        themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+        themeToggle.setAttribute('aria-label', 'Switch to dark theme');
+    }
+}
+
+// Smooth scrolling
+function smoothScroll(e) {
+    e.preventDefault();
+    
+    const targetId = e.currentTarget.getAttribute('href');
+    if (!targetId || targetId === '#') return;
+    
+    const targetPosition = document.querySelector(targetId).offsetTop - 80;
+    
+    window.scrollTo({
+        top: targetPosition,
+        behavior: 'smooth'
+    });
+    
+    // Update active nav link
+    navLinks.forEach(link => link.classList.remove('active'));
+    e.currentTarget.classList.add('active');
+}
+
+// Back to top button
+function toggleBackToTopButton() {
+    if (window.scrollY > 500) {
+        backToTop.classList.add('active');
+    } else {
+        backToTop.classList.remove('active');
+    }
+}
+
+function scrollToTop() {
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    });
+}
+
+// Set up scroll animations
+function setupAnimations() {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('active');
+                
+                // Animate skill bars when in viewport
+                if (entry.target.classList.contains('skill-progress')) {
+                    const percentage = entry.target.getAttribute('data-percentage');
+                    entry.target.style.width = percentage + '%';
+                }
+            }
+        });
+    }, { threshold: 0.1 });
+    
+    // Observe animated elements
+    animatedElements.forEach(element => {
+        observer.observe(element);
+    });
+    
+    // Observe skill bars
+    skillBars.forEach(bar => {
+        observer.observe(bar);
+    });
+}
+
+// Scroll spy for active nav highlighting
+function setupScrollSpy() {
+    const sections = document.querySelectorAll('section[id]');
+    
+    window.addEventListener('scroll', () => {
+        let current = '';
+        
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop - 100;
+            const sectionHeight = section.offsetHeight;
+            
+            if (window.scrollY >= sectionTop && window.scrollY < sectionTop + sectionHeight) {
+                current = section.getAttribute('id');
+            }
+        });
+        
+        navLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href') === '#' + current) {
+                link.classList.add('active');
+            }
+        });
+        
+        mobileNavLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href') === '#' + current) {
+                link.classList.add('active');
+            }
+        });
+    });
+}
+
+// Project filtering
+function setupFilterProjects() {
+    if (filterButtons.length > 0 && projectItems.length > 0) {
+        filterButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                // Remove active class from all buttons
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                
+                // Add active class to clicked button
+                button.classList.add('active');
+                
+                const filterValue = button.getAttribute('data-filter');
+                
+                projectItems.forEach(item => {
+                    if (filterValue === 'all') {
+                        item.style.display = 'block';
+                    } else if (item.classList.contains(filterValue)) {
+                        item.style.display = 'block';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                    
+                    // Re-trigger animation
+                    setTimeout(() => {
+                        item.classList.remove('active');
+                        void item.offsetWidth; // Force reflow
+                        item.classList.add('active');
+                    }, 100);
+                });
+            });
+        });
+    }
+}
+
+// Contact form handling
+function handleFormSubmit(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(e.target);
+    const formValues = Object.fromEntries(formData.entries());
+    
+    // Basic form validation
+    let isValid = true;
+    const inputs = e.target.querySelectorAll('input, textarea');
+    
+    inputs.forEach(input => {
+        if (!input.value.trim()) {
+            input.style.borderColor = 'red';
+            isValid = false;
+        } else {
+            input.style.borderColor = '';
+        }
+        
+        if (input.type === 'email' && !validateEmail(input.value)) {
+            input.style.borderColor = 'red';
+            isValid = false;
+        }
+    });
+    
+    if (isValid) {
+        // Here you would normally send the form data to a server
+        // For now, we'll just show a success message
+        const submitButton = e.target.querySelector('button[type="submit"]');
+        const originalText = submitButton.innerHTML;
+        
+        submitButton.disabled = true;
+        submitButton.innerHTML = 'Sending...';
+        
+        // Simulate server response
+        setTimeout(() => {
+            alert('Your message has been sent successfully!');
+            e.target.reset();
+            submitButton.disabled = false;
+            submitButton.innerHTML = originalText;
+        }, 1500);
+    }
+}
+
+// Email validation helper
+function validateEmail(email) {
+    const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(String(email).toLowerCase());
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', initPortfolio);
+
+// Handle page load animations
+window.addEventListener('load', () => {
+    document.body.classList.add('loaded');
+    
+    // Animate hero section elements with delay
+    const heroElements = document.querySelectorAll('.hero .animate-on-scroll');
+    heroElements.forEach((element, index) => {
+        setTimeout(() => {
+            element.classList.add('active');
+        }, 300 + (index * 100));
+    });
+});
+
+// Preload images for smoother transitions
+function preloadImages() {
+    const images = document.querySelectorAll('img');
+    images.forEach(img => {
+        if (img.src && !img.complete) {
+            const newImg = new Image();
+            newImg.src = img.src;
+        }
+    });
+}
+
+// Prevent FOUC (Flash of Unstyled Content)
+document.documentElement.classList.remove('no-js');
+document.documentElement.classList.add('js');
+preloadImages(); 
+</script>
+</body>
+</html> 

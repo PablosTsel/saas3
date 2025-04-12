@@ -54,6 +54,10 @@ interface PortfolioData {
   name: string;
   title: string;
   about: string;
+  fullName: string;
+  email: string;
+  phone: string;
+  profilePicture: File | null;
   cv: File | null;
   hasCv: boolean;
   skills: Skill[];
@@ -72,15 +76,35 @@ export default function DashboardPage() {
   const [currentStep, setCurrentStep] = useState(1)
   const [portfolioData, setPortfolioData] = useState<PortfolioData>({
     name: "",
-    title: "",
-    about: "",
+    title: "AI Engineer",
+    about: "I'm Pablos Tselioudis Garmendia, a dedicated Data Scientist currently studying the bachelor of \"Data Science and Engineering\" at UC3M and Northeastern University.",
+    fullName: "",
+    email: "",
+    phone: "",
+    profilePicture: null,
     cv: null,
     hasCv: true,
     skills: [],
     experience: [],
     education: [],
-    projectCount: 1,
-    projects: [{ name: "", description: "", image: null }],
+    projectCount: 3,
+    projects: [
+      { 
+        name: "UCSAS 2024 USOPC DATA CHALLENGE", 
+        description: "The objective of the challenge is to identify the group of 5 athletes and 3 individual ones who will enable the Team USA Olympic Men's and Women's Artistic Gymnastics teams to optimize success in Paris 2024.", 
+        image: null 
+      },
+      { 
+        name: "Spotify Song Recommender", 
+        description: "Machine learning model that personalizes music playlists to enhance user satisfaction by accurately reflecting individual music preferences.", 
+        image: null 
+      },
+      { 
+        name: "Football Fantasy Predictive Model", 
+        description: "ML model to predict the adequate transfer signings in Football Fantasy", 
+        image: null 
+      }
+    ],
     templateId: ""
   })
   const [selectedTemplate, setSelectedTemplate] = useState("")
@@ -174,15 +198,35 @@ export default function DashboardPage() {
     setCurrentStep(1)
     setPortfolioData({
       name: "",
-      title: "",
-      about: "",
+      title: "AI Engineer",
+      about: "I'm Pablos Tselioudis Garmendia, a dedicated Data Scientist currently studying the bachelor of \"Data Science and Engineering\" at UC3M and Northeastern University.",
+      fullName: "",
+      email: "",
+      phone: "",
+      profilePicture: null,
       cv: null,
       hasCv: true,
       skills: [],
       experience: [],
       education: [],
-      projectCount: 1,
-      projects: [{ name: "", description: "", image: null }],
+      projectCount: 3,
+      projects: [
+        { 
+          name: "UCSAS 2024 USOPC DATA CHALLENGE", 
+          description: "The objective of the challenge is to identify the group of 5 athletes and 3 individual ones who will enable the Team USA Olympic Men's and Women's Artistic Gymnastics teams to optimize success in Paris 2024.", 
+          image: null 
+        },
+        { 
+          name: "Spotify Song Recommender", 
+          description: "Machine learning model that personalizes music playlists to enhance user satisfaction by accurately reflecting individual music preferences.", 
+          image: null 
+        },
+        { 
+          name: "Football Fantasy Predictive Model", 
+          description: "ML model to predict the adequate transfer signings in Football Fantasy", 
+          image: null 
+        }
+      ],
       templateId: ""
     })
     setSelectedTemplate("")
@@ -355,7 +399,7 @@ export default function DashboardPage() {
   };
 
   // Update the handleFileUpload function to better handle different file types
-  const handleFileUpload = async (file: File, field: 'cv' | 'projectImage', projectIndex?: number) => {
+  const handleFileUpload = async (file: File, field: 'cv' | 'projectImage' | 'profilePicture', projectIndex?: number) => {
     try {
       // Check file size and type
       const isImage = file.type.startsWith('image/');
@@ -429,6 +473,12 @@ export default function DashboardPage() {
           projects: newProjects
         });
         toast.success(`Project image "${file.name}" selected`);
+      } else if (field === 'profilePicture') {
+        setPortfolioData({
+          ...portfolioData,
+          profilePicture: processedFile
+        });
+        toast.success(`Profile picture "${file.name}" selected`);
       }
     } catch (error) {
       console.error("Error handling file upload:", error);
@@ -507,15 +557,35 @@ export default function DashboardPage() {
       setSelectedTemplate("");
       setPortfolioData({
         name: "",
-        title: "",
-        about: "",
+        title: "AI Engineer",
+        about: "I'm Pablos Tselioudis Garmendia, a dedicated Data Scientist currently studying the bachelor of \"Data Science and Engineering\" at UC3M and Northeastern University.",
+        fullName: "",
+        email: "",
+        phone: "",
+        profilePicture: null,
         cv: null,
         hasCv: true,
         skills: [],
         experience: [],
         education: [],
-        projectCount: 1,
-        projects: [{ name: "", description: "", image: null }],
+        projectCount: 3,
+        projects: [
+          { 
+            name: "UCSAS 2024 USOPC DATA CHALLENGE", 
+            description: "The objective of the challenge is to identify the group of 5 athletes and 3 individual ones who will enable the Team USA Olympic Men's and Women's Artistic Gymnastics teams to optimize success in Paris 2024.", 
+            image: null 
+          },
+          { 
+            name: "Spotify Song Recommender", 
+            description: "Machine learning model that personalizes music playlists to enhance user satisfaction by accurately reflecting individual music preferences.", 
+            image: null 
+          },
+          { 
+            name: "Football Fantasy Predictive Model", 
+            description: "ML model to predict the adequate transfer signings in Football Fantasy", 
+            image: null 
+          }
+        ],
         templateId: "",
       });
     } catch (err: any) {
@@ -545,15 +615,35 @@ export default function DashboardPage() {
           setSelectedTemplate("");
           setPortfolioData({
             name: "",
-            title: "",
-            about: "",
+            title: "AI Engineer",
+            about: "I'm Pablos Tselioudis Garmendia, a dedicated Data Scientist currently studying the bachelor of \"Data Science and Engineering\" at UC3M and Northeastern University.",
+            fullName: "",
+            email: "",
+            phone: "",
+            profilePicture: null,
             cv: null,
             hasCv: true,
             skills: [],
             experience: [],
             education: [],
-            projectCount: 1,
-            projects: [{ name: "", description: "", image: null }],
+            projectCount: 3,
+            projects: [
+              { 
+                name: "UCSAS 2024 USOPC DATA CHALLENGE", 
+                description: "The objective of the challenge is to identify the group of 5 athletes and 3 individual ones who will enable the Team USA Olympic Men's and Women's Artistic Gymnastics teams to optimize success in Paris 2024.", 
+                image: null 
+              },
+              { 
+                name: "Spotify Song Recommender", 
+                description: "Machine learning model that personalizes music playlists to enhance user satisfaction by accurately reflecting individual music preferences.", 
+                image: null 
+              },
+              { 
+                name: "Football Fantasy Predictive Model", 
+                description: "ML model to predict the adequate transfer signings in Football Fantasy", 
+                image: null 
+              }
+            ],
             templateId: "",
           });
         } else {
@@ -573,7 +663,11 @@ export default function DashboardPage() {
     setPortfolioData({
       ...portfolioData,
       hasCv,
-      // Reset fields accordingly
+      // Reset fields accordingly but preserve personal info
+      fullName: portfolioData.fullName,       // preserve fullName
+      email: portfolioData.email,             // preserve email
+      phone: portfolioData.phone,             // preserve phone
+      profilePicture: portfolioData.profilePicture, // preserve profile picture
       cv: hasCv ? portfolioData.cv : null,
       skills: !hasCv ? portfolioData.skills : [],
       experience: !hasCv ? portfolioData.experience : [],
@@ -831,16 +925,15 @@ export default function DashboardPage() {
                       <CardDescription className="text-indigo-500">
                         {portfolio.templateId === "minimal" ? "Minimal template" : 
                          portfolio.templateId === "creative" ? "Creative template" : 
-                         "Professional template"}
+                         `Template ${portfolio.templateId.replace('template', '')}`}
                       </CardDescription>
                     </CardHeader>
-                    <CardContent className="aspect-video bg-gradient-to-r from-indigo-50 to-purple-50 flex items-center justify-center p-0 relative overflow-hidden">
-                      <div className="text-center transition-transform duration-300 group-hover:scale-110">
-                        <div className="h-20 w-20 bg-white rounded-full shadow-sm flex items-center justify-center mx-auto mb-3">
-                          <Globe className="h-10 w-10 text-indigo-400" />
-                        </div>
-                        <p className="text-sm text-gray-600 font-medium">Portfolio Preview</p>
-                      </div>
+                    <CardContent className="aspect-video bg-white flex items-center justify-center p-0 relative overflow-hidden">
+                      <img 
+                        src={`/templates/${portfolio.templateId}/thumbnail_dash.svg`}
+                        alt={`${portfolio.name} Preview`}
+                        className="w-full h-full object-contain"
+                      />
                     </CardContent>
                     <CardFooter className="flex justify-between py-4 border-t">
                       <div className="flex gap-2">
@@ -1034,6 +1127,72 @@ export default function DashboardPage() {
               {currentStep === 1 && (
                 <div className="py-4 space-y-4">
                   <h3 className="text-lg font-medium text-gray-800">Basic Information</h3>
+                  
+                  {/* Profile Picture Upload */}
+                  <div className="space-y-2">
+                    <Label htmlFor="profilePicture">Profile Picture</Label>
+                    <div className="flex items-center gap-4">
+                      <div className="w-24 h-24 rounded-full overflow-hidden bg-indigo-50 flex items-center justify-center border border-indigo-100">
+                        {portfolioData.profilePicture ? (
+                          <img 
+                            src={URL.createObjectURL(portfolioData.profilePicture)} 
+                            alt="Profile preview" 
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <User className="w-12 h-12 text-indigo-300" />
+                        )}
+                      </div>
+                      
+                      <div className="flex-1">
+                        <div className="border-2 border-dashed border-indigo-100 rounded-lg p-4 text-center hover:border-indigo-300 transition-colors">
+                          {portfolioData.profilePicture ? (
+                            <div className="space-y-2">
+                              <div className="text-sm text-indigo-600">
+                                Selected image: {portfolioData.profilePicture.name}
+                              </div>
+                              <Button 
+                                variant="outline" 
+                                size="sm" 
+                                className="border-indigo-200 text-xs"
+                                onClick={() => document.getElementById('profile-picture-upload')?.click()}
+                              >
+                                Change Image
+                              </Button>
+                            </div>
+                          ) : (
+                            <>
+                              <Upload className="h-8 w-8 text-indigo-300 mx-auto mb-2" />
+                              <div className="text-sm text-gray-600 mb-2">
+                                Upload a profile picture
+                              </div>
+                              <Button 
+                                variant="outline" 
+                                size="sm" 
+                                className="border-indigo-200 text-xs"
+                                onClick={() => document.getElementById('profile-picture-upload')?.click()}
+                              >
+                                Select Image
+                              </Button>
+                            </>
+                          )}
+                          <input 
+                            type="file" 
+                            id="profile-picture-upload"
+                            accept="image/*" 
+                            className="hidden" 
+                            onChange={(e) => {
+                              if (e.target.files?.[0]) {
+                                handleFileUpload(e.target.files[0], 'profilePicture');
+                              }
+                            }}
+                          />
+                        </div>
+                        <p className="text-xs text-gray-500 mt-1">Recommended: Square image (1:1 ratio), max 2MB. Formats: JPG, PNG.</p>
+                      </div>
+                    </div>
+                  </div>
+
                   <div className="space-y-2">
                     <Label htmlFor="name">Portfolio Name</Label>
                     <Input 
@@ -1140,6 +1299,52 @@ export default function DashboardPage() {
                   ) : (
                     // Manual entry section
                     <div className="space-y-6">
+                      {/* Personal Information Section */}
+                      <div className="space-y-3">
+                        <Label className="text-gray-800 font-medium">Personal Information</Label>
+                        <div className="space-y-3 p-3 rounded-lg border border-indigo-100 bg-indigo-50/30">
+                          <div className="space-y-2">
+                            <Label htmlFor="fullName">Full Name</Label>
+                            <Input 
+                              id="fullName"
+                              name="fullName"
+                              value={portfolioData.fullName || ""}
+                              onChange={handleInputChange}
+                              placeholder="John Doe" 
+                              className="border-indigo-100 focus:border-indigo-300 focus:ring-indigo-200"
+                            />
+                            <p className="text-xs text-gray-500">Your complete name as you'd like it to appear on your portfolio.</p>
+                          </div>
+                          
+                          <div className="space-y-2">
+                            <Label htmlFor="email">Email Address</Label>
+                            <Input 
+                              id="email"
+                              name="email"
+                              type="email"
+                              value={portfolioData.email || ""}
+                              onChange={handleInputChange}
+                              placeholder="email@example.com" 
+                              className="border-indigo-100 focus:border-indigo-300 focus:ring-indigo-200"
+                            />
+                            <p className="text-xs text-gray-500">Your contact email for professional inquiries.</p>
+                          </div>
+                          
+                          <div className="space-y-2">
+                            <Label htmlFor="phone">Phone Number</Label>
+                            <Input 
+                              id="phone"
+                              name="phone"
+                              value={portfolioData.phone || ""}
+                              onChange={handleInputChange}
+                              placeholder="+1 (555) 123-4567" 
+                              className="border-indigo-100 focus:border-indigo-300 focus:ring-indigo-200"
+                            />
+                            <p className="text-xs text-gray-500">Your contact phone number (optional).</p>
+                          </div>
+                        </div>
+                      </div>
+                      
                       {/* Skills Section */}
                       <div className="space-y-3">
                         <div className="flex justify-between items-center">
@@ -1443,12 +1648,12 @@ export default function DashboardPage() {
                       }`}
                       onClick={() => handleTemplateSelect("template1")}
                     >
-                      <div className="aspect-[3/4] bg-gradient-to-r from-indigo-50 to-purple-50 flex items-center justify-center">
-                        <div className="text-center">
-                          <div className="h-16 w-16 bg-white rounded-full shadow-sm flex items-center justify-center mx-auto">
-                            <div className="text-indigo-400 font-semibold">01</div>
-                          </div>
-                        </div>
+                      <div className="aspect-[16/9] bg-white flex items-center justify-center">
+                        <img 
+                          src="/templates/template1/thumbnail_dash.svg" 
+                          alt="Template 1 Preview" 
+                          className="w-full h-full object-cover"
+                        />
                       </div>
                       <div className="p-3 bg-white text-center">
                         <div className="font-medium text-gray-800">Template 1</div>
@@ -1464,12 +1669,12 @@ export default function DashboardPage() {
                       }`}
                       onClick={() => handleTemplateSelect("template2")}
                     >
-                      <div className="aspect-[3/4] bg-gradient-to-r from-purple-50 to-pink-50 flex items-center justify-center">
-                        <div className="text-center">
-                          <div className="h-16 w-16 bg-white rounded-full shadow-sm flex items-center justify-center mx-auto">
-                            <div className="text-purple-400 font-semibold">02</div>
-                          </div>
-                        </div>
+                      <div className="aspect-[16/9] bg-white flex items-center justify-center">
+                        <img 
+                          src="/templates/template2/thumbnail_dash.svg" 
+                          alt="Template 2 Preview" 
+                          className="w-full h-full object-cover"
+                        />
                       </div>
                       <div className="p-3 bg-white text-center">
                         <div className="font-medium text-gray-800">Template 2</div>
@@ -1485,12 +1690,12 @@ export default function DashboardPage() {
                       }`}
                       onClick={() => handleTemplateSelect("template3")}
                     >
-                      <div className="aspect-[3/4] bg-gradient-to-r from-blue-50 to-cyan-50 flex items-center justify-center">
-                        <div className="text-center">
-                          <div className="h-16 w-16 bg-white rounded-full shadow-sm flex items-center justify-center mx-auto">
-                            <div className="text-blue-400 font-semibold">03</div>
-                          </div>
-                        </div>
+                      <div className="aspect-[16/9] bg-white flex items-center justify-center">
+                        <img 
+                          src="/templates/template3/thumbnail_dash.svg" 
+                          alt="Template 3 Preview" 
+                          className="w-full h-full object-cover"
+                        />
                       </div>
                       <div className="p-3 bg-white text-center">
                         <div className="font-medium text-gray-800">Template 3</div>
@@ -1506,12 +1711,12 @@ export default function DashboardPage() {
                       }`}
                       onClick={() => handleTemplateSelect("template4")}
                     >
-                      <div className="aspect-[3/4] bg-gradient-to-r from-green-50 to-emerald-50 flex items-center justify-center">
-                        <div className="text-center">
-                          <div className="h-16 w-16 bg-white rounded-full shadow-sm flex items-center justify-center mx-auto">
-                            <div className="text-emerald-400 font-semibold">04</div>
-                          </div>
-                        </div>
+                      <div className="aspect-[16/9] bg-white flex items-center justify-center">
+                        <img 
+                          src="/templates/template4/thumbnail_dash.svg" 
+                          alt="Template 4 Preview" 
+                          className="w-full h-full object-cover"
+                        />
                       </div>
                       <div className="p-3 bg-white text-center">
                         <div className="font-medium text-gray-800">Template 4</div>
@@ -1527,12 +1732,12 @@ export default function DashboardPage() {
                       }`}
                       onClick={() => handleTemplateSelect("template5")}
                     >
-                      <div className="aspect-[3/4] bg-gradient-to-r from-orange-50 to-amber-50 flex items-center justify-center">
-                        <div className="text-center">
-                          <div className="h-16 w-16 bg-white rounded-full shadow-sm flex items-center justify-center mx-auto">
-                            <div className="text-amber-400 font-semibold">05</div>
-                          </div>
-                        </div>
+                      <div className="aspect-[16/9] bg-white flex items-center justify-center">
+                        <img 
+                          src="/templates/template5/thumbnail_dash.svg" 
+                          alt="Template 5 Preview" 
+                          className="w-full h-full object-cover"
+                        />
                       </div>
                       <div className="p-3 bg-white text-center">
                         <div className="font-medium text-gray-800">Template 5</div>
@@ -1548,16 +1753,16 @@ export default function DashboardPage() {
                       }`}
                       onClick={() => handleTemplateSelect("template6")}
                     >
-                      <div className="aspect-[3/4] bg-gradient-to-r from-red-50 to-rose-50 flex items-center justify-center">
-                        <div className="text-center">
-                          <div className="h-16 w-16 bg-white rounded-full shadow-sm flex items-center justify-center mx-auto">
-                            <div className="text-rose-400 font-semibold">06</div>
-                          </div>
-                        </div>
+                      <div className="aspect-[16/9] bg-white flex items-center justify-center">
+                        <img 
+                          src="/templates/template6/thumbnail_dash.svg" 
+                          alt="Template 6 Preview" 
+                          className="w-full h-full object-cover"
+                        />
                       </div>
                       <div className="p-3 bg-white text-center">
                         <div className="font-medium text-gray-800">Template 6</div>
-                        <div className="text-xs text-gray-500">Interactive Resume</div>
+                        <div className="text-xs text-gray-500">Glass Morphism</div>
                       </div>
                     </div>
                   </div>

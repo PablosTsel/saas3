@@ -351,6 +351,10 @@ export const createPortfolio = async (
       name: portfolioData.name,
       title: portfolioData.title,
       about: portfolioData.about,
+      fullName: portfolioData.fullName || portfolioData.name,
+      email: portfolioData.email || "",
+      phone: portfolioData.phone || "",
+      profilePictureUrl: "", // Will update after upload if successful
       skills: portfolioData.skills || [],
       experience: portfolioData.experience || [],
       education: portfolioData.education || [],
@@ -372,6 +376,43 @@ export const createPortfolio = async (
 
     // Create an array to store all upload promises
     const uploadPromises = [];
+    
+    // Profile Picture upload (if exists)
+    if (portfolioData.profilePicture) {
+      const profilePictureUploadPromise = (async () => {
+        try {
+          console.log(`Starting profile picture upload for portfolio ${portfolioId}`);
+          const uploadPath = `users/${userId}/portfolios/${portfolioId}/profile/${Date.now()}-${portfolioData.profilePicture.name}`;
+          
+          const uploadResult = await uploadFile(
+            portfolioData.profilePicture,
+            uploadPath,
+            { portfolioId, fileType: 'profilePicture' }
+          );
+
+          if (uploadResult.url) {
+            // Update the portfolio with profile picture URL
+            await updateDoc(portfolioRef, { profilePictureUrl: uploadResult.url });
+            console.log("Profile picture uploaded successfully:", uploadResult.url);
+            return { success: true, type: 'profilePicture' };
+          } else {
+            hasFileUploadIssues = true;
+            const errorMsg = `Profile picture upload failed: ${uploadResult.error || "Unknown error"}`;
+            fileErrorMessages.push(errorMsg);
+            console.error(errorMsg);
+            return { success: false, type: 'profilePicture', error: errorMsg };
+          }
+        } catch (err) {
+          hasFileUploadIssues = true;
+          const errorMsg = `Profile picture upload error: ${err instanceof Error ? err.message : "Unknown error"}`;
+          fileErrorMessages.push(errorMsg);
+          console.error(errorMsg);
+          return { success: false, type: 'profilePicture', error: errorMsg };
+        }
+      })();
+      
+      uploadPromises.push(profilePictureUploadPromise);
+    }
     
     // CV upload (if exists)
     if (portfolioData.hasCv && portfolioData.cv) {

@@ -1,0 +1,64 @@
+<svg width="600" height="338" viewBox="0 0 600 338" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="600" height="338" fill="#f8f9fa" />
+  
+  <!-- Header -->
+  <rect x="0" y="0" width="600" height="60" fill="#ffffff" />
+  <rect x="0" y="59" width="600" height="1" fill="#e5e7eb" />
+  
+  <!-- Logo -->
+  <circle cx="40" cy="30" r="20" fill="#333333" />
+  <text x="40" y="35" font-family="'Inter', sans-serif" font-size="12" font-weight="bold" fill="#ffffff" text-anchor="middle">JD</text>
+  
+  <!-- Navigation -->
+  <text x="90" y="35" font-family="'Inter', sans-serif" font-size="13" fill="#333333">About</text>
+  <text x="150" y="35" font-family="'Inter', sans-serif" font-size="13" fill="#333333">Experience</text>
+  <text x="240" y="35" font-family="'Inter', sans-serif" font-size="13" fill="#333333">Skills</text>
+  <text x="290" y="35" font-family="'Inter', sans-serif" font-size="13" fill="#333333">Projects</text>
+  <text x="350" y="35" font-family="'Inter', sans-serif" font-size="13" fill="#333333">Contact</text>
+  
+  <!-- Theme toggle -->
+  <circle cx="540" cy="30" r="15" fill="#f8f9fa" stroke="#e5e7eb" />
+  <text x="540" y="34" font-family="'Inter', sans-serif" font-size="12" fill="#333333" text-anchor="middle">☾</text>
+  
+  <!-- Menu toggle -->
+  <circle cx="570" cy="30" r="15" fill="#f8f9fa" stroke="#e5e7eb" />
+  <line x1="565" y1="28" x2="575" y2="28" stroke="#333333" stroke-width="1.5" />
+  <line x1="565" y1="32" x2="575" y2="32" stroke="#333333" stroke-width="1.5" />
+  
+  <!-- Hero Section -->
+  <rect x="0" y="60" width="600" height="120" fill="#ffffff" />
+  
+  <!-- Hero Text -->
+  <text x="40" y="110" font-family="'Playfair Display', serif" font-size="30" font-weight="bold" fill="#111827">John Doe</text>
+  <text x="40" y="140" font-family="'Inter', sans-serif" font-size="16" fill="#4b5563">Product Designer</text>
+  
+  <text x="40" y="170" font-family="'Inter', sans-serif" font-size="12" fill="#6b7280" letter-spacing="0.5">A passionate designer creating beautiful and functional user experiences</text>
+  
+  <!-- Hero Buttons -->
+  <rect x="40" y="190" width="120" height="30" rx="6" fill="#4f46e5" />
+  <text x="100" y="210" font-family="'Inter', sans-serif" font-size="12" fill="#ffffff" text-anchor="middle">Get in Touch</text>
+  
+  <rect x="170" y="190" width="120" height="30" rx="6" fill="#ffffff" stroke="#4f46e5" />
+  <text x="230" y="210" font-family="'Inter', sans-serif" font-size="12" fill="#4f46e5" text-anchor="middle">Download CV</text>
+  
+  <!-- Profile Image -->
+  <circle cx="500" cy="140" r="70" fill="#e0e7ff" />
+  <text x="500" y="160" font-family="'Inter', sans-serif" font-size="40" font-weight="bold" fill="#4f46e5" text-anchor="middle">JD</text>
+  
+  <!-- Skills Section -->
+  <rect x="0" y="220" width="600" height="118" fill="#fafafa" />
+  <text x="40" y="255" font-family="'Playfair Display', serif" font-size="20" font-weight="bold" fill="#111827">Skills</text>
+  <text x="40" y="275" font-family="'Inter', sans-serif" font-size="12" fill="#6b7280">What I bring to the table</text>
+  
+  <!-- Skill Bars -->
+  <text x="40" y="305" font-family="'Inter', sans-serif" font-size="13" fill="#111827">UI Design</text>
+  <text x="550" y="305" font-family="'Inter', sans-serif" font-size="13" fill="#6b7280" text-anchor="end">90%</text>
+  <rect x="40" y="315" width="510" height="8" rx="4" fill="#f3f4f6" />
+  <rect x="40" y="315" width="459" height="8" rx="4" fill="#4f46e5" />
+  
+  <text x="40" y="345" font-family="'Inter', sans-serif" font-size="13" fill="#111827">UX Research</text>
+  <text x="550" y="345" font-family="'Inter', sans-serif" font-size="13" fill="#6b7280" text-anchor="end">85%</text>
+  <rect x="40" y="355" width="510" height="8" rx="4" fill="#f3f4f6" />
+  <rect x="40" y="355" width="433" height="8" rx="4" fill="#4f46e5" />
+</svg> 

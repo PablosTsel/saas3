@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{fullName}} | {{title}}</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+    <meta name="description" content="{{fullName}}'s professional portfolio showcasing work and expertise in {{title}}">
+</head>
+<body class="dark-mode">
+    <!-- Matrix Background Canvas -->
+    <canvas id="matrixCanvas"></canvas>
+    
+    <!-- Terminal Header -->
+    <header class="terminal-header">
+        <div class="container">
+            <div class="terminal-window">
+                <div class="terminal-bar">
+                    <div class="terminal-buttons">
+                        <span class="terminal-button close"></span>
+                        <span class="terminal-button minimize"></span>
+                        <span class="terminal-button maximize"></span>
+                    </div>
+                    <div class="terminal-title">{{name}}@portfolio ~ </div>
+                    <div class="terminal-controls">
+                        <button class="theme-toggle" aria-label="Toggle theme">
+                            <i class="fas fa-sun"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="terminal-content">
+                    <div class="terminal-line">
+                        <span class="prompt">$</span> <span class="command">cd portfolio</span>
+                    </div>
+                    <div class="terminal-line">
+                        <span class="prompt">$</span> <span class="command">ls -la</span>
+                    </div>
+                    <div class="terminal-line output">
+                        <span>drwxr-xr-x  about/</span>
+                    </div>
+                    <div class="terminal-line output">
+                        <span>drwxr-xr-x  experience/</span>
+                    </div>
+                    <div class="terminal-line output">
+                        <span>drwxr-xr-x  education/</span>
+                    </div>
+                    <div class="terminal-line output">
+                        <span>drwxr-xr-x  skills/</span>
+                    </div>
+                    <div class="terminal-line output">
+                        <span>drwxr-xr-x  projects/</span>
+                    </div>
+                    <div class="terminal-line output">
+                        <span>drwxr-xr-x  contact/</span>
+                    </div>
+                    <div class="terminal-line">
+                        <span class="prompt">$</span> <span class="command">cat welcome.txt</span>
+                    </div>
+                    <div class="terminal-line output">
+                        <span>Welcome to my portfolio! Navigate using the menu below or continue exploring the terminal.</span>
+                    </div>
+                    <div class="terminal-line">
+                        <span class="prompt">$</span> <span class="command blink">_</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Navigation -->
+            <nav class="main-nav">
+                <ul class="nav-list">
+                    <li><a href="#about" class="nav-link">about</a></li>
+                    <li><a href="#experience" class="nav-link">experience</a></li>
+                    <li><a href="#education" class="nav-link">education</a></li>
+                    <li><a href="#skills" class="nav-link">skills</a></li>
+                    <li><a href="#projects" class="nav-link">projects</a></li>
+                    <li><a href="#contact" class="nav-link">contact</a></li>
+                </ul>
+            </nav>
+            
+            <!-- Mobile Menu Button -->
+            <button class="menu-toggle" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu">
+        <div class="mobile-menu-container">
+            <button class="close-menu" aria-label="Close menu">
+                <i class="fas fa-times"></i>
+            </button>
+            <ul class="mobile-nav-list">
+                <li><a href="#about" class="mobile-nav-link">about</a></li>
+                <li><a href="#experience" class="mobile-nav-link">experience</a></li>
+                <li><a href="#education" class="mobile-nav-link">education</a></li>
+                <li><a href="#skills" class="mobile-nav-link">skills</a></li>
+                <li><a href="#projects" class="mobile-nav-link">projects</a></li>
+                <li><a href="#contact" class="mobile-nav-link">contact</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="container">
+                <div class="hero-content">
+                    <div class="hero-text">
+                        <div class="typing-container">
+                            <h1 class="typing-text">{{fullName}}</h1>
+                        </div>
+                        <div class="console-line">
+                            <span class="prompt">></span> <span class="typed-text">{{title}}</span>
+                        </div>
+                        <p class="hero-description">
+                            <span class="comment">// {{about}}</span>
+                        </p>
+                        <div class="hero-cta">
+                            <a href="#contact" class="btn btn-primary">
+                                <i class="fas fa-terminal"></i> Contact.execute()
+                            </a>
+                            <a href="#projects" class="btn btn-secondary">
+                                <i class="fas fa-code-branch"></i> Projects.view()
+                            </a>
+                            {{#if hasCv}}
+                            <a href="{{cvUrl}}" target="_blank" class="btn btn-secondary">
+                                <i class="fas fa-file-alt"></i> Resume.download()
+                            </a>
+                            {{/if}}
+                        </div>
+                    </div>
+                    <div class="hero-image">
+                        <div class="profile-frame">
+                            <div class="profile-image">
+                                {{#if profilePictureUrl}}
+                                <img src="{{profilePictureUrl}}" alt="{{fullName}}">
+                                {{else}}
+                                <div class="profile-placeholder">{{initials}}</div>
+                                {{/if}}
+                            </div>
+                            <div class="frame-corners">
+                                <span class="corner top-left"></span>
+                                <span class="corner top-right"></span>
+                                <span class="corner bottom-left"></span>
+                                <span class="corner bottom-right"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about" class="section about-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">About<span class="dot">.</span>me()</h2>
+                    <div class="code-comment">/* Who I am and what I do */</div>
+                </div>
+                <div class="about-content">
+                    <pre><code class="language-javascript">const aboutMe = {
+  name: "{{fullName}}",
+  title: "{{title}}",
+  location: "Available Worldwide",
+  
+  bio: `{{about}}`
+};</code></pre>
+                    <div class="personal-info">
+                        <div class="info-item">
+                            <span class="info-label">Location</span>
+                            <span class="info-value">Available Worldwide</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Email</span>
+                            <span class="info-value">{{email}}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Phone</span>
+                            <span class="info-value">{{phone}}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Experience Section -->
+        <section id="experience" class="section experience-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Experience<span class="dot">.</span>map()</h2>
+                    <div class="code-comment">/* My professional journey */</div>
+                </div>
+                <div class="timeline">
+                    {{#each experience}}
+                    <div class="timeline-item">
+                        <div class="timeline-marker"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-date">{{period}}</div>
+                            <h3 class="timeline-title">{{position}}</h3>
+                            <h4 class="timeline-company">{{company}}</h4>
+                            <p class="timeline-description">
+                                <span class="comment">// Responsibilities and achievements</span><br>
+                                {{description}}
+                            </p>
+                        </div>
+                    </div>
+                    {{/each}}
+                </div>
+            </div>
+        </section>
+
+        <!-- Education Section -->
+        <section id="education" class="section education-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Education<span class="dot">.</span>sort()</h2>
+                    <div class="code-comment">/* My academic background */</div>
+                </div>
+                <div class="timeline">
+                    {{#each education}}
+                    <div class="timeline-item">
+                        <div class="timeline-marker"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-date">{{period}}</div>
+                            <h3 class="timeline-title">{{degree}}</h3>
+                            <h4 class="timeline-company">{{institution}}</h4>
+                        </div>
+                    </div>
+                    {{/each}}
+                </div>
+            </div>
+        </section>
+
+        <!-- Skills Section -->
+        <section id="skills" class="section skills-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Skills<span class="dot">.</span>filter()</h2>
+                    <div class="code-comment">/* What I bring to the table */</div>
+                </div>
+                <div class="skills-content">
+                    <div class="skills-category">
+                        <h3 class="category-title">Skills & Expertise</h3>
+                        <div class="skills-grid">
+                            {{#each skills}}
+                            <div class="skill-item">
+                                <div class="skill-info">
+                                    <span class="skill-name">{{name}}</span>
+                                    <span class="skill-percentage">{{level}}</span>
+                                </div>
+                                <div class="skill-bar">
+                                    <div class="skill-progress" style="width: {{level}}"></div>
+                                </div>
+                            </div>
+                            {{/each}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Projects Section -->
+        <section id="projects" class="section projects-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Projects<span class="dot">.</span>forEach()</h2>
+                    <div class="code-comment">/* My recent work */</div>
+                </div>
+                <div class="projects-filter">
+                    <button class="filter-btn active" data-filter="all">all</button>
+                    <button class="filter-btn" data-filter="web">web</button>
+                    <button class="filter-btn" data-filter="ml">machine learning</button>
+                    <button class="filter-btn" data-filter="algo">algorithms</button>
+                </div>
+                <div class="projects-grid">
+                    {{#each projects}}
+                    <div class="project-card" data-category="all">
+                        <div class="project-header">
+                            <div class="project-folder">
+                                <i class="fas fa-folder"></i>
+                            </div>
+                            <div class="project-links">
+                                <a href="#" class="project-link" aria-label="External Link">
+                                    <i class="fas fa-external-link-alt"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="project-content">
+                            <h3 class="project-title">{{name}}</h3>
+                            <p class="project-description">{{description}}</p>
+                            <div class="project-tech">
+                                <img src="{{imageUrl}}" alt="{{name}}" class="project-image">
+                            </div>
+                        </div>
+                    </div>
+                    {{/each}}
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="section contact-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Contact<span class="dot">.</span>send()</h2>
+                    <div class="code-comment">/* Let's connect */</div>
+                </div>
+                <div class="contact-content">
+                    <div class="contact-info">
+                        <pre><code class="language-javascript">const contactInfo = {
+  email: "{{email}}",
+  phone: "{{phone}}",
+  location: "Available Worldwide",
+  availability: "Open to opportunities and collaboration",
+  response_time: "< 24 hours"
+};</code></pre>
+                        <div class="social-links">
+                            <a href="#" class="social-link" aria-label="GitHub">
+                                <i class="fab fa-github"></i>
+                            </a>
+                            <a href="#" class="social-link" aria-label="LinkedIn">
+                                <i class="fab fa-linkedin-in"></i>
+                            </a>
+                            <a href="#" class="social-link" aria-label="Twitter">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="contact-form-container">
+                        <form class="contact-form" id="contactForm">
+                            <div class="form-group">
+                                <input type="text" id="name" name="name" required>
+                                <label for="name">Name</label>
+                            </div>
+                            <div class="form-group">
+                                <input type="email" id="email" name="email" required>
+                                <label for="email">Email</label>
+                            </div>
+                            <div class="form-group">
+                                <input type="text" id="subject" name="subject" required>
+                                <label for="subject">Subject</label>
+                            </div>
+                            <div class="form-group">
+                                <textarea id="message" name="message" required></textarea>
+                                <label for="message">Message</label>
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane"></i> Submit.post()
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-text">
+                    <span class="comment">/* Built with ❤️ by {{fullName}} */</span>
+                </div>
+                <div class="footer-links">
+                    <span class="footer-link">© {{currentYear}}</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Back to Top Button -->
+    <button class="back-to-top" aria-label="Back to top">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script src="js/script.js"></script>
+</body>
+</html> 
