@@ -82,10 +82,10 @@ export async function POST(request: NextRequest) {
       // Get template information
       const templateId = portfolioData.templateId || 'template1'; // Default to template1
       
-      // Read the template files asynchronously
-      const templatePath = path.join(process.cwd(), 'templates', templateId, 'index.html');
-      const cssPath = path.join(process.cwd(), 'templates', templateId, 'css', 'styles.css');
-      const jsPath = path.join(process.cwd(), 'templates', templateId, 'js', 'script.js');
+      // Use public directory paths for templates
+      const templatePath = path.join(process.cwd(), 'public', 'templates', templateId, 'index.html');
+      const cssPath = path.join(process.cwd(), 'public', 'templates', templateId, 'css', 'styles.css');
+      const jsPath = path.join(process.cwd(), 'public', 'templates', templateId, 'js', 'script.js');
       
       console.log('Template paths:', {
         templatePath,
@@ -95,29 +95,25 @@ export async function POST(request: NextRequest) {
       });
 
       // Verify file existence before reading
-      await Promise.all([
-        fsPromises.access(templatePath),
-        fsPromises.access(cssPath),
-        fsPromises.access(jsPath)
-      ]).catch(error => {
-        console.error('File access error:', error);
-        throw new Error(`Template files not accessible: ${error.message}`);
-      });
+      try {
+        await Promise.all([
+          fsPromises.access(templatePath),
+          fsPromises.access(cssPath),
+          fsPromises.access(jsPath)
+        ]);
+      } catch (error) {
+        console.error('Template files not found:', error);
+        return NextResponse.json({ 
+          error: 'Template files not found. Please ensure templates are in the public directory.',
+          details: error.message 
+        }, { status: 404 });
+      }
       
-      // Use Promise.all to read all files concurrently
+      // Read template files
       const [htmlContent, cssContent, jsContent] = await Promise.all([
-        fsPromises.readFile(templatePath, 'utf-8').catch(error => {
-          console.error('Error reading HTML template:', error);
-          throw error;
-        }),
-        fsPromises.readFile(cssPath, 'utf-8').catch(error => {
-          console.error('Error reading CSS file:', error);
-          throw error;
-        }),
-        fsPromises.readFile(jsPath, 'utf-8').catch(error => {
-          console.error('Error reading JS file:', error);
-          throw error;
-        })
+        fsPromises.readFile(templatePath, 'utf-8'),
+        fsPromises.readFile(cssPath, 'utf-8'),
+        fsPromises.readFile(jsPath, 'utf-8')
       ]);
 
       console.log('Successfully read all template files');
@@ -483,7 +479,7 @@ export async function POST(request: NextRequest) {
         console.log(`Successfully wrote HTML to: ${outputPath}`);
         
         // Copy all assets from the template directory to the public directory
-        await copyTemplateAssets(path.join(process.cwd(), 'templates', templateId), publicOutputDir);
+        await copyTemplateAssets(path.join(process.cwd(), 'public', 'templates', templateId), publicOutputDir);
         
         // Generate SEO files (robots.txt, sitemap.xml)
         await generateSEOFiles(portfolioData.id, portfolioData);
