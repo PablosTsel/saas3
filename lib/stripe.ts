@@ -6,7 +6,7 @@ const getStripeServerSide = () => {
   // Check if we're on the server
   if (typeof window === 'undefined') {
     return new Stripe(process.env.STRIPE_SECRET_KEY || '', {
-      apiVersion: '2025-03-31.basil', // Use the latest API version
+      apiVersion: '2022-11-15', // Use a stable current version
     });
   }
   

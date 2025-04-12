@@ -28,10 +28,14 @@ export default function PaymentModal({
 }: PaymentModalProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const handleCheckout = async () => {
     try {
       setIsLoading(true);
+      setErrorMessage(null);
+      
+      console.log("Starting checkout process for portfolio:", portfolioId);
       
       // Call our API to create a checkout session
       const response = await fetch('/api/payments/create-checkout-session', {
@@ -48,6 +52,8 @@ export default function PaymentModal({
         throw new Error(data.error || 'Failed to create checkout session');
       }
 
+      console.log("Checkout session created:", data);
+      
       // Redirect to Stripe Checkout
       const stripe = await getStripe();
       if (!stripe) {
@@ -56,18 +62,27 @@ export default function PaymentModal({
 
       if (data.url) {
         // If we have a URL, redirect directly to Stripe hosted page
-        router.push(data.url);
+        console.log("Redirecting to Stripe URL:", data.url);
+        window.location.href = data.url; // Use direct location change instead of router
       } else if (data.sessionId) {
         // If we have a sessionId, redirect using Stripe SDK
+        console.log("Redirecting via Stripe SDK with session ID:", data.sessionId);
         const { error } = await stripe.redirectToCheckout({
           sessionId: data.sessionId,
         });
         
-        if (error) throw error;
+        if (error) {
+          console.error("Stripe redirect error:", error);
+          throw error;
+        }
+      } else {
+        throw new Error('No URL or session ID returned from server');
       }
     } catch (error: any) {
+      const errorMsg = error.message || 'An unknown error occurred';
       console.error('Payment error:', error);
-      toast.error(`Payment failed: ${error.message}`);
+      setErrorMessage(errorMsg);
+      toast.error(`Payment failed: ${errorMsg}`);
     } finally {
       setIsLoading(false);
     }
@@ -93,6 +108,13 @@ export default function PaymentModal({
             </p>
             <p className="text-2xl font-bold mt-2">€1.00</p>
           </div>
+          
+          {errorMessage && (
+            <div className="bg-red-50 text-red-600 p-3 rounded-md text-sm">
+              Error: {errorMessage}
+            </div>
+          )}
+          
           <div className="text-sm text-muted-foreground">
             <p>• Secure payment via Stripe</p>
             <p>• One-time payment for preview access</p>

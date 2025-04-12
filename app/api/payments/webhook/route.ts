@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { stripe } from '@/lib/stripe';
+import { getServerStripe } from '@/lib/stripe';
 import { updatePortfolio, getPortfolioById } from '@/lib/firebase';
 import { Readable } from 'stream';
+import { headers } from 'next/headers';
 
 // Helper function to get the raw body from the request
 async function buffer(readable: Readable): Promise<Buffer> {
@@ -14,7 +15,8 @@ async function buffer(readable: Readable): Promise<Buffer> {
 
 export async function POST(request: NextRequest) {
   const body = await request.text();
-  const sig = request.headers.get('stripe-signature');
+  const headersList = await headers();
+  const sig = headersList.get('stripe-signature');
 
   if (!sig) {
     return NextResponse.json({ error: 'No signature' }, { status: 400 });
@@ -23,6 +25,8 @@ export async function POST(request: NextRequest) {
   let event;
 
   try {
+    const stripe = getServerStripe();
+    
     // Verify the event is from Stripe
     event = stripe.webhooks.constructEvent(
       body,
@@ -30,6 +34,7 @@ export async function POST(request: NextRequest) {
       process.env.STRIPE_WEBHOOK_SECRET || ''
     );
   } catch (err: any) {
+    console.error('Webhook verification error:', err.message);
     return NextResponse.json({ error: `Webhook Error: ${err.message}` }, { status: 400 });
   }
 
@@ -42,6 +47,8 @@ export async function POST(request: NextRequest) {
     
     if (portfolioId) {
       try {
+        console.log(`Payment completed for portfolio: ${portfolioId}`);
+        
         // Get current portfolio data
         const { portfolio } = await getPortfolioById(portfolioId);
         
@@ -54,7 +61,7 @@ export async function POST(request: NextRequest) {
             paymentCompletedAt: new Date().toISOString(),
           });
           
-          console.log(`Payment completed for portfolio: ${portfolioId}`);
+          console.log(`Portfolio ${portfolioId} payment status updated successfully`);
         }
       } catch (error) {
         console.error('Error updating portfolio after payment:', error);
