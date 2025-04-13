@@ -54,6 +54,7 @@ interface Project {
 interface PortfolioData {
   name: string;
   title: string;
+  smallIntro: string;
   about: string;
   fullName: string;
   email: string;
@@ -78,8 +79,9 @@ export default function DashboardPage() {
   const [portfolioData, setPortfolioData] = useState<PortfolioData>({
     name: "",
     title: "AI Engineer",
-    about: "I'm Pablos Tselioudis Garmendia, a dedicated Data Scientist currently studying the bachelor of \"Data Science and Engineering\" at UC3M and Northeastern University.",
-    fullName: "",
+    smallIntro: "I'm a skilled AI Engineer with a passion for developing innovative solutions.",
+    about: "Hello! I'm Pablos Tselioudis Garmendia, a dedicated Data Scientist currently studying the bachelor of \"Data Science and Engineering\" at UC3M and Northeastern University. My academic journey is enriched by my active participation in various competitions, including the prestigious Math and Informatics Olympiads, the CANSAT project, and my role as the captain of a team of 3 in the UCSAS 2024 USOPC DATA CHALLENGE. Beyond the realm of data science, I have a profound passion for AI.",
+    fullName: "Pablos Tselioudis",
     email: "",
     phone: "",
     profilePicture: null,
@@ -92,17 +94,17 @@ export default function DashboardPage() {
     projects: [
       { 
         name: "UCSAS 2024 USOPC DATA CHALLENGE", 
-        description: "The objective of the challenge is to identify the group of 5 athletes and 3 individual ones who will enable the Team USA Olympic Men's and Women's Artistic Gymnastics teams to optimize success in Paris 2024.", 
+        description: "In developing this Python script, my team and I set out to tackle the challenge of strategically selecting the most promising athletes for Team USA Olympic Men's and Women's Artistic Gymnastics teams, optimizing their success at the Paris 2024 Olympics. The script incorporates techniques such as linear regression modeling to predict gymnastic scores. We carefully considered historical means for adjusting scores, ensuring fair comparisons across different apparatus and genders.", 
         image: null 
       },
       { 
         name: "Spotify Song Recommender", 
-        description: "Machine learning model that personalizes music playlists to enhance user satisfaction by accurately reflecting individual music preferences.", 
+        description: "This project aimes to create a machine learning-based Spotify song recommender system that enhances user satisfaction by personalizing music playlists according to individual preferences. By analyzing user listening data and using features such as danceability, energy, and valence, the system predicts and recommends songs that align with users' tastes.", 
         image: null 
       },
       { 
         name: "Football Fantasy Predictive Model", 
-        description: "ML model to predict the adequate transfer signings in Football Fantasy", 
+        description: "In developing this data-driven approach, I set out to tackle the challenge of identifying the most promising La Liga players for Fantasy Football, ensuring that users can optimize their weekly lineups with confidence. I integrated various techniques—most notably Random Forest and Gradient Boosting—to predict both player points and market values.", 
         image: null 
       }
     ],
@@ -200,8 +202,9 @@ export default function DashboardPage() {
     setPortfolioData({
       name: "",
       title: "AI Engineer",
-      about: "I'm Pablos Tselioudis Garmendia, a dedicated Data Scientist currently studying the bachelor of \"Data Science and Engineering\" at UC3M and Northeastern University.",
-      fullName: "",
+      smallIntro: "I'm a skilled AI Engineer with a passion for developing innovative solutions.",
+      about: "Hello! I'm Pablos Tselioudis Garmendia, a dedicated Data Scientist currently studying the bachelor of \"Data Science and Engineering\" at UC3M and Northeastern University. My academic journey is enriched by my active participation in various competitions, including the prestigious Math and Informatics Olympiads, the CANSAT project, and my role as the captain of a team of 3 in the UCSAS 2024 USOPC DATA CHALLENGE. Beyond the realm of data science, I have a profound passion for AI.",
+      fullName: "Pablos Tselioudis",
       email: "",
       phone: "",
       profilePicture: null,
@@ -214,17 +217,17 @@ export default function DashboardPage() {
       projects: [
         { 
           name: "UCSAS 2024 USOPC DATA CHALLENGE", 
-          description: "The objective of the challenge is to identify the group of 5 athletes and 3 individual ones who will enable the Team USA Olympic Men's and Women's Artistic Gymnastics teams to optimize success in Paris 2024.", 
+          description: "In developing this Python script, my team and I set out to tackle the challenge of strategically selecting the most promising athletes for Team USA Olympic Men's and Women's Artistic Gymnastics teams, optimizing their success at the Paris 2024 Olympics. The script incorporates techniques such as linear regression modeling to predict gymnastic scores. We carefully considered historical means for adjusting scores, ensuring fair comparisons across different apparatus and genders.", 
           image: null 
         },
         { 
           name: "Spotify Song Recommender", 
-          description: "Machine learning model that personalizes music playlists to enhance user satisfaction by accurately reflecting individual music preferences.", 
+          description: "This project aimes to create a machine learning-based Spotify song recommender system that enhances user satisfaction by personalizing music playlists according to individual preferences. By analyzing user listening data and using features such as danceability, energy, and valence, the system predicts and recommends songs that align with users' tastes.", 
           image: null 
         },
         { 
           name: "Football Fantasy Predictive Model", 
-          description: "ML model to predict the adequate transfer signings in Football Fantasy", 
+          description: "In developing this data-driven approach, I set out to tackle the challenge of identifying the most promising La Liga players for Fantasy Football, ensuring that users can optimize their weekly lineups with confidence. I integrated various techniques—most notably Random Forest and Gradient Boosting—to predict both player points and market values.", 
           image: null 
         }
       ],
@@ -559,8 +562,9 @@ export default function DashboardPage() {
       setPortfolioData({
         name: "",
         title: "AI Engineer",
-        about: "I'm Pablos Tselioudis Garmendia, a dedicated Data Scientist currently studying the bachelor of \"Data Science and Engineering\" at UC3M and Northeastern University.",
-        fullName: "",
+        smallIntro: "I'm a skilled AI Engineer with a passion for developing innovative solutions.",
+        about: "Hello! I'm Pablos Tselioudis Garmendia, a dedicated Data Scientist currently studying the bachelor of \"Data Science and Engineering\" at UC3M and Northeastern University. My academic journey is enriched by my active participation in various competitions, including the prestigious Math and Informatics Olympiads, the CANSAT project, and my role as the captain of a team of 3 in the UCSAS 2024 USOPC DATA CHALLENGE. Beyond the realm of data science, I have a profound passion for AI.",
+        fullName: "Pablos Tselioudis",
         email: "",
         phone: "",
         profilePicture: null,
@@ -573,17 +577,17 @@ export default function DashboardPage() {
         projects: [
           { 
             name: "UCSAS 2024 USOPC DATA CHALLENGE", 
-            description: "The objective of the challenge is to identify the group of 5 athletes and 3 individual ones who will enable the Team USA Olympic Men's and Women's Artistic Gymnastics teams to optimize success in Paris 2024.", 
+            description: "In developing this Python script, my team and I set out to tackle the challenge of strategically selecting the most promising athletes for Team USA Olympic Men's and Women's Artistic Gymnastics teams, optimizing their success at the Paris 2024 Olympics. The script incorporates techniques such as linear regression modeling to predict gymnastic scores. We carefully considered historical means for adjusting scores, ensuring fair comparisons across different apparatus and genders.", 
             image: null 
           },
           { 
             name: "Spotify Song Recommender", 
-            description: "Machine learning model that personalizes music playlists to enhance user satisfaction by accurately reflecting individual music preferences.", 
+            description: "This project aimes to create a machine learning-based Spotify song recommender system that enhances user satisfaction by personalizing music playlists according to individual preferences. By analyzing user listening data and using features such as danceability, energy, and valence, the system predicts and recommends songs that align with users' tastes.", 
             image: null 
           },
           { 
             name: "Football Fantasy Predictive Model", 
-            description: "ML model to predict the adequate transfer signings in Football Fantasy", 
+            description: "In developing this data-driven approach, I set out to tackle the challenge of identifying the most promising La Liga players for Fantasy Football, ensuring that users can optimize their weekly lineups with confidence. I integrated various techniques—most notably Random Forest and Gradient Boosting—to predict both player points and market values.", 
             image: null 
           }
         ],
@@ -617,8 +621,9 @@ export default function DashboardPage() {
           setPortfolioData({
             name: "",
             title: "AI Engineer",
-            about: "I'm Pablos Tselioudis Garmendia, a dedicated Data Scientist currently studying the bachelor of \"Data Science and Engineering\" at UC3M and Northeastern University.",
-            fullName: "",
+            smallIntro: "I'm a skilled AI Engineer with a passion for developing innovative solutions.",
+            about: "Hello! I'm Pablos Tselioudis Garmendia, a dedicated Data Scientist currently studying the bachelor of \"Data Science and Engineering\" at UC3M and Northeastern University. My academic journey is enriched by my active participation in various competitions, including the prestigious Math and Informatics Olympiads, the CANSAT project, and my role as the captain of a team of 3 in the UCSAS 2024 USOPC DATA CHALLENGE. Beyond the realm of data science, I have a profound passion for AI.",
+            fullName: "Pablos Tselioudis",
             email: "",
             phone: "",
             profilePicture: null,
@@ -631,17 +636,17 @@ export default function DashboardPage() {
             projects: [
               { 
                 name: "UCSAS 2024 USOPC DATA CHALLENGE", 
-                description: "The objective of the challenge is to identify the group of 5 athletes and 3 individual ones who will enable the Team USA Olympic Men's and Women's Artistic Gymnastics teams to optimize success in Paris 2024.", 
+                description: "In developing this Python script, my team and I set out to tackle the challenge of strategically selecting the most promising athletes for Team USA Olympic Men's and Women's Artistic Gymnastics teams, optimizing their success at the Paris 2024 Olympics. The script incorporates techniques such as linear regression modeling to predict gymnastic scores. We carefully considered historical means for adjusting scores, ensuring fair comparisons across different apparatus and genders.", 
                 image: null 
               },
               { 
                 name: "Spotify Song Recommender", 
-                description: "Machine learning model that personalizes music playlists to enhance user satisfaction by accurately reflecting individual music preferences.", 
+                description: "This project aimes to create a machine learning-based Spotify song recommender system that enhances user satisfaction by personalizing music playlists according to individual preferences. By analyzing user listening data and using features such as danceability, energy, and valence, the system predicts and recommends songs that align with users' tastes.", 
                 image: null 
               },
               { 
                 name: "Football Fantasy Predictive Model", 
-                description: "ML model to predict the adequate transfer signings in Football Fantasy", 
+                description: "In developing this data-driven approach, I set out to tackle the challenge of identifying the most promising La Liga players for Fantasy Football, ensuring that users can optimize their weekly lineups with confidence. I integrated various techniques—most notably Random Forest and Gradient Boosting—to predict both player points and market values.", 
                 image: null 
               }
             ],
@@ -1098,6 +1103,21 @@ export default function DashboardPage() {
                 <div className="py-4 space-y-4">
                   <h3 className="text-lg font-medium text-gray-800">Basic Information</h3>
                   
+                  {/* Full Name Field - first required field */}
+                  <div className="space-y-2">
+                    <Label htmlFor="fullName">Full Name *</Label>
+                    <Input 
+                      id="fullName" 
+                      name="fullName" 
+                      placeholder="Pablos Tselioudis" 
+                      value={portfolioData.fullName}
+                      onChange={handleInputChange}
+                      className="border-indigo-100 focus:border-indigo-300 focus:ring-indigo-200"
+                      required
+                    />
+                    <p className="text-xs text-gray-500">Your complete name as it will appear on your portfolio.</p>
+                  </div>
+                  
                   {/* Profile Picture Upload */}
                   <div className="space-y-2">
                     <Label htmlFor="profilePicture">Profile Picture</Label>
@@ -1164,7 +1184,7 @@ export default function DashboardPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="name">Portfolio Name</Label>
+                    <Label htmlFor="name">Portfolio Name *</Label>
                     <Input 
                       id="name" 
                       name="name" 
@@ -1172,8 +1192,9 @@ export default function DashboardPage() {
                       value={portfolioData.name}
                       onChange={handleInputChange}
                       className="border-indigo-100 focus:border-indigo-300 focus:ring-indigo-200"
+                      required
                     />
-                    <p className="text-xs text-gray-500">This will be used to identify your portfolio in your dashboard.</p>
+                    <p className="text-xs text-gray-500">This name is only used to identify your portfolio in your dashboard. It will NOT appear on the actual portfolio.</p>
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="title">Professional Title</Label>
@@ -1186,6 +1207,18 @@ export default function DashboardPage() {
                       className="border-indigo-100 focus:border-indigo-300 focus:ring-indigo-200"
                     />
                     <p className="text-xs text-gray-500">Your job title or professional focus.</p>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="smallIntro">Small Intro (1 sentence)</Label>
+                    <Input 
+                      id="smallIntro" 
+                      name="smallIntro" 
+                      placeholder="A brief one-sentence introduction" 
+                      value={portfolioData.smallIntro}
+                      onChange={handleInputChange}
+                      className="border-indigo-100 focus:border-indigo-300 focus:ring-indigo-200"
+                    />
+                    <p className="text-xs text-gray-500">A short introduction for the homepage header (1 sentence).</p>
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="about">About Me</Label>
@@ -1620,7 +1653,7 @@ export default function DashboardPage() {
                     >
                       <div className="aspect-[16/9] bg-white flex items-center justify-center">
                         <img 
-                          src="/templates/template1/thumbnail_dash.svg" 
+                          src="/templates/template1/Template_1pic.png" 
                           alt="Template 1 Preview" 
                           className="w-full h-full object-cover"
                         />

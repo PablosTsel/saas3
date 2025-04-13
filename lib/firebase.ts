@@ -351,6 +351,7 @@ export const createPortfolio = async (
       name: portfolioData.name,
       title: portfolioData.title,
       about: portfolioData.about,
+      smallIntro: portfolioData.smallIntro || "",
       fullName: portfolioData.fullName || portfolioData.name,
       email: portfolioData.email || "",
       phone: portfolioData.phone || "",

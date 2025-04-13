@@ -47,6 +47,109 @@ const axios_1 = __importDefault(require("axios"));
 admin.initializeApp();
 // Configure Affinda API key - you'll need to get an API key from Affinda
 const AFFINDA_API_KEY = 'aff_ce224a9b4bb8bea0cdde3711018208dc4fc9c0c1'; // API key provided by user
+// Phone number extraction implementation
+// Copy of the extractPhoneNumber function from app/api/portfolios/generate/route.ts
+const extractPhoneNumber = (text) => {
+    // Pre-processing: normalize text (remove extra spaces, lowercase for pattern matching)
+    const normalizedText = text.replace(/\s+/g, ' ').toLowerCase();
+    // Common keywords that might appear near phone numbers
+    const phoneKeywords = ['phone', 'mobile', 'cell', 'tel', 'telephone', 'contact', 'call'];
+    // Regular expressions for various phone number formats
+    const phonePatterns = [
+        // International format with country code (handles spaces, dots, or dashes as separators)
+        /(?:\+|00)[1-9]\d{0,2}[\s.-]?\(?\d{1,4}\)?[\s.-]?\d{1,4}[\s.-]?\d{1,4}[\s.-]?\d{1,9}/g,
+        // Spanish format (like +34 XXX XX XX XX or +34 XXX XXX XXX)
+        /\+34[\s.-]?\d{3}[\s.-]?\d{2}[\s.-]?\d{2}[\s.-]?\d{2}/g,
+        /\+34[\s.-]?\d{3}[\s.-]?\d{3}[\s.-]?\d{3}/g,
+        // US/Canada format (XXX) XXX-XXXX or XXX-XXX-XXXX
+        /\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}/g,
+        // UK format +44 XXXX XXXXXX
+        /\+44[\s.-]?\d{4}[\s.-]?\d{6}/g,
+        // Generic formats (7-15 digits with various separators)
+        /\d{3}[\s.-]?\d{3,4}[\s.-]?\d{3,4}/g,
+        /\d{2}[\s.-]?\d{2}[\s.-]?\d{2}[\s.-]?\d{2}[\s.-]?\d{2}/g,
+        // Catch-all for sequences of digits that look like phone numbers (7+ digits)
+        /[\d\s.()+\-]{7,20}/g
+    ];
+    // Check for phone numbers near keywords first (higher accuracy)
+    for (const keyword of phoneKeywords) {
+        // Look for keyword followed by potential phone number
+        const keywordIndex = normalizedText.indexOf(keyword);
+        if (keywordIndex !== -1) {
+            // Extract text around the keyword (30 chars before and 30 chars after)
+            const start = Math.max(0, keywordIndex - 30);
+            const end = Math.min(normalizedText.length, keywordIndex + 30);
+            const contextText = normalizedText.substring(start, end);
+            // Try each pattern on the context text
+            for (const pattern of phonePatterns) {
+                const matches = contextText.match(pattern);
+                if (matches && matches.length > 0) {
+                    return normalizePhoneNumber(matches[0]);
+                }
+            }
+        }
+    }
+    // If no phone number found near keywords, try scanning the entire text
+    for (const pattern of phonePatterns) {
+        const matches = text.match(pattern);
+        if (matches && matches.length > 0) {
+            return normalizePhoneNumber(matches[0]);
+        }
+    }
+    return null;
+};
+// Helper function to clean and normalize phone numbers
+const normalizePhoneNumber = (phoneNumber) => {
+    // Remove all non-digit characters except + at the start
+    let normalized = phoneNumber.trim();
+    // Keep only digits, plus sign, spaces and some separators for readability
+    normalized = normalized.replace(/[^\d+\s.-]/g, '');
+    // Remove extra whitespace
+    normalized = normalized.replace(/\s+/g, ' ').trim();
+    // Make sure it has at least 7 digits to be a valid phone number
+    const digitCount = (normalized.match(/\d/g) || []).length;
+    if (digitCount < 7) {
+        return '';
+    }
+    return normalized;
+};
+// Email extraction function
+const extractEmailAddress = (text) => {
+    // Pre-processing: normalize text
+    const normalizedText = text.replace(/\s+/g, ' ');
+    
+    // Common keywords that might appear near email addresses
+    const emailKeywords = ['email', 'e-mail', 'mail', 'correo', 'contact', 'contacto'];
+    
+    // Basic email regex pattern
+    const emailPattern = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
+    
+    // Check for email near keywords first (higher accuracy)
+    for (const keyword of emailKeywords) {
+      // Look for keyword
+      const keywordIndex = normalizedText.toLowerCase().indexOf(keyword);
+      if (keywordIndex !== -1) {
+        // Extract text around the keyword (50 chars before and 50 chars after)
+        const start = Math.max(0, keywordIndex - 50);
+        const end = Math.min(normalizedText.length, keywordIndex + 50);
+        const contextText = normalizedText.substring(start, end);
+        
+        // Find email in context
+        const matches = contextText.match(emailPattern);
+        if (matches && matches.length > 0) {
+          return matches[0].trim();
+        }
+      }
+    }
+    
+    // If no email found near keywords, try scanning the entire text
+    const matches = normalizedText.match(emailPattern);
+    if (matches && matches.length > 0) {
+      return matches[0].trim();
+    }
+    
+    return null;
+};
 /**
  * Cloud Function that triggers when a CV is uploaded to Firebase Storage
  */
@@ -112,6 +215,28 @@ async function extractCvDataWithAffinda(filePath) {
             experience: [],
             skills: []
         };
+        // Get raw text for phone extraction
+        const rawText = result.data.rawText || '';
+        
+        // Try to extract phone number
+        const phoneNumber = extractPhoneNumber(rawText);
+        if (phoneNumber) {
+            console.log('Found phone number:', phoneNumber);
+            extractedData.phone = phoneNumber;
+        }
+        else {
+            console.log('No phone number found in the CV');
+        }
+        
+        // Try to extract email address
+        const emailAddress = extractEmailAddress(rawText);
+        if (emailAddress) {
+            console.log('Found email address:', emailAddress);
+            extractedData.email = emailAddress;
+        }
+        else {
+            console.log('No email address found in the CV');
+        }
         // Extract education
         if (result.data.education && Array.isArray(result.data.education)) {
             extractedData.education = result.data.education.map((edu) => {
@@ -251,15 +376,24 @@ async function updateFirestoreWithCvData(portfolioId, cvData) {
     const db = admin.firestore();
     try {
         console.log(`Updating portfolio ${portfolioId} with CV data`);
-        // Update the portfolio document with the extracted data
-        await db.collection('portfolios').doc(portfolioId).update({
+        // Create update data including all extracted fields
+        const updateData = {
             education: cvData.education,
             experience: cvData.experience,
             skills: cvData.skills,
-            // Set a flag to indicate CV data has been processed
             cvProcessed: true,
             updatedAt: admin.firestore.FieldValue.serverTimestamp()
-        });
+        };
+        // Add phone number if found
+        if (cvData.phone) {
+            updateData.phone = cvData.phone;
+        }
+        // Add email address if found
+        if (cvData.email) {
+            updateData.email = cvData.email;
+        }
+        // Update the portfolio document with the extracted data
+        await db.collection('portfolios').doc(portfolioId).update(updateData);
         console.log(`Successfully updated portfolio ${portfolioId} with CV data`);
     }
     catch (error) {

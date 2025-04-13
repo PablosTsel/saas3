@@ -5,13 +5,16 @@ import { headers } from 'next/headers';
 
 // This API route handles Stripe webhook events
 export async function POST(request: NextRequest) {
-  const body = await request.text();
-  const headersList = await headers();
-  const signature = headersList.get('stripe-signature') || '';
-  
-  const stripe = getServerStripe();
-  
   try {
+    // Get the request body text
+    const body = await request.text();
+    
+    // Get headers with await - required in Next.js 15+
+    const headersList = await headers();
+    const signature = headersList.get('stripe-signature') || '';
+    
+    const stripe = getServerStripe();
+    
     // Verify the webhook signature
     const event = stripe.webhooks.constructEvent(
       body,

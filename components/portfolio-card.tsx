@@ -36,7 +36,9 @@ const PortfolioCard: FC<PortfolioCardProps> = ({
       
       <CardContent className="aspect-video bg-white flex items-center justify-center p-0 relative overflow-hidden">
         <Image 
-          src={`/templates/${templateId}/thumbnail_dash.svg`}
+          src={templateId === "template1" 
+            ? `/templates/template1/Template_1pic.png`
+            : `/templates/${templateId}/thumbnail_dash.svg`}
           alt={`${name} Preview`}
           fill
           className="object-contain"

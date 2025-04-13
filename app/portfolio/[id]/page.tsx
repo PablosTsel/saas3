@@ -7,6 +7,9 @@ import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
 import PaymentModal from '@/components/payment-modal';
 
+// Check if payment bypass is enabled in development
+const BYPASS_PAYMENT = process.env.NEXT_PUBLIC_BYPASS_PORTFOLIO_PAYMENT === 'true';
+
 export default function PortfolioViewPage() {
   const params = useParams();
   const searchParams = useSearchParams();
@@ -120,14 +123,19 @@ export default function PortfolioViewPage() {
         const isPaid = typedPortfolioData.isPreviewPaid === true || 
                       ['paid', 'completed'].includes(typedPortfolioData.paymentStatus || '');
         
-        if (!isPaid) {
-          console.log("Portfolio requires payment");
+        // If payment bypass is enabled or portfolio is paid, proceed to load portfolio
+        if (!isPaid && !BYPASS_PAYMENT) {
+          console.log("Portfolio requires payment and bypass is not enabled");
           setLoading(false);
-          return; // Don't proceed to load portfolio if payment is required
+          return; // Don't proceed to load portfolio if payment is required and bypass is not enabled
         }
         
-        // Payment is confirmed, proceed to load/generate the portfolio
-        console.log("Payment verified, proceeding to load portfolio");
+        // Payment is confirmed or bypassed, proceed to load/generate the portfolio
+        if (BYPASS_PAYMENT && !isPaid) {
+          console.log("Payment bypass enabled, skipping payment check");
+        } else {
+          console.log("Payment verified, proceeding to load portfolio");
+        }
         
         // Check if portfolio HTML exists
         try {
@@ -286,7 +294,8 @@ export default function PortfolioViewPage() {
   const isPaid = portfolio && (portfolio.isPreviewPaid === true || 
                             ['paid', 'completed'].includes(portfolio.paymentStatus || ''));
   
-  if (portfolio && !isPaid) {
+  // Only show the payment screen if payment is required (bypass is disabled) and portfolio is not paid
+  if (portfolio && !isPaid && !BYPASS_PAYMENT) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-50">
         <div className="text-center max-w-md p-8 bg-white rounded-xl shadow-sm border border-indigo-100">
