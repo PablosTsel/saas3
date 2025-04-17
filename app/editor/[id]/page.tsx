@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import { useParams, useRouter } from "next/navigation"
 import { useAuth } from "@/lib/auth-context"
-import { getPortfolioById, updatePortfolio } from "@/lib/firebase"
+import { getPortfolioById, updatePortfolio, uploadFile } from "@/lib/firebase"
 import { toast } from "sonner"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card"
@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { X, Plus, ChevronLeft, Save, Trash2, ListChecks, Briefcase, GraduationCap, UploadCloud, FileText } from "lucide-react"
+import { X, Plus, ChevronLeft, Save, Trash2, ListChecks, Briefcase, GraduationCap, UploadCloud, FileText, User } from "lucide-react"
 import { isEqual } from 'lodash'
 
 // Define types for our portfolio data using the same types as dashboard
@@ -55,6 +55,12 @@ interface PortfolioData {
   projectCount: number;
   projects: Project[];
   templateId: string;
+  fullName: string;
+  smallIntro: string;
+  email: string;
+  phone: string;
+  profilePicture?: File;
+  profilePictureUrl?: string;
 }
 
 export default function PortfolioEditorPage() {
@@ -70,12 +76,23 @@ export default function PortfolioEditorPage() {
     about: "",
     cv: null,
     hasCv: true,
-    skills: [],
+    skills: [
+      { name: "Python", level: "Advanced" },
+      { name: "Machine Learning", level: "Advanced" },
+      { name: "TensorFlow", level: "Intermediate" },
+      { name: "Natural Language Processing", level: "Intermediate" },
+      { name: "Computer Vision", level: "Intermediate" },
+      { name: "Data Structures & Algorithms", level: "Advanced" }
+    ],
     experience: [],
     education: [],
     projectCount: 1,
     projects: [{ name: "", description: "", image: null }],
     templateId: "",
+    fullName: "",
+    smallIntro: "",
+    email: "",
+    phone: "",
   })
   const [activeTab, setActiveTab] = useState("general")
   const [hasChanges, setHasChanges] = useState(false)
@@ -117,6 +134,12 @@ export default function PortfolioEditorPage() {
             imageUrl: project.imageUrl || ""
           })) || [{ name: "", description: "", image: null }],
           templateId: portfolioData.templateId || "minimal",
+          fullName: portfolioData.fullName || "",
+          smallIntro: portfolioData.smallIntro || "",
+          email: portfolioData.email || "",
+          phone: portfolioData.phone || "",
+          profilePicture: portfolioData.profilePicture,
+          profilePictureUrl: portfolioData.profilePictureUrl,
         }
         
         setPortfolioData(transformedData)
@@ -172,7 +195,7 @@ export default function PortfolioEditorPage() {
   }
 
   // Handle file upload
-  const handleFileUpload = (file: File, field: 'cv' | 'projectImage', projectIndex?: number) => {
+  const handleFileUpload = (file: File, field: 'cv' | 'projectImage' | 'profilePicture', projectIndex?: number) => {
     if (field === 'cv') {
       setPortfolioData({
         ...portfolioData,
@@ -189,6 +212,12 @@ export default function PortfolioEditorPage() {
       setPortfolioData({
         ...portfolioData,
         projects: newProjects
+      })
+    } else if (field === 'profilePicture') {
+      setPortfolioData({
+        ...portfolioData,
+        profilePicture: file,
+        profilePictureUrl: "" // Clear the previous URL so we know to upload the new file
       })
     }
   }
@@ -225,58 +254,6 @@ export default function PortfolioEditorPage() {
     setPortfolioData({
       ...portfolioData,
       skills: newSkills
-    })
-  }
-
-  // Handle experience
-  const handleAddExperience = () => {
-    setPortfolioData({
-      ...portfolioData,
-      experience: [...portfolioData.experience, { company: "", position: "", period: "", description: "" }]
-    })
-  }
-
-  const handleUpdateExperience = (index: number, field: keyof Experience, value: string) => {
-    const newExperience = [...portfolioData.experience]
-    newExperience[index] = { ...newExperience[index], [field]: value }
-    setPortfolioData({
-      ...portfolioData,
-      experience: newExperience
-    })
-  }
-
-  const handleRemoveExperience = (index: number) => {
-    const newExperience = [...portfolioData.experience]
-    newExperience.splice(index, 1)
-    setPortfolioData({
-      ...portfolioData,
-      experience: newExperience
-    })
-  }
-
-  // Handle education
-  const handleAddEducation = () => {
-    setPortfolioData({
-      ...portfolioData,
-      education: [...portfolioData.education, { institution: "", degree: "", period: "" }]
-    })
-  }
-
-  const handleUpdateEducation = (index: number, field: keyof Education, value: string) => {
-    const newEducation = [...portfolioData.education]
-    newEducation[index] = { ...newEducation[index], [field]: value }
-    setPortfolioData({
-      ...portfolioData,
-      education: newEducation
-    })
-  }
-
-  const handleRemoveEducation = (index: number) => {
-    const newEducation = [...portfolioData.education]
-    newEducation.splice(index, 1)
-    setPortfolioData({
-      ...portfolioData,
-      education: newEducation
     })
   }
 
@@ -336,39 +313,224 @@ export default function PortfolioEditorPage() {
     toast.loading("Saving changes...", { id: "saving" })
 
     try {
-      // Create a copy of the portfolio data with the ID
+      // Create a copy of the portfolio data without File objects
       const portfolioToUpdate = {
         ...portfolioData,
-        updatedAt: new Date().toISOString()
+        updatedAt: new Date().toISOString(),
+        // Remove the File objects - they will be uploaded separately
+        cv: null,
+        profilePicture: null
       }
       
-      // Call the updatePortfolio function
-      const { success, error } = await updatePortfolio(id, portfolioToUpdate)
+      // First, verify portfolio ownership
+      const { portfolio: currentPortfolio, error: fetchError } = await getPortfolioById(id);
+      if (fetchError || !currentPortfolio) {
+        throw new Error(`Failed to verify portfolio ownership: ${fetchError || "Portfolio not found"}`);
+      }
+      
+      // Cast to any to access properties safely
+      const portfolioDoc = currentPortfolio as any;
+      
+      if (portfolioDoc.userId !== user.uid) {
+        throw new Error("You don't have permission to edit this portfolio");
+      }
+      
+      // Create a version of the portfolio that doesn't contain File objects
+      // This version will be used if the file uploads fail
+      const fallbackPortfolio = {
+        ...portfolioToUpdate,
+        // Keep existing URLs if available
+        profilePictureUrl: portfolioData.profilePictureUrl || portfolioDoc.profilePictureUrl,
+        cvUrl: portfolioData.hasCv ? (portfolioData.cvUrl || portfolioDoc.cvUrl) : null,
+        // Keep existing project images
+        projects: portfolioToUpdate.projects.map((project: Project, i: number) => ({
+          ...project,
+          imageUrl: project.imageUrl || (portfolioDoc.projects && i < portfolioDoc.projects.length ? 
+                                portfolioDoc.projects[i].imageUrl : null),
+        }))
+      };
+      
+      // Handle file uploads - Profile Picture
+      if (portfolioData.profilePicture) {
+        try {
+          toast.loading("Uploading profile picture...", { id: "uploading-profile" })
+          const { url, error: uploadError } = await uploadFile(
+            portfolioData.profilePicture,
+            `users/${user.uid}/portfolios/${id}/profile-picture`
+          )
+          
+          if (uploadError) {
+            console.error("Profile picture upload failed:", uploadError);
+            toast.dismiss("uploading-profile");
+            toast.error("Couldn't upload profile picture. Using existing one if available.");
+            // Continue without the new profile picture, using the existing URL
+          } else {
+            toast.dismiss("uploading-profile");
+            toast.success("Profile picture uploaded successfully!");
+            portfolioToUpdate.profilePictureUrl = url;
+          }
+        } catch (error) {
+          console.error("Profile picture upload error:", error);
+          toast.dismiss("uploading-profile");
+          toast.error("Profile picture upload failed. Continuing with other changes.");
+          // Continue with the update, just without the new profile picture
+        }
+      }
+      
+      // Handle file uploads - CV
+      if (portfolioData.hasCv && portfolioData.cv) {
+        try {
+          toast.loading("Uploading CV...", { id: "uploading-cv" });
+          const { url, error: uploadError } = await uploadFile(
+            portfolioData.cv,
+            `users/${user.uid}/portfolios/${id}/cv`
+          );
+          
+          if (uploadError) {
+            console.error("CV upload failed:", uploadError);
+            toast.dismiss("uploading-cv");
+            toast.error("Couldn't upload CV. Using existing one if available.");
+            // Continue without the new CV, using the existing URL
+          } else {
+            toast.dismiss("uploading-cv");
+            toast.success("CV uploaded successfully!");
+            portfolioToUpdate.cvUrl = url;
+          }
+        } catch (error) {
+          console.error("CV upload error:", error);
+          toast.dismiss("uploading-cv");
+          toast.error("CV upload failed. Continuing with other changes.");
+          // Continue with the update, just without the new CV
+        }
+      }
+      
+      // Handle project image uploads
+      const projectsToUpdate = [...portfolioData.projects];
+      
+      for (let i = 0; i < projectsToUpdate.length; i++) {
+        const project = projectsToUpdate[i];
+        
+        if (project.image) {
+          try {
+            toast.loading(`Uploading project ${i+1} image...`, { id: `uploading-project-${i}` });
+            const { url, error: uploadError } = await uploadFile(
+              project.image,
+              `users/${user.uid}/portfolios/${id}/projects/project-${i}`
+            );
+            
+            if (uploadError) {
+              console.error(`Project ${i+1} image upload failed:`, uploadError);
+              toast.dismiss(`uploading-project-${i}`);
+              toast.error(`Couldn't upload project ${i+1} image. Using existing one if available.`);
+              // Keep existing image URL if available
+              projectsToUpdate[i] = {
+                ...project,
+                image: null,
+                imageUrl: project.imageUrl || (portfolioDoc.projects && i < portfolioDoc.projects.length ? 
+                                portfolioDoc.projects[i].imageUrl : null)
+              };
+            } else {
+              toast.dismiss(`uploading-project-${i}`);
+              projectsToUpdate[i] = {
+                ...project,
+                imageUrl: url,
+                image: null
+              };
+            }
+          } catch (error) {
+            console.error(`Project ${i+1} image upload error:`, error);
+            toast.dismiss(`uploading-project-${i}`);
+            toast.error(`Project ${i+1} image upload failed. Continuing with other changes.`);
+            // Keep existing image URL if available
+            projectsToUpdate[i] = {
+              ...project,
+              image: null,
+              imageUrl: project.imageUrl || (portfolioDoc.projects && i < portfolioDoc.projects.length ? 
+                            portfolioDoc.projects[i].imageUrl : null)
+            };
+          }
+        }
+      }
+      
+      // Update with the processed projects
+      portfolioToUpdate.projects = projectsToUpdate;
+      
+      // Call the updatePortfolio function with cleaned data
+      const { success, error } = await updatePortfolio(id, portfolioToUpdate);
       
       if (!success) {
-        toast.dismiss("saving")
-        toast.error(error || "Failed to update portfolio")
-        setIsSaving(false)
-        return
+        toast.dismiss("saving");
+        toast.error(error || "Failed to update portfolio");
+        setIsSaving(false);
+        return;
       }
       
-      toast.dismiss("saving")
-      toast.success("Portfolio updated successfully!")
+      toast.dismiss("saving");
+      toast.success("Portfolio updated successfully!");
       
       // Update the original data to reflect the new state
-      setOriginalData(portfolioData)
-      setHasChanges(false)
+      setOriginalData({
+        ...portfolioToUpdate,
+        // Restore the file references in our state, but they won't be saved to Firestore
+        cv: portfolioData.cv,
+        profilePicture: portfolioData.profilePicture,
+        projects: projectsToUpdate.map((p, i) => ({
+          ...p,
+          image: portfolioData.projects[i].image
+        }))
+      });
+      setHasChanges(false);
       
-      // Wait a moment then redirect to dashboard
+      // Automatically regenerate the portfolio before redirecting
+      toast.loading(`Regenerating portfolio...`, {
+        id: `regenerate-${id}`,
+        duration: 10000, // Longer duration as generation can take time
+      });
+      
+      try {
+        // Call the API to regenerate the portfolio
+        const regenerateResponse = await fetch(`/api/portfolios/generate`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ portfolioId: id }),
+        });
+
+        const regenerateData = await regenerateResponse.json();
+
+        if (!regenerateResponse.ok) {
+          throw new Error(regenerateData.error || "Failed to regenerate portfolio");
+        }
+
+        // Success message
+        toast.success(`Portfolio "${portfolioData.name}" regenerated successfully`, {
+          id: `regenerate-${id}`,
+          duration: 4000,
+        });
+      } catch (regenerateError) {
+        console.error("Error regenerating portfolio:", regenerateError);
+        toast.error(
+          regenerateError instanceof Error 
+            ? `Failed to regenerate portfolio: ${regenerateError.message}` 
+            : "Failed to regenerate portfolio", 
+          {
+            id: `regenerate-${id}`,
+            duration: 5000,
+          }
+        );
+      }
+      
+      // Redirect to dashboard after regeneration attempt (whether successful or not)
       setTimeout(() => {
-        router.push("/dashboard")
-      }, 1500)
+        router.push("/dashboard");
+      }, 1500);
     } catch (err: any) {
-      console.error("Error updating portfolio:", err)
-      toast.dismiss("saving")
-      toast.error(err.message || "An unexpected error occurred")
+      console.error("Error updating portfolio:", err);
+      toast.dismiss("saving");
+      toast.error(err.message || "An unexpected error occurred");
     } finally {
-      setIsSaving(false)
+      setIsSaving(false);
     }
   }
 
@@ -426,18 +588,12 @@ export default function PortfolioEditorPage() {
 
       <div className="container mx-auto px-4 py-8">
         <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-8">
-          <TabsList className="grid grid-cols-3 md:grid-cols-5 gap-2 bg-white p-1 rounded-lg shadow-sm border border-indigo-100">
+          <TabsList className="grid grid-cols-3 gap-2 bg-white p-1 rounded-lg shadow-sm border border-indigo-100">
             <TabsTrigger value="general" className="data-[state=active]:bg-indigo-50 data-[state=active]:text-indigo-700">
               General
             </TabsTrigger>
             <TabsTrigger value="skills" className="data-[state=active]:bg-indigo-50 data-[state=active]:text-indigo-700">
               <ListChecks className="h-4 w-4 mr-1" /> Skills
-            </TabsTrigger>
-            <TabsTrigger value="experience" className="data-[state=active]:bg-indigo-50 data-[state=active]:text-indigo-700">
-              <Briefcase className="h-4 w-4 mr-1" /> Experience
-            </TabsTrigger>
-            <TabsTrigger value="education" className="data-[state=active]:bg-indigo-50 data-[state=active]:text-indigo-700">
-              <GraduationCap className="h-4 w-4 mr-1" /> Education
             </TabsTrigger>
             <TabsTrigger value="projects" className="data-[state=active]:bg-indigo-50 data-[state=active]:text-indigo-700">
               Projects
@@ -465,6 +621,17 @@ export default function PortfolioEditorPage() {
                   </div>
                   
                   <div className="space-y-2">
+                    <Label htmlFor="fullName">Full Name</Label>
+                    <Input 
+                      id="fullName" 
+                      name="fullName"
+                      placeholder="e.g. John Doe"
+                      value={portfolioData.fullName}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
                     <Label htmlFor="title">Professional Title</Label>
                     <Input 
                       id="title" 
@@ -473,6 +640,18 @@ export default function PortfolioEditorPage() {
                       value={portfolioData.title}
                       onChange={handleInputChange}
                     />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="smallIntro">Small Intro</Label>
+                    <Input 
+                      id="smallIntro" 
+                      name="smallIntro"
+                      placeholder="A brief one-sentence introduction"
+                      value={portfolioData.smallIntro}
+                      onChange={handleInputChange}
+                    />
+                    <p className="text-xs text-gray-500">A short introduction for the homepage header (1 sentence).</p>
                   </div>
                   
                   <div className="space-y-2">
@@ -497,11 +676,80 @@ export default function PortfolioEditorPage() {
                         <SelectValue placeholder="Select a template" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="minimal">Minimal</SelectItem>
-                        <SelectItem value="creative">Creative</SelectItem>
-                        <SelectItem value="professional">Professional</SelectItem>
+                        <SelectItem value="template1">Template 1 (Modern Minimal)</SelectItem>
+                        <SelectItem value="template2">Template 2 (Professional Dark)</SelectItem>
+                        <SelectItem value="template3">Template 3 (Creative Bold)</SelectItem>
+                        <SelectItem value="template4">Template 4 (Minimal Portfolio)</SelectItem>
+                        <SelectItem value="template5">Template 5 (Visual Portfolio)</SelectItem>
+                        <SelectItem value="template6">Template 6 (Glass Morphism)</SelectItem>
                       </SelectContent>
                     </Select>
+                  </div>
+                </div>
+
+                {/* Profile Picture Upload */}
+                <div className="space-y-4">
+                  <Label className="block">Profile Picture</Label>
+                  <div className="flex items-center gap-4">
+                    <div className="h-24 w-24 rounded-full bg-indigo-50 flex items-center justify-center overflow-hidden border-2 border-indigo-100">
+                      {portfolioData.profilePicture || portfolioData.profilePictureUrl ? (
+                        <img 
+                          src={portfolioData.profilePicture ? URL.createObjectURL(portfolioData.profilePicture) : portfolioData.profilePictureUrl}
+                          alt="Profile"
+                          className="h-full w-full object-cover"
+                        />
+                      ) : (
+                        <User className="h-12 w-12 text-indigo-300" />
+                      )}
+                    </div>
+                    <div className="space-y-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="flex items-center gap-2 text-indigo-600 border-indigo-200"
+                        onClick={() => document.getElementById('profilePicture-upload')?.click()}
+                      >
+                        <UploadCloud className="h-4 w-4" />
+                        Choose Photo
+                      </Button>
+                      <Input
+                        id="profilePicture-upload"
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => e.target.files?.[0] && handleFileUpload(e.target.files[0], 'profilePicture')}
+                      />
+                      <p className="text-xs text-gray-500">Recommended: Square image, at least 300x300px</p>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Contact Information */}
+                <div className="space-y-4">
+                  <Label className="block">Contact Information</Label>
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div className="space-y-2">
+                      <Label htmlFor="email">Email Address</Label>
+                      <Input 
+                        id="email" 
+                        name="email"
+                        type="email"
+                        placeholder="email@example.com"
+                        value={portfolioData.email}
+                        onChange={handleInputChange}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="phone">Phone Number</Label>
+                      <Input 
+                        id="phone" 
+                        name="phone"
+                        placeholder="+1 (555) 123-4567"
+                        value={portfolioData.phone}
+                        onChange={handleInputChange}
+                      />
+                    </div>
                   </div>
                 </div>
                 
@@ -562,6 +810,7 @@ export default function PortfolioEditorPage() {
                           </a>
                         </div>
                       )}
+                      <p className="text-xs text-gray-500">Accepted formats: PDF, DOC, DOCX, max 5MB.</p>
                     </div>
                   )}
                 </div>
@@ -588,30 +837,12 @@ export default function PortfolioEditorPage() {
                   <div className="space-y-4">
                     {portfolioData.skills.map((skill, index) => (
                       <div key={index} className="flex gap-2 items-start">
-                        <div className="flex-1 grid md:grid-cols-2 gap-2">
-                          <div>
-                            <Input
-                              placeholder="Skill name"
-                              value={skill.name}
-                              onChange={(e) => handleUpdateSkill(index, 'name', e.target.value)}
-                            />
-                          </div>
-                          <div>
-                            <Select 
-                              value={skill.level} 
-                              onValueChange={(value) => handleUpdateSkill(index, 'level', value)}
-                            >
-                              <SelectTrigger>
-                                <SelectValue placeholder="Skill level" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="Beginner">Beginner</SelectItem>
-                                <SelectItem value="Intermediate">Intermediate</SelectItem>
-                                <SelectItem value="Advanced">Advanced</SelectItem>
-                                <SelectItem value="Expert">Expert</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
+                        <div className="flex-1">
+                          <Input
+                            placeholder="e.g. React, JavaScript, UI Design"
+                            value={skill.name}
+                            onChange={(e) => handleUpdateSkill(index, 'name', e.target.value)}
+                          />
                         </div>
                         <Button 
                           variant="ghost" 
@@ -630,169 +861,6 @@ export default function PortfolioEditorPage() {
                       className="mt-4 border-dashed border-indigo-200"
                     >
                       <Plus className="h-4 w-4 mr-1" /> Add Another Skill
-                    </Button>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Experience Tab */}
-          <TabsContent value="experience" className="space-y-6">
-            <Card className="bg-white shadow-sm border border-indigo-100">
-              <CardHeader>
-                <CardTitle>Work Experience</CardTitle>
-                <CardDescription>Add your professional experience</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {portfolioData.experience.length === 0 ? (
-                  <div className="text-center py-8">
-                    <p className="text-gray-500 mb-4">No work experience added yet</p>
-                    <Button onClick={handleAddExperience} variant="outline" className="border-dashed border-indigo-200">
-                      <Plus className="h-4 w-4 mr-1" /> Add Your First Experience
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="space-y-6">
-                    {portfolioData.experience.map((exp, index) => (
-                      <div key={index} className="space-y-4 p-4 bg-indigo-50/30 rounded-lg border border-indigo-100">
-                        <div className="flex justify-between items-start">
-                          <h3 className="font-medium text-gray-800">Experience #{index + 1}</h3>
-                          <Button 
-                            variant="ghost" 
-                            size="icon" 
-                            onClick={() => handleRemoveExperience(index)}
-                            className="text-red-500 hover:bg-red-50 hover:text-red-600"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                        
-                        <div className="grid gap-4 md:grid-cols-2">
-                          <div className="space-y-2">
-                            <Label htmlFor={`exp-company-${index}`}>Company</Label>
-                            <Input
-                              id={`exp-company-${index}`}
-                              placeholder="Company name"
-                              value={exp.company}
-                              onChange={(e) => handleUpdateExperience(index, 'company', e.target.value)}
-                            />
-                          </div>
-                          <div className="space-y-2">
-                            <Label htmlFor={`exp-position-${index}`}>Position</Label>
-                            <Input
-                              id={`exp-position-${index}`}
-                              placeholder="Your job title"
-                              value={exp.position}
-                              onChange={(e) => handleUpdateExperience(index, 'position', e.target.value)}
-                            />
-                          </div>
-                          <div className="space-y-2">
-                            <Label htmlFor={`exp-period-${index}`}>Period</Label>
-                            <Input
-                              id={`exp-period-${index}`}
-                              placeholder="e.g. Jan 2020 - Present"
-                              value={exp.period}
-                              onChange={(e) => handleUpdateExperience(index, 'period', e.target.value)}
-                            />
-                          </div>
-                        </div>
-                        
-                        <div className="space-y-2">
-                          <Label htmlFor={`exp-description-${index}`}>Description</Label>
-                          <Textarea
-                            id={`exp-description-${index}`}
-                            placeholder="Describe your responsibilities and achievements"
-                            value={exp.description}
-                            onChange={(e) => handleUpdateExperience(index, 'description', e.target.value)}
-                            rows={3}
-                          />
-                        </div>
-                      </div>
-                    ))}
-                    
-                    <Button 
-                      onClick={handleAddExperience} 
-                      variant="outline" 
-                      className="mt-4 border-dashed border-indigo-200"
-                    >
-                      <Plus className="h-4 w-4 mr-1" /> Add Another Experience
-                    </Button>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Education Tab */}
-          <TabsContent value="education" className="space-y-6">
-            <Card className="bg-white shadow-sm border border-indigo-100">
-              <CardHeader>
-                <CardTitle>Education</CardTitle>
-                <CardDescription>Add your educational background</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {portfolioData.education.length === 0 ? (
-                  <div className="text-center py-8">
-                    <p className="text-gray-500 mb-4">No education added yet</p>
-                    <Button onClick={handleAddEducation} variant="outline" className="border-dashed border-indigo-200">
-                      <Plus className="h-4 w-4 mr-1" /> Add Your First Education
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="space-y-6">
-                    {portfolioData.education.map((edu, index) => (
-                      <div key={index} className="space-y-4 p-4 bg-indigo-50/30 rounded-lg border border-indigo-100">
-                        <div className="flex justify-between items-start">
-                          <h3 className="font-medium text-gray-800">Education #{index + 1}</h3>
-                          <Button 
-                            variant="ghost" 
-                            size="icon" 
-                            onClick={() => handleRemoveEducation(index)}
-                            className="text-red-500 hover:bg-red-50 hover:text-red-600"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                        
-                        <div className="grid gap-4 md:grid-cols-2">
-                          <div className="space-y-2">
-                            <Label htmlFor={`edu-institution-${index}`}>Institution</Label>
-                            <Input
-                              id={`edu-institution-${index}`}
-                              placeholder="School or university name"
-                              value={edu.institution}
-                              onChange={(e) => handleUpdateEducation(index, 'institution', e.target.value)}
-                            />
-                          </div>
-                          <div className="space-y-2">
-                            <Label htmlFor={`edu-degree-${index}`}>Degree</Label>
-                            <Input
-                              id={`edu-degree-${index}`}
-                              placeholder="e.g. Bachelor of Science in Computer Science"
-                              value={edu.degree}
-                              onChange={(e) => handleUpdateEducation(index, 'degree', e.target.value)}
-                            />
-                          </div>
-                          <div className="space-y-2">
-                            <Label htmlFor={`edu-period-${index}`}>Period</Label>
-                            <Input
-                              id={`edu-period-${index}`}
-                              placeholder="e.g. 2016 - 2020"
-                              value={edu.period}
-                              onChange={(e) => handleUpdateEducation(index, 'period', e.target.value)}
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                    
-                    <Button 
-                      onClick={handleAddEducation} 
-                      variant="outline" 
-                      className="mt-4 border-dashed border-indigo-200"
-                    >
-                      <Plus className="h-4 w-4 mr-1" /> Add Another Education
                     </Button>
                   </div>
                 )}

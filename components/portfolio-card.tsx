@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Edit, ExternalLink, Eye, Trash2 } from "lucide-react";
@@ -21,6 +21,20 @@ const PortfolioCard: FC<PortfolioCardProps> = ({
   templateId,
   onDelete,
 }) => {
+  const [isHovering, setIsHovering] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    if (videoRef.current) {
+      if (isHovering) {
+        videoRef.current.play().catch(err => console.error("Video play error:", err));
+      } else {
+        videoRef.current.pause();
+        videoRef.current.currentTime = 0;
+      }
+    }
+  }, [isHovering]);
+
   return (
     <Card className="overflow-hidden transition-all duration-300 hover:shadow-xl bg-white border border-indigo-100 rounded-xl group">
       <CardHeader className="pb-2 border-b">
@@ -29,20 +43,45 @@ const PortfolioCard: FC<PortfolioCardProps> = ({
           <span className="text-xs font-normal text-indigo-500">
             {templateId === "minimal" ? "Minimal template" : 
              templateId === "creative" ? "Creative template" : 
+             templateId === "template4" ? "Minimal Portfolio" :
              `Template ${templateId.replace('template', '')}`}
           </span>
         </CardTitle>
       </CardHeader>
       
-      <CardContent className="aspect-video bg-white flex items-center justify-center p-0 relative overflow-hidden">
-        <Image 
-          src={templateId === "template1" 
-            ? `/templates/template1/Template_1pic.png`
-            : `/templates/${templateId}/thumbnail_dash.svg`}
-          alt={`${name} Preview`}
-          fill
-          className="object-contain"
-        />
+      <CardContent 
+        className="aspect-video bg-white flex items-center justify-center p-0 relative overflow-hidden"
+        onMouseEnter={() => setIsHovering(true)}
+        onMouseLeave={() => setIsHovering(false)}
+      >
+        <div className="absolute inset-0 w-full h-full">
+          {templateId === "template1" ? (
+            <>
+              <img 
+                src="/templates/template1/JohnDoe2024.png"
+                alt={`${name} Preview`}
+                className={`object-cover w-full h-full transition-opacity duration-300 ${isHovering ? 'opacity-0' : 'opacity-100'}`}
+              />
+              <video 
+                ref={videoRef}
+                src="/videos/Temp1.webm"
+                muted
+                loop
+                playsInline
+                className={`absolute inset-0 object-cover w-full h-full transition-opacity duration-300 ${isHovering ? 'opacity-100' : 'opacity-0'}`}
+              />
+            </>
+          ) : (
+            <Image 
+              src={templateId === "template4"
+                ? `/templates/template4/thumbnail_dash.svg`
+                : `/templates/${templateId}/thumbnail_dash.svg`}
+              alt={`${name} Preview`}
+              fill
+              className="object-cover"
+            />
+          )}
+        </div>
       </CardContent>
       
       <CardFooter className="flex justify-between py-4 border-t">

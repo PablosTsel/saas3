@@ -1,47 +1,78 @@
-<svg width="600" height="338" viewBox="0 0 600 338" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Background -->
-  <rect width="600" height="338" fill="#fafafa" />
+<svg width="640" height="360" viewBox="0 0 640 360" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="640" height="360" fill="#121212"/>
   
-  <!-- Header -->
-  <rect x="0" y="0" width="600" height="70" fill="#ffffff" />
-  <rect x="0" y="69" width="600" height="1" fill="#e2e8f0" />
+  <!-- Animated Background Simulation -->
+  <g opacity="0.1">
+    <ellipse cx="50" cy="50" rx="200" ry="150" fill="url(#paint0_radial)"/>
+    <ellipse cx="580" cy="320" rx="180" ry="120" fill="url(#paint1_radial)"/>
+    <ellipse cx="320" cy="180" rx="240" ry="100" fill="url(#paint2_radial)"/>
+  </g>
   
-  <!-- Navigation -->
-  <text x="40" y="43" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#0f172a">Portfolio</text>
-  <text x="350" y="43" font-family="Arial, sans-serif" font-size="14" fill="#64748b">Home</text>
-  <text x="400" y="43" font-family="Arial, sans-serif" font-size="14" fill="#64748b">About</text>
-  <text x="455" y="43" font-family="Arial, sans-serif" font-size="14" fill="#64748b">Services</text>
-  <text x="530" y="43" font-family="Arial, sans-serif" font-size="14" fill="#64748b">Contact</text>
+  <!-- Navbar -->
+  <rect x="0" y="0" width="640" height="60" fill="#1A1A1A" filter="url(#shadow)"/>
   
-  <!-- Theme Toggle -->
-  <circle cx="565" cy="35" r="15" fill="#f1f5f9" />
-  <circle cx="565" cy="35" r="7" fill="#0f172a" />
+  <!-- Logo -->
+  <text x="30" y="38" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#F5F5F5">JD</text>
   
-  <!-- Hero Section -->
-  <text x="70" y="130" font-family="Arial, sans-serif" font-size="28" font-weight="bold" fill="#0f172a">Hi, I'm John Smith</text>
-  <text x="70" y="165" font-family="Arial, sans-serif" font-size="16" fill="#475569">Frontend Developer & UI/UX Designer</text>
+  <!-- Nav Links -->
+  <text x="320" y="38" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#F5F5F5">Home</text>
+  <text x="390" y="38" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#A0A0A0">About</text>
+  <text x="450" y="38" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#A0A0A0">Skills</text>
+  <text x="510" y="38" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#A0A0A0">Projects</text>
   
-  <rect x="70" y="190" width="140" height="40" rx="20" fill="#3b82f6" />
-  <text x="140" y="215" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#ffffff" text-anchor="middle">Hire Me</text>
+  <!-- Contact Button -->
+  <rect x="550" y="20" width="70" height="28" rx="4" fill="#4169E1"/>
+  <text x="585" y="38" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#FFFFFF">Contact</text>
   
-  <rect x="220" y="190" width="140" height="40" rx="20" fill="#ffffff" stroke="#3b82f6" />
-  <text x="290" y="215" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#3b82f6" text-anchor="middle">Download CV</text>
+  <!-- Profile Section -->
+  <rect x="120" y="100" width="400" height="180" rx="12" fill="#1E1E1E" filter="url(#shadow)"/>
   
   <!-- Profile Image -->
-  <circle cx="480" cy="160" r="80" fill="#e2e8f0" />
-  <path d="M480 110 L520 170 L440 170 Z" fill="#3b82f6" />
+  <circle cx="200" cy="190" r="60" fill="#4169E1"/>
+  <text x="200" y="205" text-anchor="middle" font-family="Arial, sans-serif" font-size="48" font-weight="bold" fill="#FFFFFF">JD</text>
   
-  <!-- Services Section -->
-  <text x="70" y="270" font-family="Arial, sans-serif" font-size="22" font-weight="bold" fill="#0f172a">What I Do</text>
-  <rect x="70" y="280" width="40" height="3" fill="#3b82f6" />
+  <!-- Profile Info -->
+  <text x="300" y="150" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#FFFFFF">John Doe</text>
+  <text x="300" y="180" font-family="Arial, sans-serif" font-size="16" fill="#FFFFFF">Web <tspan fill="#4169E1">Developer</tspan></text>
   
-  <!-- Service Cards -->
-  <rect x="70" y="295" width="140" height="30" rx="4" fill="#ffffff" stroke="#e2e8f0" />
-  <text x="140" y="315" font-family="Arial, sans-serif" font-size="12" fill="#0f172a" text-anchor="middle">Web Development</text>
+  <!-- Bio Text -->
+  <rect x="300" y="200" width="180" height="6" rx="3" fill="#666666" opacity="0.6"/>
+  <rect x="300" y="215" width="160" height="6" rx="3" fill="#666666" opacity="0.6"/>
+  <rect x="300" y="230" width="170" height="6" rx="3" fill="#666666" opacity="0.6"/>
   
-  <rect x="220" y="295" width="140" height="30" rx="4" fill="#ffffff" stroke="#e2e8f0" />
-  <text x="290" y="315" font-family="Arial, sans-serif" font-size="12" fill="#0f172a" text-anchor="middle">UI/UX Design</text>
+  <!-- Contact Button -->
+  <rect x="300" y="250" width="90" height="30" rx="4" fill="#4169E1"/>
+  <text x="345" y="270" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#FFFFFF">Contact</text>
   
-  <rect x="370" y="295" width="140" height="30" rx="4" fill="#ffffff" stroke="#e2e8f0" />
-  <text x="440" y="315" font-family="Arial, sans-serif" font-size="12" fill="#0f172a" text-anchor="middle">Mobile Development</text>
+  <!-- Secondary Button -->
+  <rect x="400" y="250" width="90" height="30" rx="4" fill="#2A2A2A" stroke="#333333" stroke-width="1"/>
+  <text x="445" y="270" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#FFFFFF">Download CV</text>
+  
+  <!-- Defs for Gradients and Shadows -->
+  <defs>
+    <filter id="shadow" x="-4" y="-4" width="648" height="368" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+      <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"/>
+      <feOffset/>
+      <feGaussianBlur stdDeviation="4"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"/>
+      <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow"/>
+      <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow" result="shape"/>
+    </filter>
+    
+    <radialGradient id="paint0_radial" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(50 50) rotate(90) scale(150 200)">
+      <stop stop-color="#EE7474"/>
+      <stop offset="1" stop-color="#EE7474" stop-opacity="0"/>
+    </radialGradient>
+    
+    <radialGradient id="paint1_radial" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(580 320) rotate(90) scale(120 180)">
+      <stop stop-color="#74AAEE"/>
+      <stop offset="1" stop-color="#74AAEE" stop-opacity="0"/>
+    </radialGradient>
+    
+    <radialGradient id="paint2_radial" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(320 180) rotate(90) scale(100 240)">
+      <stop stop-color="#74EED0"/>
+      <stop offset="1" stop-color="#74EED0" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
 </svg> 

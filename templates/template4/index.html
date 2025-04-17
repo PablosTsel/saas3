@@ -6,320 +6,141 @@
     <title>{{fullName}} | {{title}}</title>
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <meta name="description" content="{{fullName}}'s professional portfolio showcasing expertise in {{title}}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="description" content="{{fullName}}'s professional portfolio showcasing projects and skills in {{title}}">
 </head>
-<body class="dark-mode">
-    <!-- Header -->
-    <header class="header">
-        <div class="container">
-            <div class="navbar">
-                <div class="logo neon-text">{{initials}}</div>
-                <nav class="nav">
-                    <ul class="nav-list">
-                        <li><a href="#about" class="nav-link">About</a></li>
-                        <li><a href="#experience" class="nav-link">Experience</a></li>
-                        <li><a href="#education" class="nav-link">Education</a></li>
-                        <li><a href="#skills" class="nav-link">Skills</a></li>
-                        <li><a href="#projects" class="nav-link">Projects</a></li>
-                        <li><a href="#contact" class="nav-link">Contact</a></li>
-                    </ul>
-                </nav>
-                <div class="header-controls">
-                    <button class="theme-toggle" aria-label="Toggle theme">
-                        <i class="fas fa-sun"></i>
-                    </button>
-                    <button class="menu-toggle" aria-label="Toggle menu">
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                    </button>
-                </div>
-            </div>
+<body>
+    <div class="animated-background"></div>
+    
+    <nav class="navbar">
+        <div class="logo">
+            <a href="#">{{initials}}</a>
         </div>
-    </header>
-
-    <!-- Mobile Menu -->
-    <div class="mobile-menu">
-        <div class="mobile-menu-container">
-            <button class="close-menu" aria-label="Close menu">
-                <i class="fas fa-times"></i>
+        <div class="nav-links">
+            <a href="#home" class="active">Home</a>
+            <a href="#about">About Me</a>
+            <a href="#skills">Skills</a>
+            <a href="#projects">Projects</a>
+            {{#if hasCv}}
+            <a href="{{cvUrl}}" target="_blank">CV</a>
+            {{/if}}
+            <a href="#contact" class="contact-btn">Contact</a>
+            <button id="theme-toggle" aria-label="Toggle dark mode">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="sun"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="moon"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
             </button>
-            <ul class="mobile-nav-list">
-                <li><a href="#about" class="mobile-nav-link">About</a></li>
-                <li><a href="#experience" class="mobile-nav-link">Experience</a></li>
-                <li><a href="#education" class="mobile-nav-link">Education</a></li>
-                <li><a href="#skills" class="mobile-nav-link">Skills</a></li>
-                <li><a href="#projects" class="mobile-nav-link">Projects</a></li>
-                <li><a href="#contact" class="mobile-nav-link">Contact</a></li>
-            </ul>
         </div>
-    </div>
+    </nav>
 
-    <!-- Main Content -->
-    <main>
-        <!-- Hero Section -->
-        <section class="hero-section">
-            <div class="container">
-                <div class="split-layout">
-                    <div class="hero-content animate-on-scroll">
-                        <h1 class="hero-title cyber-glitch">{{fullName}}</h1>
-                        <h2 class="hero-subtitle neon-text">{{title}}</h2>
-                        <div class="highlight-box">
-                            <p>{{about}}</p>
-                        </div>
-                        <div class="hero-cta">
-                            <a href="#contact" class="cyber-button">Contact Me</a>
-                            <a href="#projects" class="cyber-button">View Projects</a>
-                            {{#if hasCv}}
-                            <a href="{{cvUrl}}" target="_blank" class="cyber-button">Download CV</a>
-                            {{/if}}
-                        </div>
-                    </div>
-                    <div class="hero-image animate-on-scroll">
-                        <div class="cyber-border">
-                            {{#if profilePictureUrl}}
-                            <img src="{{profilePictureUrl}}" alt="{{fullName}}" class="profile-image">
-                            {{else}}
-                            <div class="profile-placeholder neon-text">{{initials}}</div>
-                            {{/if}}
-                        </div>
-                    </div>
+    <main id="home" class="container">
+        <div class="profile-section">
+            <div class="profile-image-container">
+                {{#if profilePictureUrl}}
+                <img src="{{profilePictureUrl}}" alt="{{fullName}}" class="profile-image">
+                {{else}}
+                <div class="profile-avatar">{{initials}}</div>
+                {{/if}}
+            </div>
+            <div class="profile-info">
+                <h1>{{fullName}}</h1>
+                <h2>{{title}} <span class="highlight">{{title}}</span></h2>
+                <p class="bio">
+                    {{smallIntro}}
+                </p>
+                <div class="profile-buttons">
+                    <a href="#contact" class="btn btn-contact">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                        Contact
+                    </a>
+                    {{#if hasCv}}
+                    <a href="{{cvUrl}}" target="_blank" class="btn btn-secondary">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                        Download CV
+                    </a>
+                    {{/if}}
                 </div>
             </div>
-        </section>
-
-        <!-- About Section -->
-        <section id="about" class="section template4-section">
-            <div class="container">
-                <div class="template4-header">
-                    <span class="section-number">01.</span>
-                    <h2 class="section-title">About Me</h2>
-                </div>
-                <div class="split-layout">
-                    <div class="about-text animate-on-scroll">
-                        <p>{{about}}</p>
-                        <div class="highlight-box">
-                            <div class="contact-detail">
-                                <span class="detail-label">Email:</span>
-                                <span class="detail-value">{{email}}</span>
-                            </div>
-                            <div class="contact-detail">
-                                <span class="detail-label">Phone:</span>
-                                <span class="detail-value">{{phone}}</span>
-                            </div>
-                            <div class="contact-detail">
-                                <span class="detail-label">Location:</span>
-                                <span class="detail-value">Available Worldwide</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="about-stats animate-on-scroll">
-                        <div class="cyber-border">
-                            <h3>Core Competencies</h3>
-                            <ul class="competency-list">
-                                <li>Problem Solving</li>
-                                <li>Critical Thinking</li>
-                                <li>Team Collaboration</li>
-                                <li>Continuous Learning</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Experience Section -->
-        <section id="experience" class="section template4-section">
-            <div class="container">
-                <div class="template4-header">
-                    <span class="section-number">02.</span>
-                    <h2 class="section-title">Experience</h2>
-                </div>
-                <div class="experience-timeline animate-on-scroll">
-                    {{#each experience}}
-                    <div class="cyber-border timeline-item">
-                        <div class="timeline-header">
-                            <h3 class="timeline-position">{{position}}</h3>
-                            <span class="timeline-company neon-text">{{company}}</span>
-                        </div>
-                        <div class="timeline-period">{{period}}</div>
-                        <div class="timeline-description">
-                            <p>{{description}}</p>
-                        </div>
-                    </div>
-                    {{/each}}
-                </div>
-            </div>
-        </section>
-
-        <!-- Education Section -->
-        <section id="education" class="section template4-section">
-            <div class="container">
-                <div class="template4-header">
-                    <span class="section-number">03.</span>
-                    <h2 class="section-title">Education</h2>
-                </div>
-                <div class="grid-container animate-on-scroll">
-                    {{#each education}}
-                    <div class="cyber-border education-item">
-                        <h3 class="education-degree">{{degree}}</h3>
-                        <div class="education-institution neon-text">{{institution}}</div>
-                        <div class="education-period">{{period}}</div>
-                    </div>
-                    {{/each}}
-                </div>
-            </div>
-        </section>
-
-        <!-- Skills Section -->
-        <section id="skills" class="section template4-section">
-            <div class="container">
-                <div class="template4-header">
-                    <span class="section-number">04.</span>
-                    <h2 class="section-title">Skills</h2>
-                </div>
-                <div class="skills-container animate-on-scroll">
-                    <div class="cyber-border">
-                        <div class="skills-content">
-                            <div class="skills-list">
-                                {{#each skills}}
-                                <div class="skill-item">
-                                    <div class="skill-info">
-                                        <span class="skill-name">{{name}}</span>
-                                        <span class="skill-percentage">{{level}}</span>
-                                    </div>
-                                    <div class="skill-bar">
-                                        <div class="skill-progress" style="width: {{level}}"></div>
-                                    </div>
-                                </div>
-                                {{/each}}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Projects Section -->
-        <section id="projects" class="section template4-section">
-            <div class="container">
-                <div class="template4-header">
-                    <span class="section-number">05.</span>
-                    <h2 class="section-title">Projects</h2>
-                </div>
-                <div class="project-filters animate-on-scroll">
-                    <button class="filter-button active" data-filter="all">All</button>
-                    <button class="filter-button" data-filter="web">Web</button>
-                    <button class="filter-button" data-filter="app">Applications</button>
-                    <button class="filter-button" data-filter="design">Design</button>
-                </div>
-                <div class="project-grid animate-on-scroll">
-                    {{#each projects}}
-                    <div class="project-card-t4 all">
-                        <div class="project-image">
-                            <img src="{{imageUrl}}" alt="{{name}}">
-                        </div>
-                        <div class="project-content">
-                            <h3 class="project-title neon-text">{{name}}</h3>
-                            <p class="project-description">{{description}}</p>
-                            <div class="project-tags">
-                                <span class="tag">Project</span>
-                            </div>
-                        </div>
-                    </div>
-                    {{/each}}
-                </div>
-            </div>
-        </section>
-
-        <!-- Contact Section -->
-        <section id="contact" class="section template4-section">
-            <div class="container">
-                <div class="template4-header">
-                    <span class="section-number">06.</span>
-                    <h2 class="section-title">Contact</h2>
-                </div>
-                <div class="split-layout animate-on-scroll">
-                    <div class="contact-info">
-                        <div class="cyber-border">
-                            <h3 class="neon-text">Get In Touch</h3>
-                            <div class="contact-details">
-                                <div class="contact-detail">
-                                    <span class="detail-label">Email</span>
-                                    <span class="detail-value">{{email}}</span>
-                                </div>
-                                <div class="contact-detail">
-                                    <span class="detail-label">Phone</span>
-                                    <span class="detail-value">{{phone}}</span>
-                                </div>
-                                <div class="contact-detail">
-                                    <span class="detail-label">Location</span>
-                                    <span class="detail-value">Available Worldwide</span>
-                                </div>
-                            </div>
-                            <div class="social-links">
-                                <a href="#" class="social-link" aria-label="GitHub">
-                                    <i class="fab fa-github"></i>
-                                </a>
-                                <a href="#" class="social-link" aria-label="LinkedIn">
-                                    <i class="fab fa-linkedin-in"></i>
-                                </a>
-                                <a href="#" class="social-link" aria-label="Twitter">
-                                    <i class="fab fa-twitter"></i>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="contact-form-container cyber-border">
-                        <form id="contactForm" class="contact-form">
-                            <div class="form-group">
-                                <input type="text" id="name" required>
-                                <label for="name">Your Name</label>
-                            </div>
-                            <div class="form-group">
-                                <input type="email" id="email" required>
-                                <label for="email">Your Email</label>
-                            </div>
-                            <div class="form-group">
-                                <input type="text" id="subject" required>
-                                <label for="subject">Subject</label>
-                            </div>
-                            <div class="form-group">
-                                <textarea id="message" rows="5" required></textarea>
-                                <label for="message">Your Message</label>
-                            </div>
-                            <button type="submit" class="cyber-button">Send Message</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </section>
+        </div>
     </main>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="copyright">
-                    <p class="currentYear">© {{currentYear}} {{fullName}}. All rights reserved.</p>
+    <!-- About Section -->
+    <section id="about" class="about-section">
+        <div class="section-container">
+            <h2 class="section-title">About Me</h2>
+            <div class="about-content">
+                <p>{{about}}</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Skills Section -->
+    <section id="skills" class="skills-section">
+        <div class="section-container">
+            <h2 class="section-title">My Skills</h2>
+            <div class="skills-container">
+                {{#each skills}}
+                <div class="skill-tag">{{name}}</div>
+                {{/each}}
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects" class="projects-section">
+        <div class="section-container">
+            <h2 class="section-title">My Projects</h2>
+            <div class="projects-grid">
+                {{#each projects}}
+                <div class="project-card">
+                    <div class="project-image">
+                        <img src="{{imageUrl}}" alt="{{name}}" onerror="this.src='https://placehold.co/600x400/e2e8f0/1e293b?text=Project+Image'">
+                    </div>
+                    <div class="project-info">
+                        <h3 class="project-title">{{name}}</h3>
+                        <p class="project-description">{{description}}</p>
+                        {{#if technologies}}
+                        <div class="project-tags">
+                            {{#technologies}}
+                            <span class="project-tag">{{.}}</span>
+                            {{/technologies}}
+                        </div>
+                        {{/if}}
+                    </div>
                 </div>
-                <div class="footer-nav">
-                    <ul class="footer-links">
-                        <li><a href="#about" class="footer-link">About</a></li>
-                        <li><a href="#experience" class="footer-link">Experience</a></li>
-                        <li><a href="#projects" class="footer-link">Projects</a></li>
-                        <li><a href="#contact" class="footer-link">Contact</a></li>
-                    </ul>
+                {{/each}}
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact-section">
+        <div class="section-container">
+            <h2 class="section-title">Contact Me</h2>
+            <div class="contact-info">
+                <div class="contact-card">
+                    <div class="contact-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                    </div>
+                    <h3>Email</h3>
+                    <a href="mailto:{{email}}">{{email}}</a>
+                </div>
+                <div class="contact-card">
+                    <div class="contact-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                    </div>
+                    <h3>Phone</h3>
+                    <a href="tel:{{phone}}">{{phone}}</a>
                 </div>
             </div>
         </div>
-    </footer>
+    </section>
 
-    <!-- Back to Top Button -->
-    <button class="back-to-top" aria-label="Back to top">
-        <i class="fas fa-arrow-up"></i>
-    </button>
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>&copy; <span class="currentYear">2023</span> {{fullName}}. All rights reserved.</p>
+        </div>
+    </footer>
 
     <script src="js/script.js"></script>
 </body>

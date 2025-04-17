@@ -1,66 +1,112 @@
-<svg width="600" height="338" viewBox="0 0 600 338" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Background -->
-  <rect width="600" height="338" fill="#111827" />
+<svg width="640" height="360" viewBox="0 0 640 360" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="640" height="360" fill="#121212"/>
   
-  <!-- Left Sidebar -->
-  <rect x="0" y="0" width="160" height="338" fill="#1f2937" />
+  <!-- Particles Background -->
+  <g opacity="0.3">
+    <circle cx="50" cy="50" r="2" fill="#4169E1"/>
+    <circle cx="150" cy="80" r="2" fill="#4169E1"/>
+    <circle cx="250" cy="30" r="2" fill="#4169E1"/>
+    <circle cx="350" cy="90" r="2" fill="#4169E1"/>
+    <circle cx="450" cy="40" r="2" fill="#4169E1"/>
+    <circle cx="550" cy="70" r="2" fill="#4169E1"/>
+    <circle cx="100" cy="150" r="2" fill="#4169E1"/>
+    <circle cx="200" cy="180" r="2" fill="#4169E1"/>
+    <circle cx="300" cy="130" r="2" fill="#4169E1"/>
+    <circle cx="400" cy="190" r="2" fill="#4169E1"/>
+    <circle cx="500" cy="140" r="2" fill="#4169E1"/>
+    <circle cx="600" cy="170" r="2" fill="#4169E1"/>
+    <circle cx="80" cy="250" r="2" fill="#4169E1"/>
+    <circle cx="180" cy="280" r="2" fill="#4169E1"/>
+    <circle cx="280" cy="230" r="2" fill="#4169E1"/>
+    <circle cx="380" cy="290" r="2" fill="#4169E1"/>
+    <circle cx="480" cy="240" r="2" fill="#4169E1"/>
+    <circle cx="580" cy="270" r="2" fill="#4169E1"/>
+    <circle cx="120" cy="320" r="2" fill="#4169E1"/>
+    <circle cx="220" cy="350" r="2" fill="#4169E1"/>
+    <circle cx="320" cy="300" r="2" fill="#4169E1"/>
+    <circle cx="420" cy="330" r="2" fill="#4169E1"/>
+    <circle cx="520" cy="310" r="2" fill="#4169E1"/>
+    
+    <!-- Connecting Lines -->
+    <line x1="50" y1="50" x2="150" y2="80" stroke="#4169E1" stroke-width="0.5" opacity="0.2"/>
+    <line x1="150" y1="80" x2="250" y2="30" stroke="#4169E1" stroke-width="0.5" opacity="0.2"/>
+    <line x1="250" y1="30" x2="350" y2="90" stroke="#4169E1" stroke-width="0.5" opacity="0.2"/>
+    <line x1="350" y1="90" x2="450" y2="40" stroke="#4169E1" stroke-width="0.5" opacity="0.2"/>
+    <line x1="450" y1="40" x2="550" y2="70" stroke="#4169E1" stroke-width="0.5" opacity="0.2"/>
+    <line x1="100" y1="150" x2="200" y2="180" stroke="#4169E1" stroke-width="0.5" opacity="0.2"/>
+    <line x1="200" y1="180" x2="300" y2="130" stroke="#4169E1" stroke-width="0.5" opacity="0.2"/>
+    <line x1="300" y1="130" x2="400" y2="190" stroke="#4169E1" stroke-width="0.5" opacity="0.2"/>
+    <line x1="400" y1="190" x2="500" y2="140" stroke="#4169E1" stroke-width="0.5" opacity="0.2"/>
+    <line x1="500" y1="140" x2="600" y2="170" stroke="#4169E1" stroke-width="0.5" opacity="0.2"/>
+  </g>
   
-  <!-- Profile -->
-  <circle cx="80" cy="60" r="40" fill="#4b5563" />
-  <text x="80" y="70" font-family="'Inter', sans-serif" font-size="22" font-weight="bold" fill="#ffffff" text-anchor="middle">JD</text>
+  <!-- Navbar -->
+  <rect x="0" y="0" width="640" height="60" fill="#1A1A1A"/>
   
-  <!-- Name and Title -->
-  <text x="80" y="130" font-family="'Inter', sans-serif" font-size="16" font-weight="bold" fill="#ffffff" text-anchor="middle">John Doe</text>
-  <text x="80" y="150" font-family="'Inter', sans-serif" font-size="12" fill="#9ca3af" text-anchor="middle">Web Developer</text>
+  <!-- Navbar Logo -->
+  <rect x="20" y="15" width="30" height="30" rx="4" stroke="#4169E1" stroke-width="2" fill="none"/>
+  <text x="35" y="37" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#4169E1">PT</text>
   
-  <!-- Navigation -->
-  <rect x="30" y="180" width="100" height="28" rx="4" fill="#2563eb" />
-  <text x="80" y="198" font-family="'Inter', sans-serif" font-size="12" fill="#ffffff" text-anchor="middle">About</text>
+  <!-- Navbar Links -->
+  <text x="100" y="37" font-family="Arial, sans-serif" font-size="12" fill="white">Home</text>
+  <text x="160" y="37" font-family="Arial, sans-serif" font-size="12" fill="#4169E1">About</text>
+  <text x="220" y="37" font-family="Arial, sans-serif" font-size="12" fill="white">Skills</text>
+  <text x="280" y="37" font-family="Arial, sans-serif" font-size="12" fill="white">Projects</text>
   
-  <text x="80" y="230" font-family="'Inter', sans-serif" font-size="12" fill="#9ca3af" text-anchor="middle">Skills</text>
-  <text x="80" y="260" font-family="'Inter', sans-serif" font-size="12" fill="#9ca3af" text-anchor="middle">Projects</text>
-  <text x="80" y="290" font-family="'Inter', sans-serif" font-size="12" fill="#9ca3af" text-anchor="middle">Contact</text>
+  <!-- Contact Button -->
+  <rect x="550" y="20" width="70" height="25" rx="4" fill="#4169E1"/>
+  <text x="585" y="37" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="white">Contact</text>
   
-  <!-- Social Icons -->
-  <rect x="45" y="320" width="20" height="20" rx="4" fill="#4b5563" />
-  <rect x="75" y="320" width="20" height="20" rx="4" fill="#4b5563" />
-  <rect x="105" y="320" width="20" height="20" rx="4" fill="#4b5563" />
+  <!-- Profile Section -->
+  <g transform="translate(80, 100)">
+    <!-- Profile Image -->
+    <circle cx="60" cy="60" r="60" fill="#4169E1"/>
+    
+    <!-- Profile Info -->
+    <text x="180" y="40" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="white">John Doe</text>
+    <text x="180" y="70" font-family="Arial, sans-serif" font-size="16" fill="white">Web <tspan fill="#4169E1">Developer</tspan></text>
+    
+    <!-- Bio Text -->
+    <rect x="180" y="90" width="260" height="5" rx="2.5" fill="#666666" opacity="0.6"/>
+    <rect x="180" y="100" width="220" height="5" rx="2.5" fill="#666666" opacity="0.6"/>
+    <rect x="180" y="110" width="240" height="5" rx="2.5" fill="#666666" opacity="0.6"/>
+    
+    <!-- Buttons -->
+    <rect x="180" y="130" width="100" height="30" rx="4" fill="#4169E1"/>
+    <text x="230" y="150" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="white">Contact</text>
+    
+    <rect x="290" y="130" width="100" height="30" rx="4" fill="#2A2A2A" stroke="#333333" stroke-width="1"/>
+    <text x="340" y="150" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="white">Download CV</text>
+  </g>
   
-  <!-- Main Content -->
-  <!-- About Section -->
-  <text x="190" y="50" font-family="'Inter', sans-serif" font-size="24" font-weight="bold" fill="#ffffff">About Me</text>
-  <rect x="190" y="65" width="60" height="3" fill="#2563eb" />
-  
-  <rect x="190" y="85" width="380" height="3" fill="#4b5563" />
-  <rect x="190" y="95" width="350" height="3" fill="#4b5563" />
-  <rect x="190" y="105" width="370" height="3" fill="#4b5563" />
-  <rect x="190" y="115" width="320" height="3" fill="#4b5563" />
-  
-  <!-- Skills Section -->
-  <text x="190" y="155" font-family="'Inter', sans-serif" font-size="24" font-weight="bold" fill="#ffffff">Skills</text>
-  <rect x="190" y="170" width="60" height="3" fill="#2563eb" />
-  
-  <!-- Skill Items -->
-  <rect x="190" y="190" width="100" height="30" rx="4" fill="#1f2937" />
-  <text x="240" y="210" font-family="'Inter', sans-serif" font-size="12" fill="#ffffff" text-anchor="middle">React</text>
-  
-  <rect x="300" y="190" width="100" height="30" rx="4" fill="#1f2937" />
-  <text x="350" y="210" font-family="'Inter', sans-serif" font-size="12" fill="#ffffff" text-anchor="middle">Node.js</text>
-  
-  <rect x="410" y="190" width="100" height="30" rx="4" fill="#1f2937" />
-  <text x="460" y="210" font-family="'Inter', sans-serif" font-size="12" fill="#ffffff" text-anchor="middle">TypeScript</text>
-  
-  <rect x="190" y="230" width="100" height="30" rx="4" fill="#1f2937" />
-  <text x="240" y="250" font-family="'Inter', sans-serif" font-size="12" fill="#ffffff" text-anchor="middle">MongoDB</text>
-  
-  <rect x="300" y="230" width="100" height="30" rx="4" fill="#1f2937" />
-  <text x="350" y="250" font-family="'Inter', sans-serif" font-size="12" fill="#ffffff" text-anchor="middle">GraphQL</text>
-  
-  <!-- Projects Section -->
-  <text x="190" y="285" font-family="'Inter', sans-serif" font-size="24" font-weight="bold" fill="#ffffff">Projects</text>
-  <rect x="190" y="300" width="60" height="3" fill="#2563eb" />
-  
-  <!-- Project Cards -->
-  <rect x="190" y="320" width="160" height="90" rx="4" fill="#1f2937" />
-  <rect x="360" y="320" width="160" height="90" rx="4" fill="#1f2937" />
+  <!-- Code Block -->
+  <g transform="translate(80, 240)">
+    <rect width="480" height="100" rx="8" fill="#1E1E1E"/>
+    
+    <!-- Code Header -->
+    <rect width="480" height="25" rx="8 8 0 0" fill="#2D2D2D"/>
+    <text x="20" y="17" font-family="monospace" font-size="12" fill="white">about_me.js</text>
+    
+    <!-- Control Dots -->
+    <circle cx="450" cy="12.5" r="5" fill="#FF5F56"/>
+    <circle cx="430" cy="12.5" r="5" fill="#FFBD2E"/>
+    <circle cx="410" cy="12.5" r="5" fill="#27C93F"/>
+    
+    <!-- Code Content -->
+    <text x="20" y="50" font-family="monospace" font-size="12" fill="#CE9178">const</text>
+    <text x="55" y="50" font-family="monospace" font-size="12" fill="#9CDCFE">aboutMe</text>
+    <text x="110" y="50" font-family="monospace" font-size="12" fill="white">=</text>
+    <text x="120" y="50" font-family="monospace" font-size="12" fill="white">{</text>
+    
+    <text x="40" y="70" font-family="monospace" font-size="12" fill="#9CDCFE">name</text>
+    <text x="75" y="70" font-family="monospace" font-size="12" fill="white">:</text>
+    <text x="85" y="70" font-family="monospace" font-size="12" fill="#CE9178">"John Doe"</text>
+    <text x="145" y="70" font-family="monospace" font-size="12" fill="white">,</text>
+    
+    <text x="40" y="90" font-family="monospace" font-size="12" fill="#9CDCFE">title</text>
+    <text x="75" y="90" font-family="monospace" font-size="12" fill="white">:</text>
+    <text x="85" y="90" font-family="monospace" font-size="12" fill="#CE9178">"Web Developer"</text>
+    
+    <text x="20" y="110" font-family="monospace" font-size="12" fill="white">}</text>
+  </g>
 </svg> 

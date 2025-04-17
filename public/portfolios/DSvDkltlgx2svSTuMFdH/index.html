@@ -1,0 +1,1555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>John Doe - AI Engineer</title>
+    <style>
+/* RESET & BASE STYLES */
+:root {
+  /* Light Theme Variables */
+  --bg-color-light: #f8f9fa;
+  --text-color-light: #1a1a2e;
+  --accent-color-light: #4361ee;
+  --secondary-color-light: #3f37c9;
+  --card-bg-light: #ffffff;
+  --border-color-light: #e9ecef;
+  --section-bg-light: #f1f3f5;
+  --skill-bar-bg-light: #e9ecef;
+  --shadow-light: 0 10px 30px rgba(0, 0, 0, 0.1);
+  
+  /* Dark Theme Variables */
+  --bg-color-dark: #121212;
+  --text-color-dark: #f8f9fa;
+  --accent-color-dark: #4cc9f0;
+  --secondary-color-dark: #7209b7;
+  --card-bg-dark: #1e1e1e;
+  --border-color-dark: #333333;
+  --section-bg-dark: #1a1a1a;
+  --skill-bar-bg-dark: #2a2a2a;
+  --shadow-dark: 0 10px 30px rgba(0, 0, 0, 0.5);
+  
+  /* Common Variables */
+  --transition: all 0.3s ease;
+  --border-radius: 8px;
+  --max-width: 1200px;
+  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  
+  /* Default to Dark Theme */
+  --bg-color: var(--bg-color-dark);
+  --text-color: var(--text-color-dark);
+  --accent-color: var(--accent-color-dark);
+  --secondary-color: var(--secondary-color-dark);
+  --card-bg: var(--card-bg-dark);
+  --border-color: var(--border-color-dark);
+  --section-bg: var(--section-bg-dark);
+  --skill-bar-bg: var(--skill-bar-bg-dark);
+  --shadow: var(--shadow-dark);
+}
+
+/* Light Theme Override */
+body[data-theme="light"] {
+  --bg-color: var(--bg-color-light);
+  --text-color: var(--text-color-light);
+  --accent-color: var(--accent-color-light);
+  --secondary-color: var(--secondary-color-light);
+  --card-bg: var(--card-bg-light);
+  --border-color: var(--border-color-light);
+  --section-bg: var(--section-bg-light);
+  --skill-bar-bg: var(--skill-bar-bg-light);
+  --shadow: var(--shadow-light);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  overflow-x: hidden;
+  line-height: 1.6;
+  transition: var(--transition);
+}
+
+a {
+  text-decoration: none;
+  color: var(--accent-color);
+  transition: var(--transition);
+}
+
+a:hover {
+  color: var(--secondary-color);
+}
+
+ul, ol {
+  list-style: none;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+.container {
+  width: 100%;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+section {
+  padding: 5rem 0;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--border-radius);
+  font-weight: 600;
+  transition: var(--transition);
+  cursor: pointer;
+  border: none;
+  outline: none;
+  font-size: 1rem;
+  gap: 0.5rem;
+}
+
+.btn.primary {
+  background-color: var(--accent-color);
+  color: #fff;
+}
+
+.btn.primary:hover {
+  background-color: var(--secondary-color);
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+}
+
+.btn.secondary {
+  background-color: transparent;
+  border: 2px solid var(--accent-color);
+  color: var(--accent-color);
+}
+
+.btn.secondary:hover {
+  background-color: var(--accent-color);
+  color: #fff;
+  transform: translateY(-3px);
+}
+
+.accent {
+  color: var(--accent-color);
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.section-header h2 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  display: inline-block;
+  position: relative;
+}
+
+.section-line {
+  height: 4px;
+  width: 70px;
+  background-color: var(--accent-color);
+  margin: 0 auto;
+  border-radius: 2px;
+}
+
+/* CUSTOM CURSOR */
+.cursor {
+  position: fixed;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: var(--accent-color);
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+  transition: width 0.3s, height 0.3s, background-color 0.3s;
+  opacity: 0.7;
+}
+
+.cursor-follower {
+  position: fixed;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 2px solid var(--accent-color);
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  z-index: 9998;
+  transition: all 0.2s ease-out;
+  opacity: 0.5;
+}
+
+/* Gradient Canvas Background */
+#gradient-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  opacity: 0.15;
+}
+
+/* HEADER STYLES */
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  padding: 1.5rem 0;
+  transition: var(--transition);
+}
+
+header.scrolled {
+  background-color: var(--bg-color);
+  box-shadow: var(--shadow);
+  padding: 1rem 0;
+}
+
+header .container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Add header profile picture */
+.header-profile {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-right: 15px;
+  border: 2px solid var(--accent-color);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.header-profile img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.header-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--accent-color);
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+}
+
+.logo a {
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-decoration: none;
+  color: var(--text-color);
+  position: relative;
+}
+
+.logo a::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: var(--accent-color);
+  transition: var(--transition);
+}
+
+.logo a:hover::after {
+  width: 100%;
+}
+
+.menu {
+  display: flex;
+  gap: 2rem;
+}
+
+.menu a {
+  color: var(--text-color);
+  font-weight: 500;
+  position: relative;
+}
+
+.menu a::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: var(--accent-color);
+  transition: var(--transition);
+}
+
+.menu a:hover::after,
+.menu a.active::after {
+  width: 100%;
+}
+
+.menu-button {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  z-index: 1001;
+}
+
+.menu-button span {
+  display: block;
+  width: 30px;
+  height: 3px;
+  background-color: var(--text-color);
+  margin: 6px 0;
+  transition: var(--transition);
+  border-radius: 3px;
+}
+
+#theme-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: var(--text-color);
+  transition: var(--transition);
+  position: relative;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+#theme-toggle:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+body[data-theme="dark"] #theme-toggle .fa-sun {
+  display: block;
+}
+
+body[data-theme="dark"] #theme-toggle .fa-moon {
+  display: none;
+}
+
+body[data-theme="light"] #theme-toggle .fa-sun {
+  display: none;
+}
+
+body[data-theme="light"] #theme-toggle .fa-moon {
+  display: block;
+}
+
+/* HERO SECTION */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-content {
+  max-width: 700px;
+}
+
+.hero-intro {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.hero-profile {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid var(--accent-color);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+  flex-shrink: 0;
+}
+
+.hero-profile img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.hero-avatar {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--accent-color);
+  color: #ffffff;
+  font-size: 3rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+}
+
+.hero-text {
+  flex: 1;
+}
+
+.hero h1 {
+  font-size: 3.5rem;
+  font-weight: 800;
+  line-height: 1.2;
+  margin-bottom: 1rem;
+}
+
+.hero h2 {
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.changing-title {
+  color: var(--accent-color);
+  display: inline-block;
+  position: relative;
+  overflow: hidden;
+}
+
+.changing-title::after {
+  content: '';
+  position: absolute;
+  right: -5px;
+  top: 5%;
+  height: 90%;
+  width: 3px;
+  background-color: var(--accent-color);
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.hero p {
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+  max-width: 600px;
+  opacity: 0.8;
+}
+
+.hero-cta {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.social-links {
+  display: flex;
+  gap: 1rem;
+}
+
+.social-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--text-color);
+  transition: var(--transition);
+}
+
+.social-link:hover {
+  background-color: var(--accent-color);
+  color: #fff;
+  transform: translateY(-5px);
+}
+
+.social-links.large .social-link {
+  width: 50px;
+  height: 50px;
+  font-size: 1.2rem;
+}
+
+.scroll-indicator {
+  position: absolute;
+  bottom: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  opacity: 0.7;
+}
+
+.mouse {
+  width: 30px;
+  height: 50px;
+  border: 2px solid var(--text-color);
+  border-radius: 20px;
+  position: relative;
+}
+
+.wheel {
+  width: 6px;
+  height: 6px;
+  background-color: var(--text-color);
+  border-radius: 50%;
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  animation: scroll 1.5s infinite;
+}
+
+.arrows {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.arrows span {
+  display: block;
+  width: 10px;
+  height: 10px;
+  border-right: 2px solid var(--text-color);
+  border-bottom: 2px solid var(--text-color);
+  transform: rotate(45deg);
+  animation: arrows 1.5s infinite;
+}
+
+.arrows span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.arrows span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes scroll {
+  0% { opacity: 1; top: 10px; }
+  100% { opacity: 0; top: 30px; }
+}
+
+@keyframes arrows {
+  0% { opacity: 0; transform: rotate(45deg) translate(-5px, -5px); }
+  50% { opacity: 1; }
+  100% { opacity: 0; transform: rotate(45deg) translate(5px, 5px); }
+}
+
+/* ABOUT SECTION */
+.about {
+  background-color: var(--section-bg);
+}
+
+.about-content {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 3rem;
+  align-items: center;
+}
+
+.image-container {
+  width: 100%;
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  position: relative;
+  box-shadow: var(--shadow);
+}
+
+.image-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--accent-color) 0%, var(--secondary-color) 100%);
+  opacity: 0.2;
+  z-index: 1;
+}
+
+.image-container img {
+  transition: var(--transition);
+}
+
+.image-container:hover img {
+  transform: scale(1.05);
+}
+
+.about-text h3 {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  position: relative;
+  display: inline-block;
+}
+
+.about-text h3::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 0;
+  width: 50px;
+  height: 3px;
+  background-color: var(--accent-color);
+  border-radius: 3px;
+}
+
+.about-text p {
+  margin-bottom: 2rem;
+  line-height: 1.8;
+}
+
+.about-details {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.detail {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.detail i {
+  font-size: 1.2rem;
+  color: var(--accent-color);
+}
+
+/* SKILLS SECTION */
+.skills-content {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+.skill-category h3 {
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  position: relative;
+  display: inline-block;
+}
+
+.skill-category h3::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 0;
+  width: 40px;
+  height: 3px;
+  background-color: var(--accent-color);
+  border-radius: 3px;
+}
+
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 2rem;
+}
+
+.skill-item {
+  background-color: var(--card-bg);
+  padding: 1.5rem;
+  border-radius: var(--border-radius);
+  transition: var(--transition);
+  box-shadow: var(--shadow);
+}
+
+.skill-item:hover {
+  transform: translateY(-5px);
+}
+
+.skill-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  margin-bottom: 1rem;
+}
+
+.skill-icon i {
+  font-size: 1.5rem;
+  color: var(--accent-color);
+}
+
+.skill-item h4 {
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+}
+
+.skill-bar {
+  height: 8px;
+  background-color: var(--skill-bar-bg);
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+  color: transparent;
+  font-size: 0;
+}
+
+.skill-level {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--gradient-1), var(--gradient-2));
+  border-radius: 3px;
+  width: 90%;
+  transform-origin: left;
+  transition: transform 1.5s ease;
+  position: relative;
+  color: transparent;
+  font-size: 0;
+}
+
+/* This rule completely hides percentages in skill bars */
+.skill-bar,
+.skill-level,
+.skill-level::before,
+.skill-level::after {
+  content: none !important;
+  color: transparent !important;
+  font-size: 0 !important;
+}
+
+/* Special rule to override any dynamically added content */
+.skill-level[data-level]:after,
+.skill-level[data-level]:before {
+  content: none !important;
+  display: none !important;
+}
+
+/* Hide any dynamically injected elements */
+.skill-level > * {
+  display: none !important;
+}
+
+/* Hide any skill percentage spans */
+.skill-percentage {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  width: 0 !important;
+  height: 0 !important;
+  overflow: hidden !important;
+  position: absolute !important;
+  pointer-events: none !important;
+}
+
+/* PROJECTS SECTION */
+.projects-filter {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 3rem;
+}
+
+.filter-btn {
+  background: none;
+  border: none;
+  padding: 0.5rem 1.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: var(--transition);
+  color: var(--text-color);
+  border-radius: var(--border-radius);
+  position: relative;
+}
+
+.filter-btn::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 2px;
+  background-color: var(--accent-color);
+  transition: var(--transition);
+}
+
+.filter-btn:hover::after,
+.filter-btn.active::after {
+  width: 70%;
+}
+
+.filter-btn.active {
+  color: var(--accent-color);
+  font-weight: 600;
+}
+
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 2rem;
+}
+
+.project-card {
+  background-color: var(--card-bg);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  transition: var(--transition);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.project-card:hover {
+  transform: translateY(-10px);
+}
+
+.project-image {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 16/9;
+}
+
+.project-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: var(--transition);
+}
+
+.project-card:hover .project-image img {
+  transform: scale(1.1);
+}
+
+.project-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: var(--transition);
+}
+
+.project-card:hover .project-overlay {
+  opacity: 1;
+}
+
+.project-links {
+  display: flex;
+  gap: 1rem;
+}
+
+.project-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 45px;
+  height: 45px;
+  background-color: var(--accent-color);
+  color: #fff;
+  border-radius: 50%;
+  transition: var(--transition);
+}
+
+.project-link:hover {
+  background-color: var(--secondary-color);
+  transform: translateY(-5px);
+}
+
+.project-info {
+  padding: 1.5rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.project-info h3 {
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+}
+
+.project-info p {
+  margin-bottom: 1.5rem;
+  flex: 1;
+  color: var(--text-color);
+  opacity: 0.8;
+}
+
+.project-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.tag {
+  padding: 0.3rem 0.8rem;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+/* CONTACT SECTION */
+.contact {
+  background-color: var(--section-bg);
+}
+
+.contact-content {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 3rem;
+}
+
+.contact-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.contact-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
+}
+
+.contact-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.contact-icon i {
+  font-size: 1.2rem;
+  color: var(--accent-color);
+}
+
+.contact-details h3 {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+}
+
+.contact-form-container {
+  background-color: var(--card-bg);
+  padding: 2rem;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border: 2px solid var(--border-color);
+  border-radius: var(--border-radius);
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  font-family: var(--font-family);
+  transition: var(--transition);
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--accent-color);
+}
+
+/* FOOTER */
+footer {
+  padding: 2rem 0;
+  text-align: center;
+  border-top: 1px solid var(--border-color);
+}
+
+.footer-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.footer-content p {
+  opacity: 0.7;
+}
+
+.footer-content i {
+  color: #e25555;
+}
+
+/* ANIMATIONS */
+.reveal-text {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: revealText 0.5s forwards;
+}
+
+@keyframes revealText {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* MEDIA QUERIES */
+@media (max-width: 1024px) {
+  html {
+    font-size: 15px;
+  }
+  
+  .hero h1 {
+    font-size: 3rem;
+  }
+  
+  .hero h2 {
+    font-size: 1.8rem;
+  }
+  
+  .projects-grid {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  html {
+    font-size: 14px;
+  }
+  
+  .menu {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 80%;
+    max-width: 400px;
+    height: 100vh;
+    background-color: var(--bg-color);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: right 0.3s ease;
+    box-shadow: var(--shadow);
+    z-index: 1000;
+    padding: 2rem;
+  }
+  
+  .menu.active {
+    right: 0;
+  }
+  
+  .menu-button {
+    display: block;
+  }
+  
+  .menu-button.active span:nth-child(1) {
+    transform: rotate(-45deg) translate(-5px, 6px);
+  }
+  
+  .menu-button.active span:nth-child(2) {
+    opacity: 0;
+  }
+  
+  .menu-button.active span:nth-child(3) {
+    transform: rotate(45deg) translate(-5px, -6px);
+  }
+  
+  .about-content,
+  .contact-content {
+    grid-template-columns: 1fr;
+  }
+  
+  .about-content {
+    gap: 2rem;
+  }
+  
+  .about-image {
+    max-width: 350px;
+    margin: 0 auto;
+  }
+  
+  .skills-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .hero h1 {
+    font-size: 2.5rem;
+  }
+  
+  .hero h2 {
+    font-size: 1.5rem;
+  }
+  
+  section {
+    padding: 4rem 0;
+  }
+  
+  .hero-cta {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .hero-cta .btn {
+    width: 100%;
+  }
+  
+  .projects-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .projects-filter {
+    gap: 0.5rem;
+  }
+  
+  .filter-btn {
+    padding: 0.4rem 1rem;
+    font-size: 0.9rem;
+  }
+  
+  .contact-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+} 
+</style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta name="description" content="{{description}}">
+</head>
+<body data-theme="dark">
+    <!-- Custom Cursor -->
+    <div class="cursor"></div>
+    <div class="cursor-follower"></div>
+    
+    <!-- Background Canvas -->
+    <canvas id="gradient-canvas"></canvas>
+    
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="logo">
+                
+                <div class="header-profile">
+                    <img src="https://firebasestorage.googleapis.com/v0/b/makeportfolio-2bd67.firebasestorage.app/o/users%2FxJNLPOUgWQP8AL4X864Cl8Y18zn2%2Fportfolios%2FDSvDkltlgx2svSTuMFdH%2Fprofile%2F1744854199333-ProfilePic.png?alt=media&token=13266750-2a82-40bd-8158-512c2fd29c9e" alt="John Doe">
+                </div>
+                
+                <a href="#home">John Doe</a>
+            </div>
+            
+            <button class="menu-button">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            
+            <nav>
+                <ul class="menu">
+                    <li><a href="#home" class="active">Home</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#skills">Skills</a></li>
+                    <li><a href="#projects">Projects</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </nav>
+            
+            <button id="theme-toggle" aria-label="Toggle dark/light mode">
+                <i class="fas fa-sun"></i>
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </header>
+    
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-intro">
+                    
+                    <div class="hero-profile">
+                        <img src="https://firebasestorage.googleapis.com/v0/b/makeportfolio-2bd67.firebasestorage.app/o/users%2FxJNLPOUgWQP8AL4X864Cl8Y18zn2%2Fportfolios%2FDSvDkltlgx2svSTuMFdH%2Fprofile%2F1744854199333-ProfilePic.png?alt=media&token=13266750-2a82-40bd-8158-512c2fd29c9e" alt="John Doe">
+                    </div>
+                    
+                    <div class="hero-text">
+                        <h1 class="reveal-text">Hi, I'm <span class="accent">John Doe</span></h1>
+                        <h2 class="reveal-text">AI Engineer <span class="changing-title" data-titles='["Developer", "Designer", "Creator"]'>Developer</span></h2>
+                        <p class="reveal-text">I'm a skilled AI Engineer with a passion for developing innovative solutions.</p>
+                    </div>
+                </div>
+                
+                <div class="hero-cta reveal-text">
+                    <a href="#projects" class="btn primary">View My Work</a>
+                    <a href="#contact" class="btn secondary">Get In Touch</a>
+                </div>
+                
+                <div class="social-links reveal-text">
+                    <a href="#" class="social-link" target="_blank" rel="noopener noreferrer">
+                        <i class="fab fa-github"></i>
+                    </a>
+                    <a href="#" class="social-link" target="_blank" rel="noopener noreferrer">
+                        <i class="fab fa-linkedin"></i>
+                    </a>
+                    <a href="#" class="social-link" target="_blank" rel="noopener noreferrer">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="scroll-indicator">
+                <div class="mouse">
+                    <div class="wheel"></div>
+                </div>
+                <div class="arrows">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- About Section -->
+    <section id="about" class="about">
+        <div class="container">
+            <div class="section-header">
+                <h2>About Me</h2>
+                <div class="section-line"></div>
+            </div>
+            
+            <div class="about-content">
+                <div class="about-image">
+                    <div class="image-container">
+                        
+                        <img src="https://firebasestorage.googleapis.com/v0/b/makeportfolio-2bd67.firebasestorage.app/o/users%2FxJNLPOUgWQP8AL4X864Cl8Y18zn2%2Fportfolios%2FDSvDkltlgx2svSTuMFdH%2Fprofile%2F1744854199333-ProfilePic.png?alt=media&token=13266750-2a82-40bd-8158-512c2fd29c9e" alt="John Doe">
+                        
+                    </div>
+                </div>
+                
+                <div class="about-text">
+                    <h3>Who I Am</h3>
+                    <p>Hello! I'm John Doe, a dedicated AI Engineer with expertise in machine learning, deep learning, and natural language processing. I have experience building and deploying AI models that solve real-world problems and drive business value. My approach combines technical excellence with a strong focus on practical applications and ethical considerations.</p>
+                    
+                    <div class="about-details">
+                        <div class="detail">
+                            <i class="fas fa-envelope"></i>
+                            <span>johndoe@gmail.com</span>
+                        </div>
+                        
+                        <div class="detail">
+                            <i class="fas fa-phone"></i>
+                            <span>+34 606 97 06 31</span>
+                        </div>
+                    </div>
+                    
+                    <div class="about-cta">
+                        <a href="{{resumeUrl}}" class="btn primary" target="_blank" rel="noopener noreferrer">
+                            <i class="fas fa-download"></i> Download Resume
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Skills Section -->
+    <section id="skills" class="skills">
+        <div class="container">
+            <div class="section-header">
+                <h2>My Skills</h2>
+                <div class="section-line"></div>
+            </div>
+            
+            <div class="skills-content">
+                <div class="skill-category">
+                    <h3>Technical Skills</h3>
+                    <div class="skills-grid">
+                        
+          <div class="skill-card">
+            <div class="skill-info">
+              <h3 class="skill-name">Python</h3>
+              <div class="skill-level-container">
+                <div class="skill-level"></div>
+              </div>
+            </div>
+          </div>
+        
+          <div class="skill-card">
+            <div class="skill-info">
+              <h3 class="skill-name">Excel</h3>
+              <div class="skill-level-container">
+                <div class="skill-level"></div>
+              </div>
+            </div>
+          </div>
+        
+          <div class="skill-card">
+            <div class="skill-info">
+              <h3 class="skill-name">R</h3>
+              <div class="skill-level-container">
+                <div class="skill-level"></div>
+              </div>
+            </div>
+          </div>
+        
+          <div class="skill-card">
+            <div class="skill-info">
+              <h3 class="skill-name">SQL</h3>
+              <div class="skill-level-container">
+                <div class="skill-level"></div>
+              </div>
+            </div>
+          </div>
+        
+          <div class="skill-card">
+            <div class="skill-info">
+              <h3 class="skill-name">HTML/CSS</h3>
+              <div class="skill-level-container">
+                <div class="skill-level"></div>
+              </div>
+            </div>
+          </div>
+        
+          <div class="skill-card">
+            <div class="skill-info">
+              <h3 class="skill-name">MongoDB</h3>
+              <div class="skill-level-container">
+                <div class="skill-level"></div>
+              </div>
+            </div>
+          </div>
+        
+          <div class="skill-card">
+            <div class="skill-info">
+              <h3 class="skill-name">Docker</h3>
+              <div class="skill-level-container">
+                <div class="skill-level"></div>
+              </div>
+            </div>
+          </div>
+        
+          <div class="skill-card">
+            <div class="skill-info">
+              <h3 class="skill-name">Langchain</h3>
+              <div class="skill-level-container">
+                <div class="skill-level"></div>
+              </div>
+            </div>
+          </div>
+        
+          <div class="skill-card">
+            <div class="skill-info">
+              <h3 class="skill-name">Firebase</h3>
+              <div class="skill-level-container">
+                <div class="skill-level"></div>
+              </div>
+            </div>
+          </div>
+        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Projects Section -->
+    <section id="projects" class="projects">
+        <div class="container">
+            <div class="section-header">
+                <h2>My Projects</h2>
+                <div class="section-line"></div>
+            </div>
+            
+            <div class="projects-filter">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="web">Web</button>
+                <button class="filter-btn" data-filter="app">App</button>
+                <button class="filter-btn" data-filter="design">Design</button>
+            </div>
+            
+            <div class="projects-grid">
+                
+          <div class="project-card all">
+            <div class="project-image">
+              <img src="https://firebasestorage.googleapis.com/v0/b/makeportfolio-2bd67.firebasestorage.app/o/users%2FxJNLPOUgWQP8AL4X864Cl8Y18zn2%2Fportfolios%2FDSvDkltlgx2svSTuMFdH%2Fprojects%2F0%2F1744854199336-USOPC.png?alt=media&token=41f6de78-cbf4-4b22-8942-8aa27cfd4c46" alt="NBA Dashboard" onerror="this.src='https://placehold.co/600x400/e2e8f0/1e293b?text=Project+Image'">
+              <div class="project-overlay">
+                <div class="project-buttons">
+                  <a href="#" class="project-link">View Details</a>
+                </div>
+              </div>
+            </div>
+            <div class="project-info">
+              <h3 class="project-title">NBA Dashboard</h3>
+              <p class="project-description">Developed an Excel file containing various data and statistics from the 2015-2017 NBA seasons. The dashboard provides insights on players, teams, and games, including player stats, team performance metrics, and game-by-game analysis. Users can filter and sort the data to identify trends and patterns in player performance across different seasons.</p>
+            </div>
+          </div>
+        
+          <div class="project-card all">
+            <div class="project-image">
+              <img src="https://firebasestorage.googleapis.com/v0/b/makeportfolio-2bd67.firebasestorage.app/o/users%2FxJNLPOUgWQP8AL4X864Cl8Y18zn2%2Fportfolios%2FDSvDkltlgx2svSTuMFdH%2Fprojects%2F1%2F1744854199336-SPOTIFY.png?alt=media&token=7f9640eb-17fc-4d29-a987-ffdd2683c851" alt="AI Recommendation System" onerror="this.src='https://placehold.co/600x400/e2e8f0/1e293b?text=Project+Image'">
+              <div class="project-overlay">
+                <div class="project-buttons">
+                  <a href="#" class="project-link">View Details</a>
+                </div>
+              </div>
+            </div>
+            <div class="project-info">
+              <h3 class="project-title">AI Recommendation System</h3>
+              <p class="project-description">Developed a sophisticated recommendation engine using collaborative filtering and content-based algorithms to provide personalized suggestions to users, resulting in a 35% increase in user engagement.</p>
+            </div>
+          </div>
+        
+          <div class="project-card all">
+            <div class="project-image">
+              <img src="https://firebasestorage.googleapis.com/v0/b/makeportfolio-2bd67.firebasestorage.app/o/users%2FxJNLPOUgWQP8AL4X864Cl8Y18zn2%2Fportfolios%2FDSvDkltlgx2svSTuMFdH%2Fprojects%2F2%2F1744854199336-nbadashboard.png?alt=media&token=9895850b-801c-4a88-9e2b-13f06e75642c" alt="Natural Language Processing Tool" onerror="this.src='https://placehold.co/600x400/e2e8f0/1e293b?text=Project+Image'">
+              <div class="project-overlay">
+                <div class="project-buttons">
+                  <a href="#" class="project-link">View Details</a>
+                </div>
+              </div>
+            </div>
+            <div class="project-info">
+              <h3 class="project-title">Natural Language Processing Tool</h3>
+              <p class="project-description">Created an NLP tool that analyzes customer feedback across multiple channels, automatically categorizing issues and identifying sentiment to help businesses understand customer needs better.</p>
+            </div>
+          </div>
+        
+          <div class="project-card all">
+            <div class="project-image">
+              <img src="https://firebasestorage.googleapis.com/v0/b/makeportfolio-2bd67.firebasestorage.app/o/users%2FxJNLPOUgWQP8AL4X864Cl8Y18zn2%2Fportfolios%2FDSvDkltlgx2svSTuMFdH%2Fprojects%2F3%2F1744854199337-FOOTBALL.png?alt=media&token=bc9b40a8-e7fd-4ef4-be2f-8a1ced188e14" alt="Computer Vision Project" onerror="this.src='https://placehold.co/600x400/e2e8f0/1e293b?text=Project+Image'">
+              <div class="project-overlay">
+                <div class="project-buttons">
+                  <a href="#" class="project-link">View Details</a>
+                </div>
+              </div>
+            </div>
+            <div class="project-info">
+              <h3 class="project-title">Computer Vision Project</h3>
+              <p class="project-description">Built a computer vision system for object detection and classification in real-time video streams, achieving 94% accuracy in identifying specific items in complex environments.</p>
+            </div>
+          </div>
+        
+                        </div>
+                    </div>
+                </div>
+                {{/each}}
+            </div>
+        </div>
+    </section>
+    
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <div class="container">
+            <div class="section-header">
+                <h2>Get In Touch</h2>
+                <div class="section-line"></div>
+            </div>
+            
+            <div class="contact-content">
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="contact-details">
+                            <h3>Email</h3>
+                            <p>johndoe@gmail.com</p>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <div class="contact-details">
+                            <h3>Phone</h3>
+                            <p>+34 606 97 06 31</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <p>&copy; <span id="year">2023</span> John Doe. All rights reserved.</p>
+                <div class="social-links large">
+                    <a href="#" class="social-link" target="_blank" rel="noopener noreferrer">
+                        <i class="fab fa-github"></i>
+                    </a>
+                    <a href="#" class="social-link" target="_blank" rel="noopener noreferrer">
+                        <i class="fab fa-linkedin"></i>
+                    </a>
+                    <a href="#" class="social-link" target="_blank" rel="noopener noreferrer">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    <script src="js/main.js"></script>
+</body>
+</html> 

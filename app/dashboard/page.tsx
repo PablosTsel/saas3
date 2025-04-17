@@ -17,7 +17,7 @@ import {
 import { useAuth } from "@/lib/auth-context"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -29,7 +29,7 @@ import PortfolioCard from "@/components/portfolio-card"
 // Define types for our portfolio data
 interface Skill {
   name: string;
-  level: string;
+  level?: string; // Making level optional since we won't be using it
 }
 
 interface Experience {
@@ -49,6 +49,7 @@ interface Project {
   name: string;
   description: string;
   image: File | null;
+  technologies: string[];
 }
 
 interface PortfolioData {
@@ -80,32 +81,48 @@ export default function DashboardPage() {
     name: "",
     title: "AI Engineer",
     smallIntro: "I'm a skilled AI Engineer with a passion for developing innovative solutions.",
-    about: "Hello! I'm Pablos Tselioudis Garmendia, a dedicated Data Scientist currently studying the bachelor of \"Data Science and Engineering\" at UC3M and Northeastern University. My academic journey is enriched by my active participation in various competitions, including the prestigious Math and Informatics Olympiads, the CANSAT project, and my role as the captain of a team of 3 in the UCSAS 2024 USOPC DATA CHALLENGE. Beyond the realm of data science, I have a profound passion for AI.",
-    fullName: "Pablos Tselioudis",
-    email: "",
-    phone: "",
+    about: "Hello! I'm John Doe, a dedicated AI Engineer with expertise in machine learning, deep learning, and natural language processing. I have experience building and deploying AI models that solve real-world problems and drive business value. My approach combines technical excellence with a strong focus on practical applications and ethical considerations.",
+    fullName: "John Doe",
+    email: "johndoe@gmail.com",
+    phone: "+34 607980731",
     profilePicture: null,
     cv: null,
     hasCv: true,
-    skills: [],
+    skills: [
+      { name: "Python", level: "95%" },
+      { name: "Machine Learning", level: "90%" },
+      { name: "TensorFlow", level: "85%" },
+      { name: "Natural Language Processing", level: "80%" },
+      { name: "Computer Vision", level: "85%" },
+      { name: "Data Structures & Algorithms", level: "90%" }
+    ],
     experience: [],
     education: [],
-    projectCount: 3,
+    projectCount: 4,
     projects: [
       { 
-        name: "UCSAS 2024 USOPC DATA CHALLENGE", 
-        description: "In developing this Python script, my team and I set out to tackle the challenge of strategically selecting the most promising athletes for Team USA Olympic Men's and Women's Artistic Gymnastics teams, optimizing their success at the Paris 2024 Olympics. The script incorporates techniques such as linear regression modeling to predict gymnastic scores. We carefully considered historical means for adjusting scores, ensuring fair comparisons across different apparatus and genders.", 
-        image: null 
+        name: "NBA Dashboard", 
+        description: "Developed an Excel file containing various data and statistics from the 2015-2017 NBA seasons. The dashboard provides insights on players, teams, and games, including player stats, team performance metrics, and game-by-game analysis. Users can filter and sort the data to identify trends and patterns in player performance across different seasons.", 
+        image: null,
+        technologies: ["Excel", "Data Analysis", "Sports Analytics", "Dashboard"]
       },
       { 
-        name: "Spotify Song Recommender", 
-        description: "This project aimes to create a machine learning-based Spotify song recommender system that enhances user satisfaction by personalizing music playlists according to individual preferences. By analyzing user listening data and using features such as danceability, energy, and valence, the system predicts and recommends songs that align with users' tastes.", 
-        image: null 
+        name: "AI Recommendation System", 
+        description: "Developed a sophisticated recommendation engine using collaborative filtering and content-based algorithms to provide personalized suggestions to users, resulting in a 35% increase in user engagement.", 
+        image: null,
+        technologies: ["Python", "Machine Learning", "Collaborative Filtering", "User Engagement"]
       },
       { 
-        name: "Football Fantasy Predictive Model", 
-        description: "In developing this data-driven approach, I set out to tackle the challenge of identifying the most promising La Liga players for Fantasy Football, ensuring that users can optimize their weekly lineups with confidence. I integrated various techniques—most notably Random Forest and Gradient Boosting—to predict both player points and market values.", 
-        image: null 
+        name: "Natural Language Processing Tool", 
+        description: "Created an NLP tool that analyzes customer feedback across multiple channels, automatically categorizing issues and identifying sentiment to help businesses understand customer needs better.", 
+        image: null,
+        technologies: ["NLP", "Python", "Sentiment Analysis", "Text Classification"] 
+      },
+      { 
+        name: "Computer Vision Project", 
+        description: "Built a computer vision system for object detection and classification in real-time video streams, achieving 94% accuracy in identifying specific items in complex environments.", 
+        image: null,
+        technologies: ["Computer Vision", "TensorFlow", "Object Detection", "Real-time Processing"]
       }
     ],
     templateId: ""
@@ -117,6 +134,31 @@ export default function DashboardPage() {
   
   const totalSteps = 4 // Basic info, CV/Skills, Projects, Template
   const progress = (currentStep / totalSteps) * 100
+
+  // Add template hover state for video
+  const [hoveredTemplate, setHoveredTemplate] = useState<string | null>(null);
+  const templateVideoRefs = useRef<{ [key: string]: HTMLVideoElement | null }>({
+    template1: null
+  });
+
+  // Add effect for template video hover
+  useEffect(() => {
+    if (hoveredTemplate && templateVideoRefs.current[hoveredTemplate]) {
+      templateVideoRefs.current[hoveredTemplate]?.play().catch(err => {
+        console.error("Video play error:", err);
+      });
+    } else {
+      // Pause all videos when not hovering
+      Object.keys(templateVideoRefs.current).forEach(key => {
+        if (templateVideoRefs.current[key]) {
+          templateVideoRefs.current[key]?.pause();
+          if (templateVideoRefs.current[key]) {
+            templateVideoRefs.current[key]!.currentTime = 0;
+          }
+        }
+      });
+    }
+  }, [hoveredTemplate]);
 
   // Fetch user portfolios on component mount
   useEffect(() => {
@@ -203,32 +245,48 @@ export default function DashboardPage() {
       name: "",
       title: "AI Engineer",
       smallIntro: "I'm a skilled AI Engineer with a passion for developing innovative solutions.",
-      about: "Hello! I'm Pablos Tselioudis Garmendia, a dedicated Data Scientist currently studying the bachelor of \"Data Science and Engineering\" at UC3M and Northeastern University. My academic journey is enriched by my active participation in various competitions, including the prestigious Math and Informatics Olympiads, the CANSAT project, and my role as the captain of a team of 3 in the UCSAS 2024 USOPC DATA CHALLENGE. Beyond the realm of data science, I have a profound passion for AI.",
-      fullName: "Pablos Tselioudis",
-      email: "",
-      phone: "",
+      about: "Hello! I'm John Doe, a dedicated AI Engineer with expertise in machine learning, deep learning, and natural language processing. I have experience building and deploying AI models that solve real-world problems and drive business value. My approach combines technical excellence with a strong focus on practical applications and ethical considerations.",
+      fullName: "John Doe",
+      email: "johndoe@gmail.com",
+      phone: "+34 607980731",
       profilePicture: null,
       cv: null,
       hasCv: true,
-      skills: [],
+      skills: [
+        { name: "Python", level: "95%" },
+        { name: "Machine Learning", level: "90%" },
+        { name: "TensorFlow", level: "85%" },
+        { name: "Natural Language Processing", level: "80%" },
+        { name: "Computer Vision", level: "85%" },
+        { name: "Data Structures & Algorithms", level: "90%" }
+      ],
       experience: [],
       education: [],
-      projectCount: 3,
+      projectCount: 4,
       projects: [
         { 
-          name: "UCSAS 2024 USOPC DATA CHALLENGE", 
-          description: "In developing this Python script, my team and I set out to tackle the challenge of strategically selecting the most promising athletes for Team USA Olympic Men's and Women's Artistic Gymnastics teams, optimizing their success at the Paris 2024 Olympics. The script incorporates techniques such as linear regression modeling to predict gymnastic scores. We carefully considered historical means for adjusting scores, ensuring fair comparisons across different apparatus and genders.", 
-          image: null 
+          name: "NBA Dashboard", 
+          description: "Developed an Excel file containing various data and statistics from the 2015-2017 NBA seasons. The dashboard provides insights on players, teams, and games, including player stats, team performance metrics, and game-by-game analysis. Users can filter and sort the data to identify trends and patterns in player performance across different seasons.", 
+          image: null,
+          technologies: ["Excel", "Data Analysis", "Sports Analytics", "Dashboard"]
         },
         { 
-          name: "Spotify Song Recommender", 
-          description: "This project aimes to create a machine learning-based Spotify song recommender system that enhances user satisfaction by personalizing music playlists according to individual preferences. By analyzing user listening data and using features such as danceability, energy, and valence, the system predicts and recommends songs that align with users' tastes.", 
-          image: null 
+          name: "AI Recommendation System", 
+          description: "Developed a sophisticated recommendation engine using collaborative filtering and content-based algorithms to provide personalized suggestions to users, resulting in a 35% increase in user engagement.", 
+          image: null,
+          technologies: ["Python", "Machine Learning", "Collaborative Filtering", "User Engagement"]
         },
         { 
-          name: "Football Fantasy Predictive Model", 
-          description: "In developing this data-driven approach, I set out to tackle the challenge of identifying the most promising La Liga players for Fantasy Football, ensuring that users can optimize their weekly lineups with confidence. I integrated various techniques—most notably Random Forest and Gradient Boosting—to predict both player points and market values.", 
-          image: null 
+          name: "Natural Language Processing Tool", 
+          description: "Created an NLP tool that analyzes customer feedback across multiple channels, automatically categorizing issues and identifying sentiment to help businesses understand customer needs better.", 
+          image: null,
+          technologies: ["NLP", "Python", "Sentiment Analysis", "Text Classification"] 
+        },
+        { 
+          name: "Computer Vision Project", 
+          description: "Built a computer vision system for object detection and classification in real-time video streams, achieving 94% accuracy in identifying specific items in complex environments.", 
+          image: null,
+          technologies: ["Computer Vision", "TensorFlow", "Object Detection", "Real-time Processing"]
         }
       ],
       templateId: ""
@@ -244,19 +302,7 @@ export default function DashboardPage() {
       return
     }
     
-    // CV is completely optional now, no warning needed
-    
-    if (currentStep === 2 && !portfolioData.hasCv) {
-      // Only validate the minimum required info for skills and experience
-      if (portfolioData.skills.length === 0) {
-        toast.warning("Consider adding at least one skill to showcase your expertise")
-        // Don't block progress
-      }
-      if (portfolioData.experience.length === 0) {
-        toast.warning("Consider adding at least one work experience to make your portfolio more complete")
-        // Don't block progress
-      }
-    }
+    // CV is optional now, no need for validation based on hasCv
     
     if (currentStep === 3) {
       // Only validate project name and description
@@ -563,32 +609,48 @@ export default function DashboardPage() {
         name: "",
         title: "AI Engineer",
         smallIntro: "I'm a skilled AI Engineer with a passion for developing innovative solutions.",
-        about: "Hello! I'm Pablos Tselioudis Garmendia, a dedicated Data Scientist currently studying the bachelor of \"Data Science and Engineering\" at UC3M and Northeastern University. My academic journey is enriched by my active participation in various competitions, including the prestigious Math and Informatics Olympiads, the CANSAT project, and my role as the captain of a team of 3 in the UCSAS 2024 USOPC DATA CHALLENGE. Beyond the realm of data science, I have a profound passion for AI.",
-        fullName: "Pablos Tselioudis",
-        email: "",
-        phone: "",
+        about: "Hello! I'm John Doe, a dedicated AI Engineer with expertise in machine learning, deep learning, and natural language processing. I have experience building and deploying AI models that solve real-world problems and drive business value. My approach combines technical excellence with a strong focus on practical applications and ethical considerations.",
+        fullName: "John Doe",
+        email: "johndoe@gmail.com",
+        phone: "+34 607980731",
         profilePicture: null,
         cv: null,
         hasCv: true,
-        skills: [],
+        skills: [
+          { name: "Python", level: "95%" },
+          { name: "Machine Learning", level: "90%" },
+          { name: "TensorFlow", level: "85%" },
+          { name: "Natural Language Processing", level: "80%" },
+          { name: "Computer Vision", level: "85%" },
+          { name: "Data Structures & Algorithms", level: "90%" }
+        ],
         experience: [],
         education: [],
-        projectCount: 3,
+        projectCount: 4,
         projects: [
           { 
-            name: "UCSAS 2024 USOPC DATA CHALLENGE", 
-            description: "In developing this Python script, my team and I set out to tackle the challenge of strategically selecting the most promising athletes for Team USA Olympic Men's and Women's Artistic Gymnastics teams, optimizing their success at the Paris 2024 Olympics. The script incorporates techniques such as linear regression modeling to predict gymnastic scores. We carefully considered historical means for adjusting scores, ensuring fair comparisons across different apparatus and genders.", 
-            image: null 
+            name: "NBA Dashboard", 
+            description: "Developed an Excel file containing various data and statistics from the 2015-2017 NBA seasons. The dashboard provides insights on players, teams, and games, including player stats, team performance metrics, and game-by-game analysis. Users can filter and sort the data to identify trends and patterns in player performance across different seasons.", 
+            image: null,
+            technologies: ["Excel", "Data Analysis", "Sports Analytics", "Dashboard"]
           },
           { 
-            name: "Spotify Song Recommender", 
-            description: "This project aimes to create a machine learning-based Spotify song recommender system that enhances user satisfaction by personalizing music playlists according to individual preferences. By analyzing user listening data and using features such as danceability, energy, and valence, the system predicts and recommends songs that align with users' tastes.", 
-            image: null 
+            name: "AI Recommendation System", 
+            description: "Developed a sophisticated recommendation engine using collaborative filtering and content-based algorithms to provide personalized suggestions to users, resulting in a 35% increase in user engagement.", 
+            image: null,
+            technologies: ["Python", "Machine Learning", "Collaborative Filtering", "User Engagement"]
           },
           { 
-            name: "Football Fantasy Predictive Model", 
-            description: "In developing this data-driven approach, I set out to tackle the challenge of identifying the most promising La Liga players for Fantasy Football, ensuring that users can optimize their weekly lineups with confidence. I integrated various techniques—most notably Random Forest and Gradient Boosting—to predict both player points and market values.", 
-            image: null 
+            name: "Natural Language Processing Tool", 
+            description: "Created an NLP tool that analyzes customer feedback across multiple channels, automatically categorizing issues and identifying sentiment to help businesses understand customer needs better.", 
+            image: null,
+            technologies: ["NLP", "Python", "Sentiment Analysis", "Text Classification"] 
+          },
+          { 
+            name: "Computer Vision Project", 
+            description: "Built a computer vision system for object detection and classification in real-time video streams, achieving 94% accuracy in identifying specific items in complex environments.", 
+            image: null,
+            technologies: ["Computer Vision", "TensorFlow", "Object Detection", "Real-time Processing"]
           }
         ],
         templateId: "",
@@ -622,32 +684,48 @@ export default function DashboardPage() {
             name: "",
             title: "AI Engineer",
             smallIntro: "I'm a skilled AI Engineer with a passion for developing innovative solutions.",
-            about: "Hello! I'm Pablos Tselioudis Garmendia, a dedicated Data Scientist currently studying the bachelor of \"Data Science and Engineering\" at UC3M and Northeastern University. My academic journey is enriched by my active participation in various competitions, including the prestigious Math and Informatics Olympiads, the CANSAT project, and my role as the captain of a team of 3 in the UCSAS 2024 USOPC DATA CHALLENGE. Beyond the realm of data science, I have a profound passion for AI.",
-            fullName: "Pablos Tselioudis",
-            email: "",
-            phone: "",
+            about: "Hello! I'm John Doe, a dedicated AI Engineer with expertise in machine learning, deep learning, and natural language processing. I have experience building and deploying AI models that solve real-world problems and drive business value. My approach combines technical excellence with a strong focus on practical applications and ethical considerations.",
+            fullName: "John Doe",
+            email: "johndoe@gmail.com",
+            phone: "+34 607980731",
             profilePicture: null,
             cv: null,
             hasCv: true,
-            skills: [],
+            skills: [
+              { name: "Python", level: "95%" },
+              { name: "Machine Learning", level: "90%" },
+              { name: "TensorFlow", level: "85%" },
+              { name: "Natural Language Processing", level: "80%" },
+              { name: "Computer Vision", level: "85%" },
+              { name: "Data Structures & Algorithms", level: "90%" }
+            ],
             experience: [],
             education: [],
-            projectCount: 3,
+            projectCount: 4,
             projects: [
               { 
-                name: "UCSAS 2024 USOPC DATA CHALLENGE", 
-                description: "In developing this Python script, my team and I set out to tackle the challenge of strategically selecting the most promising athletes for Team USA Olympic Men's and Women's Artistic Gymnastics teams, optimizing their success at the Paris 2024 Olympics. The script incorporates techniques such as linear regression modeling to predict gymnastic scores. We carefully considered historical means for adjusting scores, ensuring fair comparisons across different apparatus and genders.", 
-                image: null 
+                name: "NBA Dashboard", 
+                description: "Developed an Excel file containing various data and statistics from the 2015-2017 NBA seasons. The dashboard provides insights on players, teams, and games, including player stats, team performance metrics, and game-by-game analysis. Users can filter and sort the data to identify trends and patterns in player performance across different seasons.", 
+                image: null,
+                technologies: ["Excel", "Data Analysis", "Sports Analytics", "Dashboard"]
               },
               { 
-                name: "Spotify Song Recommender", 
-                description: "This project aimes to create a machine learning-based Spotify song recommender system that enhances user satisfaction by personalizing music playlists according to individual preferences. By analyzing user listening data and using features such as danceability, energy, and valence, the system predicts and recommends songs that align with users' tastes.", 
-                image: null 
+                name: "AI Recommendation System", 
+                description: "Developed a sophisticated recommendation engine using collaborative filtering and content-based algorithms to provide personalized suggestions to users, resulting in a 35% increase in user engagement.", 
+                image: null,
+                technologies: ["Python", "Machine Learning", "Collaborative Filtering", "User Engagement"]
               },
               { 
-                name: "Football Fantasy Predictive Model", 
-                description: "In developing this data-driven approach, I set out to tackle the challenge of identifying the most promising La Liga players for Fantasy Football, ensuring that users can optimize their weekly lineups with confidence. I integrated various techniques—most notably Random Forest and Gradient Boosting—to predict both player points and market values.", 
-                image: null 
+                name: "Natural Language Processing Tool", 
+                description: "Created an NLP tool that analyzes customer feedback across multiple channels, automatically categorizing issues and identifying sentiment to help businesses understand customer needs better.", 
+                image: null,
+                technologies: ["NLP", "Python", "Sentiment Analysis", "Text Classification"] 
+              },
+              { 
+                name: "Computer Vision Project", 
+                description: "Built a computer vision system for object detection and classification in real-time video streams, achieving 94% accuracy in identifying specific items in complex environments.", 
+                image: null,
+                technologies: ["Computer Vision", "TensorFlow", "Object Detection", "Real-time Processing"]
               }
             ],
             templateId: "",
@@ -665,26 +743,22 @@ export default function DashboardPage() {
     }
   };
 
+  // Add this after the handleInputChange function
+  // Update handleCvToggle to just set if CV is present or not
   const handleCvToggle = (hasCv: boolean) => {
+    // Always enable CV as an option, but mark if user has one or not
     setPortfolioData({
       ...portfolioData,
       hasCv,
-      // Reset fields accordingly but preserve personal info
-      fullName: portfolioData.fullName,       // preserve fullName
-      email: portfolioData.email,             // preserve email
-      phone: portfolioData.phone,             // preserve phone
-      profilePicture: portfolioData.profilePicture, // preserve profile picture
+      // If user doesn't have a CV, clear the file reference
       cv: hasCv ? portfolioData.cv : null,
-      skills: !hasCv ? portfolioData.skills : [],
-      experience: !hasCv ? portfolioData.experience : [],
-      education: !hasCv ? portfolioData.education : []
-    })
-  }
+    });
+  };
 
   const handleAddSkill = () => {
     setPortfolioData({
       ...portfolioData,
-      skills: [...portfolioData.skills, { name: "", level: "Beginner" }]
+      skills: [...portfolioData.skills, { name: "" }]
     })
   }
 
@@ -763,7 +837,7 @@ export default function DashboardPage() {
     if (newCount > portfolioData.projects.length) {
       // Add new projects
       for (let i = portfolioData.projects.length; i < newCount; i++) {
-        newProjects.push({ name: "", description: "", image: null })
+        newProjects.push({ name: "", description: "", image: null, technologies: [] })
       }
     } else if (newCount < portfolioData.projects.length) {
       // Remove excess projects
@@ -868,7 +942,7 @@ export default function DashboardPage() {
           </div>
           <Button 
             onClick={handleCreatePortfolio}
-            className="mt-4 md:mt-0 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-md px-6 py-6 h-auto rounded-lg transition-all hover:shadow-lg hover:scale-105"
+            className="mt-4 md:mt-0 bg-black hover:bg-gray-800 text-white shadow-md px-6 py-6 h-auto rounded-md transition-all hover:shadow-lg"
           >
             <Plus className="mr-2 h-4 w-4" /> Create New Portfolio
           </Button>
@@ -878,19 +952,19 @@ export default function DashboardPage() {
           <TabsList className="flex space-x-2 bg-white p-1 rounded-lg border border-indigo-100 mb-6 shadow-sm">
             <TabsTrigger 
               value="portfolios" 
-              className="flex-1 py-3 rounded-md data-[state=active]:bg-gradient-to-r data-[state=active]:from-indigo-500 data-[state=active]:to-purple-500 data-[state=active]:text-white data-[state=inactive]:bg-white data-[state=inactive]:text-gray-600 data-[state=inactive]:hover:text-indigo-600 transition-all"
+              className="flex-1 py-3 rounded-md data-[state=active]:bg-black data-[state=active]:text-white data-[state=inactive]:bg-white data-[state=inactive]:text-gray-600 data-[state=inactive]:hover:text-gray-800 transition-all"
             >
               Portfolios
             </TabsTrigger>
             <TabsTrigger 
               value="analytics" 
-              className="flex-1 py-3 rounded-md data-[state=active]:bg-gradient-to-r data-[state=active]:from-indigo-500 data-[state=active]:to-purple-500 data-[state=active]:text-white data-[state=inactive]:bg-white data-[state=inactive]:text-gray-600 data-[state=inactive]:hover:text-indigo-600 transition-all"
+              className="flex-1 py-3 rounded-md data-[state=active]:bg-black data-[state=active]:text-white data-[state=inactive]:bg-white data-[state=inactive]:text-gray-600 data-[state=inactive]:hover:text-gray-800 transition-all"
             >
               Analytics
             </TabsTrigger>
             <TabsTrigger 
               value="settings" 
-              className="flex-1 py-3 rounded-md data-[state=active]:bg-gradient-to-r data-[state=active]:from-indigo-500 data-[state=active]:to-purple-500 data-[state=active]:text-white data-[state=inactive]:bg-white data-[state=inactive]:text-gray-600 data-[state=inactive]:hover:text-indigo-600 transition-all"
+              className="flex-1 py-3 rounded-md data-[state=active]:bg-black data-[state=active]:text-white data-[state=inactive]:bg-white data-[state=inactive]:text-gray-600 data-[state=inactive]:hover:text-gray-800 transition-all"
             >
               Settings
             </TabsTrigger>
@@ -916,7 +990,7 @@ export default function DashboardPage() {
                     <p className="text-gray-600 text-center mb-6">Create your first portfolio to showcase your skills and projects.</p>
                     <Button 
                       onClick={handleCreatePortfolio}
-                      className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-md px-6 py-6 h-auto rounded-lg transition-all hover:shadow-lg hover:scale-105"
+                      className="bg-black hover:bg-gray-800 text-white shadow-md px-6 py-6 h-auto rounded-md transition-all hover:shadow-lg"
                     >
                       <Plus className="mr-2 h-4 w-4" /> Create Your First Portfolio
                     </Button>
@@ -1034,7 +1108,7 @@ export default function DashboardPage() {
                         <p className="font-medium text-gray-800">Free Plan</p>
                         <p className="text-sm text-gray-500 mt-1">Basic features</p>
                       </div>
-                      <Button className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-6 py-2 h-auto rounded-lg shadow-md hover:shadow-lg transition-all hover:scale-105">
+                      <Button className="bg-black hover:bg-gray-800 text-white px-6 py-2 h-auto rounded-md shadow-md hover:shadow-lg transition-all hover:scale-105">
                         Upgrade
                       </Button>
                     </div>
@@ -1048,7 +1122,7 @@ export default function DashboardPage() {
                   </h3>
                   <div className="p-5 bg-white rounded-lg border border-indigo-100 shadow-sm">
                     <p className="text-sm text-gray-600 mb-3">Change your password to keep your account secure</p>
-                    <Button variant="outline" className="border-indigo-200 hover:border-indigo-300 hover:bg-indigo-50 text-gray-700">
+                    <Button variant="outline" className="border-indigo-200 hover:border-indigo-300 hover:bg-indigo-50 text-gray-700 rounded-md">
                       Change Password
                     </Button>
                   </div>
@@ -1061,7 +1135,7 @@ export default function DashboardPage() {
                   </h3>
                   <div className="p-5 bg-red-50 rounded-lg border border-red-100 shadow-sm">
                     <p className="text-sm text-red-600 mb-3">Permanently delete your account and all data. This action cannot be undone.</p>
-                    <Button variant="destructive" className="bg-red-600 hover:bg-red-700">
+                    <Button variant="destructive" className="bg-red-600 hover:bg-red-700 rounded-md">
                       Delete Account
                     </Button>
                   </div>
@@ -1087,15 +1161,15 @@ export default function DashboardPage() {
             </DialogDescription>
           </DialogHeader>
           
-          <div className="px-6 pt-4 overflow-y-auto flex-grow" style={{ maxHeight: 'calc(90vh - 180px)' }}>
-            <div className="w-full mb-6 sticky top-0 bg-white z-10 pt-2 pb-4">
-              <div className="flex justify-between mb-2 text-xs text-gray-500">
-                <span>Step {currentStep} of {totalSteps}</span>
-                <span>{Math.round(progress)}%</span>
-              </div>
-              <Progress value={progress} className="h-2 bg-indigo-100 progress" />
+          <div className="px-6 pb-3 pt-4 border-b shrink-0">
+            <div className="flex justify-between mb-2 text-xs text-gray-500">
+              <span>Step {currentStep} of {totalSteps}</span>
+              <span>{Math.round(progress)}%</span>
             </div>
-            
+            <Progress value={progress} className="h-2 bg-indigo-100 progress" />
+          </div>
+          
+          <div className="px-6 pt-4 overflow-y-auto flex-grow" style={{ maxHeight: 'calc(90vh - 210px)' }}>
             {/* Content for each step */}
             <div className="pb-6">
               {/* Step 1: Basic Information */}
@@ -1144,7 +1218,7 @@ export default function DashboardPage() {
                               <Button 
                                 variant="outline" 
                                 size="sm" 
-                                className="border-indigo-200 text-xs"
+                                className="border-indigo-200 text-xs rounded-md"
                                 onClick={() => document.getElementById('profile-picture-upload')?.click()}
                               >
                                 Change Image
@@ -1159,7 +1233,7 @@ export default function DashboardPage() {
                               <Button 
                                 variant="outline" 
                                 size="sm" 
-                                className="border-indigo-200 text-xs"
+                                className="border-indigo-200 text-xs rounded-md"
                                 onClick={() => document.getElementById('profile-picture-upload')?.click()}
                               >
                                 Select Image
@@ -1235,300 +1309,119 @@ export default function DashboardPage() {
                 </div>
               )}
               
-              {/* Step 2: CV Upload or Manual Entry */}
+              {/* Step 2: CV Upload and Personal Details */}
               {currentStep === 2 && (
                 <div className="py-4 space-y-6">
-                  <h3 className="text-lg font-medium text-gray-800">Resume/CV</h3>
+                  <h3 className="text-lg font-medium text-gray-800">Resume/CV & Personal Details</h3>
                   
-                  <div className="flex items-center gap-4">
-                    <div 
-                      className={`flex-1 p-4 rounded-lg border-2 text-center cursor-pointer transition-all ${
-                        portfolioData.hasCv 
-                          ? 'border-indigo-500 bg-indigo-50' 
-                          : 'border-gray-200 hover:border-indigo-300'
-                      }`}
-                      onClick={() => handleCvToggle(true)}
-                    >
-                      <Upload className="h-5 w-5 mx-auto mb-2 text-indigo-500" />
-                      <div className="text-sm font-medium">Upload my CV</div>
+                  {/* Resume Upload Section - Optional */}
+                  <div className="space-y-3">
+                    <Label className="text-gray-800 font-medium">Resume/CV Upload (Optional)</Label>
+                    <div className="border-2 border-dashed border-indigo-100 rounded-lg p-8 text-center hover:border-indigo-300 transition-colors">
+                      <Upload className="h-10 w-10 text-indigo-300 mx-auto mb-4" />
+                      <div className="text-sm text-gray-600 mb-4">
+                        {portfolioData.cv 
+                          ? `Selected file: ${portfolioData.cv.name}` 
+                          : "Drag and drop your CV here, or click to browse"}
+                      </div>
+                      <input 
+                        type="file" 
+                        id="cv-upload" 
+                        accept=".pdf,.doc,.docx" 
+                        className="hidden" 
+                        onChange={(e) => {
+                          if (e.target.files?.[0]) {
+                            handleFileUpload(e.target.files[0], 'cv')
+                          }
+                        }}
+                      />
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="border-indigo-200 hover:border-indigo-300 hover:bg-indigo-50 text-gray-700 rounded-md"
+                        onClick={() => document.getElementById('cv-upload')?.click()}
+                      >
+                        Select File
+                      </Button>
                     </div>
-                    
-                    <div 
-                      className={`flex-1 p-4 rounded-lg border-2 text-center cursor-pointer transition-all ${
-                        !portfolioData.hasCv 
-                          ? 'border-indigo-500 bg-indigo-50' 
-                          : 'border-gray-200 hover:border-indigo-300'
-                      }`}
-                      onClick={() => handleCvToggle(false)}
-                    >
-                      <Edit className="h-5 w-5 mx-auto mb-2 text-indigo-500" />
-                      <div className="text-sm font-medium">Don't have a CV yet</div>
+                    <p className="text-xs text-gray-500 font-medium">Accepted formats: PDF, DOC, DOCX, max 5MB.</p>
+                    <p className="text-xs text-indigo-600">Visitors to your portfolio will be able to download your CV. (No information will be automatically extracted)</p>
+                  </div>
+                  
+                  {/* Personal Information Section */}
+                  <div className="space-y-3">
+                    <Label className="text-gray-800 font-medium">Personal Information</Label>
+                    <div className="space-y-3 p-3 rounded-lg border border-indigo-100 bg-indigo-50/30">
+                      <div className="space-y-2">
+                        <Label htmlFor="email">Email Address</Label>
+                        <Input 
+                          id="email"
+                          name="email"
+                          type="email"
+                          value={portfolioData.email || ""}
+                          onChange={handleInputChange}
+                          placeholder="email@example.com" 
+                          className="border-indigo-100 focus:border-indigo-300 focus:ring-indigo-200"
+                        />
+                        <p className="text-xs text-gray-500">Your contact email for professional inquiries.</p>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label htmlFor="phone">Phone Number</Label>
+                        <Input 
+                          id="phone"
+                          name="phone"
+                          value={portfolioData.phone || ""}
+                          onChange={handleInputChange}
+                          placeholder="+1 (555) 123-4567" 
+                          className="border-indigo-100 focus:border-indigo-300 focus:ring-indigo-200"
+                        />
+                        <p className="text-xs text-gray-500">Your contact phone number (optional).</p>
+                      </div>
                     </div>
                   </div>
                   
-                  {portfolioData.hasCv ? (
-                    // CV upload section
-                    <div className="space-y-4">
-                      <div className="border-2 border-dashed border-indigo-100 rounded-lg p-8 text-center hover:border-indigo-300 transition-colors">
-                        <Upload className="h-10 w-10 text-indigo-300 mx-auto mb-4" />
-                        <div className="text-sm text-gray-600 mb-4">
-                          {portfolioData.cv 
-                            ? `Selected file: ${portfolioData.cv.name}` 
-                            : "Drag and drop your CV here, or click to browse"}
-                        </div>
-                        <input 
-                          type="file" 
-                          id="cv-upload" 
-                          accept=".pdf,.doc,.docx" 
-                          className="hidden" 
-                          onChange={(e) => {
-                            if (e.target.files?.[0]) {
-                              handleFileUpload(e.target.files[0], 'cv')
-                            }
-                          }}
-                        />
-                        <Button 
-                          variant="outline" 
-                          size="sm" 
-                          className="border-indigo-200 hover:border-indigo-300 hover:bg-indigo-50 text-gray-700"
-                          onClick={() => document.getElementById('cv-upload')?.click()}
-                        >
-                          Select File
-                        </Button>
-                      </div>
-                      <p className="text-xs text-gray-500 font-medium">Accepted formats: PDF, DOC, DOCX, max 5MB.</p>
-                      <p className="text-xs text-indigo-600">Your skills, experience, and education will be extracted from your CV.</p>
+                  {/* Skills Section - Simplified */}
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <Label className="text-gray-800">Skills</Label>
+                      <Button 
+                        type="button" 
+                        size="sm" 
+                        variant="outline" 
+                        className="h-8 text-xs border-indigo-200"
+                        onClick={handleAddSkill}
+                      >
+                        Add Skill
+                      </Button>
                     </div>
-                  ) : (
-                    // Manual entry section
-                    <div className="space-y-6">
-                      {/* Personal Information Section */}
+                    
+                    {portfolioData.skills.length === 0 ? (
+                      <p className="text-sm text-gray-500 italic">No skills added yet. Click "Add Skill" to begin.</p>
+                    ) : (
                       <div className="space-y-3">
-                        <Label className="text-gray-800 font-medium">Personal Information</Label>
-                        <div className="space-y-3 p-3 rounded-lg border border-indigo-100 bg-indigo-50/30">
-                          <div className="space-y-2">
-                            <Label htmlFor="fullName">Full Name</Label>
+                        {portfolioData.skills.map((skill, index) => (
+                          <div key={index} className="flex gap-2 items-center">
                             <Input 
-                              id="fullName"
-                              name="fullName"
-                              value={portfolioData.fullName || ""}
-                              onChange={handleInputChange}
-                              placeholder="John Doe" 
-                              className="border-indigo-100 focus:border-indigo-300 focus:ring-indigo-200"
+                              value={skill.name} 
+                              onChange={(e) => handleUpdateSkill(index, 'name', e.target.value)}
+                              placeholder="e.g. React, JavaScript, UI Design" 
+                              className="flex-1 border-indigo-100"
                             />
-                            <p className="text-xs text-gray-500">Your complete name as you'd like it to appear on your portfolio.</p>
+                            <Button 
+                              type="button" 
+                              variant="ghost" 
+                              size="icon" 
+                              className="h-8 w-8 text-gray-400 hover:text-red-500"
+                              onClick={() => handleRemoveSkill(index)}
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
                           </div>
-                          
-                          <div className="space-y-2">
-                            <Label htmlFor="email">Email Address</Label>
-                            <Input 
-                              id="email"
-                              name="email"
-                              type="email"
-                              value={portfolioData.email || ""}
-                              onChange={handleInputChange}
-                              placeholder="email@example.com" 
-                              className="border-indigo-100 focus:border-indigo-300 focus:ring-indigo-200"
-                            />
-                            <p className="text-xs text-gray-500">Your contact email for professional inquiries.</p>
-                          </div>
-                          
-                          <div className="space-y-2">
-                            <Label htmlFor="phone">Phone Number</Label>
-                            <Input 
-                              id="phone"
-                              name="phone"
-                              value={portfolioData.phone || ""}
-                              onChange={handleInputChange}
-                              placeholder="+1 (555) 123-4567" 
-                              className="border-indigo-100 focus:border-indigo-300 focus:ring-indigo-200"
-                            />
-                            <p className="text-xs text-gray-500">Your contact phone number (optional).</p>
-                          </div>
-                        </div>
+                        ))}
                       </div>
-                      
-                      {/* Skills Section */}
-                      <div className="space-y-3">
-                        <div className="flex justify-between items-center">
-                          <Label className="text-gray-800">Skills</Label>
-                          <Button 
-                            type="button" 
-                            size="sm" 
-                            variant="outline" 
-                            className="h-8 text-xs border-indigo-200"
-                            onClick={handleAddSkill}
-                          >
-                            Add Skill
-                          </Button>
-                        </div>
-                        
-                        {portfolioData.skills.length === 0 ? (
-                          <p className="text-sm text-gray-500 italic">No skills added yet. Click "Add Skill" to begin.</p>
-                        ) : (
-                          <div className="space-y-3">
-                            {portfolioData.skills.map((skill, index) => (
-                              <div key={index} className="flex gap-2 items-center">
-                                <Input 
-                                  value={skill.name} 
-                                  onChange={(e) => handleUpdateSkill(index, 'name', e.target.value)}
-                                  placeholder="e.g. React, JavaScript, UI Design" 
-                                  className="flex-1 border-indigo-100"
-                                />
-                                <select 
-                                  value={skill.level}
-                                  onChange={(e) => handleUpdateSkill(index, 'level', e.target.value)}
-                                  className="w-32 h-10 rounded-md border border-indigo-100 focus:border-indigo-300 focus:ring-indigo-200"
-                                >
-                                  <option value="Beginner">Beginner</option>
-                                  <option value="Intermediate">Intermediate</option>
-                                  <option value="Advanced">Advanced</option>
-                                  <option value="Expert">Expert</option>
-                                </select>
-                                <Button 
-                                  type="button" 
-                                  variant="ghost" 
-                                  size="icon" 
-                                  className="h-8 w-8 text-gray-400 hover:text-red-500"
-                                  onClick={() => handleRemoveSkill(index)}
-                                >
-                                  <X className="h-4 w-4" />
-                                </Button>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                      
-                      {/* Experience Section */}
-                      <div className="space-y-3">
-                        <div className="flex justify-between items-center">
-                          <Label className="text-gray-800">Work Experience</Label>
-                          <Button 
-                            type="button" 
-                            size="sm" 
-                            variant="outline" 
-                            className="h-8 text-xs border-indigo-200"
-                            onClick={handleAddExperience}
-                          >
-                            Add Experience
-                          </Button>
-                        </div>
-                        
-                        {portfolioData.experience.length === 0 ? (
-                          <p className="text-sm text-gray-500 italic">No work experience added yet. Click "Add Experience" to begin.</p>
-                        ) : (
-                          <div className="space-y-5">
-                            {portfolioData.experience.map((exp, index) => (
-                              <div key={index} className="space-y-3 p-3 rounded-lg border border-indigo-100 bg-indigo-50/30">
-                                <div className="flex justify-between">
-                                  <h4 className="text-sm font-medium text-indigo-600">Position {index + 1}</h4>
-                                  <Button 
-                                    type="button" 
-                                    variant="ghost" 
-                                    size="icon" 
-                                    className="h-6 w-6 text-gray-400 hover:text-red-500"
-                                    onClick={() => handleRemoveExperience(index)}
-                                  >
-                                    <X className="h-4 w-4" />
-                                  </Button>
-                                </div>
-                                
-                                <div className="space-y-2">
-                                  <Input 
-                                    value={exp.company} 
-                                    onChange={(e) => handleUpdateExperience(index, 'company', e.target.value)}
-                                    placeholder="Company Name" 
-                                    className="w-full border-indigo-100"
-                                  />
-                                  <div className="flex gap-2">
-                                    <Input 
-                                      value={exp.position} 
-                                      onChange={(e) => handleUpdateExperience(index, 'position', e.target.value)}
-                                      placeholder="Position Title" 
-                                      className="flex-1 border-indigo-100"
-                                    />
-                                    <Input 
-                                      value={exp.period} 
-                                      onChange={(e) => handleUpdateExperience(index, 'period', e.target.value)}
-                                      placeholder="Period (e.g. 2020-Present)" 
-                                      className="w-40 border-indigo-100"
-                                    />
-                                  </div>
-                                  <Textarea 
-                                    value={exp.description} 
-                                    onChange={(e) => handleUpdateExperience(index, 'description', e.target.value)}
-                                    placeholder="Describe your responsibilities and achievements" 
-                                    className="w-full min-h-[60px] border-indigo-100"
-                                  />
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                      
-                      {/* Education Section */}
-                      <div className="space-y-3">
-                        <div className="flex justify-between items-center">
-                          <Label className="text-gray-800">Education</Label>
-                          <Button 
-                            type="button" 
-                            size="sm" 
-                            variant="outline" 
-                            className="h-8 text-xs border-indigo-200"
-                            onClick={handleAddEducation}
-                          >
-                            Add Education
-                          </Button>
-                        </div>
-                        
-                        {portfolioData.education.length === 0 ? (
-                          <p className="text-sm text-gray-500 italic">No education added yet. Click "Add Education" to begin.</p>
-                        ) : (
-                          <div className="space-y-3">
-                            {portfolioData.education.map((edu, index) => (
-                              <div key={index} className="flex gap-2 items-center">
-                                <div className="flex-1 space-y-2">
-                                  <div className="flex justify-between">
-                                    <Input 
-                                      value={edu.institution} 
-                                      onChange={(e) => handleUpdateEducation(index, 'institution', e.target.value)}
-                                      placeholder="Institution Name" 
-                                      className="w-full border-indigo-100"
-                                    />
-                                  </div>
-                                  <div className="flex gap-2">
-                                    <Input 
-                                      value={edu.degree} 
-                                      onChange={(e) => handleUpdateEducation(index, 'degree', e.target.value)}
-                                      placeholder="Degree/Certification" 
-                                      className="flex-1 border-indigo-100"
-                                    />
-                                    <Input 
-                                      value={edu.period} 
-                                      onChange={(e) => handleUpdateEducation(index, 'period', e.target.value)}
-                                      placeholder="Period (e.g. 2016-2020)" 
-                                      className="w-40 border-indigo-100"
-                                    />
-                                  </div>
-                                </div>
-                                <Button 
-                                  type="button" 
-                                  variant="ghost" 
-                                  size="icon" 
-                                  className="h-8 w-8 mt-2 text-gray-400 hover:text-red-500"
-                                  onClick={() => handleRemoveEducation(index)}
-                                >
-                                  <X className="h-4 w-4" />
-                                </Button>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </div>
               )}
               
@@ -1593,7 +1486,7 @@ export default function DashboardPage() {
                                   <Button 
                                     variant="outline" 
                                     size="sm" 
-                                    className="border-indigo-200 text-xs"
+                                    className="border-indigo-200 text-xs rounded-md"
                                     onClick={() => document.getElementById(`project-${index}-image-upload`)?.click()}
                                   >
                                     Change Image
@@ -1608,7 +1501,7 @@ export default function DashboardPage() {
                                   <Button 
                                     variant="outline" 
                                     size="sm" 
-                                    className="border-indigo-200 text-xs"
+                                    className="border-indigo-200 text-xs rounded-md"
                                     onClick={() => document.getElementById(`project-${index}-image-upload`)?.click()}
                                   >
                                     Select Image
@@ -1650,13 +1543,27 @@ export default function DashboardPage() {
                           : "border-gray-200 hover:border-indigo-300"
                       }`}
                       onClick={() => handleTemplateSelect("template1")}
+                      onMouseEnter={() => setHoveredTemplate("template1")}
+                      onMouseLeave={() => setHoveredTemplate(null)}
                     >
-                      <div className="aspect-[16/9] bg-white flex items-center justify-center">
-                        <img 
-                          src="/templates/template1/Template_1pic.png" 
-                          alt="Template 1 Preview" 
-                          className="w-full h-full object-cover"
-                        />
+                      <div className="aspect-[16/9] bg-white flex items-center justify-center relative overflow-hidden">
+                        <div className="absolute inset-0 w-full h-full">
+                          <img 
+                            src="/templates/template1/JohnDoe2024.png"
+                            alt="Template 1 Preview" 
+                            className={`w-full h-full object-cover transition-opacity duration-300 ${hoveredTemplate === "template1" ? 'opacity-0' : 'opacity-100'}`}
+                          />
+                          <video 
+                            ref={(el) => {
+                              templateVideoRefs.current.template1 = el;
+                            }}
+                            src="/videos/Temp1.webm"
+                            muted
+                            loop
+                            playsInline
+                            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${hoveredTemplate === "template1" ? 'opacity-100' : 'opacity-0'}`}
+                          />
+                        </div>
                       </div>
                       <div className="p-3 bg-white text-center">
                         <div className="font-medium text-gray-800">Template 1</div>
@@ -1672,16 +1579,18 @@ export default function DashboardPage() {
                       }`}
                       onClick={() => handleTemplateSelect("template2")}
                     >
-                      <div className="aspect-[16/9] bg-white flex items-center justify-center">
-                        <img 
-                          src="/templates/template2/thumbnail_dash.svg" 
-                          alt="Template 2 Preview" 
-                          className="w-full h-full object-cover"
-                        />
+                      <div className="aspect-[16/9] bg-white flex items-center justify-center relative overflow-hidden">
+                        <div className="absolute inset-0 w-full h-full">
+                          <img 
+                            src="/templates/template2/thumbnail_dash.svg" 
+                            alt="Template 2 Preview" 
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
                       </div>
                       <div className="p-3 bg-white text-center">
                         <div className="font-medium text-gray-800">Template 2</div>
-                        <div className="text-xs text-gray-500">Professional Dark</div>
+                        <div className="text-xs text-gray-500">Professional Dark with Device Displays</div>
                       </div>
                     </div>
 
@@ -1693,12 +1602,14 @@ export default function DashboardPage() {
                       }`}
                       onClick={() => handleTemplateSelect("template3")}
                     >
-                      <div className="aspect-[16/9] bg-white flex items-center justify-center">
-                        <img 
-                          src="/templates/template3/thumbnail_dash.svg" 
-                          alt="Template 3 Preview" 
-                          className="w-full h-full object-cover"
-                        />
+                      <div className="aspect-[16/9] bg-white flex items-center justify-center relative overflow-hidden">
+                        <div className="absolute inset-0 w-full h-full">
+                          <img 
+                            src="/templates/template3/thumbnail_dash.svg" 
+                            alt="Template 3 Preview" 
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
                       </div>
                       <div className="p-3 bg-white text-center">
                         <div className="font-medium text-gray-800">Template 3</div>
@@ -1714,16 +1625,18 @@ export default function DashboardPage() {
                       }`}
                       onClick={() => handleTemplateSelect("template4")}
                     >
-                      <div className="aspect-[16/9] bg-white flex items-center justify-center">
-                        <img 
-                          src="/templates/template4/thumbnail_dash.svg" 
-                          alt="Template 4 Preview" 
-                          className="w-full h-full object-cover"
-                        />
+                      <div className="aspect-[16/9] bg-white flex items-center justify-center relative overflow-hidden">
+                        <div className="absolute inset-0 w-full h-full">
+                          <img 
+                            src="/templates/template4/thumbnail_dash.svg" 
+                            alt="Template 4 Preview" 
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
                       </div>
                       <div className="p-3 bg-white text-center">
                         <div className="font-medium text-gray-800">Template 4</div>
-                        <div className="text-xs text-gray-500">Technical Focus</div>
+                        <div className="text-xs text-gray-500">Minimal Portfolio</div>
                       </div>
                     </div>
 
@@ -1735,12 +1648,14 @@ export default function DashboardPage() {
                       }`}
                       onClick={() => handleTemplateSelect("template5")}
                     >
-                      <div className="aspect-[16/9] bg-white flex items-center justify-center">
-                        <img 
-                          src="/templates/template5/thumbnail_dash.svg" 
-                          alt="Template 5 Preview" 
-                          className="w-full h-full object-cover"
-                        />
+                      <div className="aspect-[16/9] bg-white flex items-center justify-center relative overflow-hidden">
+                        <div className="absolute inset-0 w-full h-full">
+                          <img 
+                            src="/templates/template5/thumbnail_dash.svg" 
+                            alt="Template 5 Preview" 
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
                       </div>
                       <div className="p-3 bg-white text-center">
                         <div className="font-medium text-gray-800">Template 5</div>
@@ -1756,12 +1671,14 @@ export default function DashboardPage() {
                       }`}
                       onClick={() => handleTemplateSelect("template6")}
                     >
-                      <div className="aspect-[16/9] bg-white flex items-center justify-center">
-                        <img 
-                          src="/templates/template6/thumbnail_dash.svg" 
-                          alt="Template 6 Preview" 
-                          className="w-full h-full object-cover"
-                        />
+                      <div className="aspect-[16/9] bg-white flex items-center justify-center relative overflow-hidden">
+                        <div className="absolute inset-0 w-full h-full">
+                          <img 
+                            src="/templates/template6/thumbnail_dash.svg" 
+                            alt="Template 6 Preview" 
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
                       </div>
                       <div className="p-3 bg-white text-center">
                         <div className="font-medium text-gray-800">Template 6</div>
@@ -1785,7 +1702,7 @@ export default function DashboardPage() {
               variant="outline" 
               onClick={() => currentStep === 1 ? setIsCreateModalOpen(false) : handlePreviousStep()}
               disabled={isSubmitting}
-              className="border-indigo-200 hover:border-indigo-300 hover:bg-indigo-50 text-gray-700"
+              className="border-indigo-200 hover:border-indigo-300 hover:bg-indigo-50 text-gray-700 rounded-md"
             >
               {currentStep === 1 ? (
                 <>
@@ -1800,7 +1717,7 @@ export default function DashboardPage() {
             <Button 
               onClick={handleNextStep}
               disabled={isSubmitting}
-              className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-6"
+              className="bg-black hover:bg-gray-800 text-white px-6 rounded-md"
             >
               {currentStep === totalSteps ? (
                 <>

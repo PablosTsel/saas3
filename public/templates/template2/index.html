@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{fullName}} | {{title}}</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Open+Sans:wght@300;400;600&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta name="description" content="{{fullName}}'s professional portfolio showcasing projects and skills in {{title}}">
+</head>
+<body>
+    <!-- Hero Header Combined Section -->
+    <section id="home" class="hero-header">
+        <div class="container">
+            <nav id="navbar">
+                <div class="logo-container">
+                    <div class="logo">{{initials}}</div>
+                    <span class="logo-text">{{fullName}}</span>
+                </div>
+                <ul class="nav-links">
+                    <li><a href="#home" class="active">Home</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#skills">Skills</a></li>
+                    <li><a href="#experience">Experience</a></li>
+                    <li><a href="#projects">Projects</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+                <div class="nav-controls">
+                    <div class="theme-toggle">
+                        <i class="fas fa-sun"></i>
+                        <div class="toggle-switch">
+                            <input type="checkbox" id="theme-toggle">
+                            <label for="theme-toggle"></label>
+                        </div>
+                        <i class="fas fa-moon"></i>
+                    </div>
+                    <div class="burger">
+                        <div class="line1"></div>
+                        <div class="line2"></div>
+                        <div class="line3"></div>
+                    </div>
+                </div>
+            </nav>
+            
+            <div class="hero-content">
+                <div class="hero-profile">
+                    <div class="profile-img-container">
+                        {{#if profilePictureUrl}}
+                        <img src="{{profilePictureUrl}}" alt="{{fullName}}">
+                        {{else}}
+                        <div class="initials-avatar">{{initials}}</div>
+                        {{/if}}
+                    </div>
+                </div>
+                <div class="hero-text">
+                    <h1><span>Hello, I'm</span><br>{{fullName}}</h1>
+                    <div class="title-container">
+                        <h2>{{title}}</h2>
+                    </div>
+                    <p>{{smallIntro}}</p>
+                    <div class="hero-cta">
+                        {{#if hasCv}}
+                        <a href="{{cvUrl}}" class="btn btn-primary" target="_blank">Download CV</a>
+                        {{/if}}
+                        <a href="#contact" class="btn btn-secondary">Contact Me</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="hero-wave"></div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">About Me</h2>
+                <div class="section-line"></div>
+            </div>
+            <div class="about-content">
+                <div class="about-text">
+                    <p>{{about}}</p>
+                </div>
+                <div class="about-details">
+                    <div class="detail-card">
+                        <div class="detail-item">
+                            <i class="fas fa-user detail-icon"></i>
+                            <div class="detail-info">
+                                <h3>Full Name</h3>
+                                <p>{{fullName}}</p>
+                            </div>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-envelope detail-icon"></i>
+                            <div class="detail-info">
+                                <h3>Email</h3>
+                                <p>{{email}}</p>
+                            </div>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-phone detail-icon"></i>
+                            <div class="detail-info">
+                                <h3>Phone</h3>
+                                <p>{{phone}}</p>
+                            </div>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-briefcase detail-icon"></i>
+                            <div class="detail-info">
+                                <h3>Profession</h3>
+                                <p>{{title}}</p>
+                            </div>
+                        </div>
+                    </div>
+                    {{#if hasCv}}
+                    <div class="resume-link">
+                        <a href="{{cvUrl}}" class="btn btn-primary" target="_blank">
+                            <i class="fas fa-download"></i> Download Resume
+                        </a>
+                    </div>
+                    {{/if}}
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Skills Section -->
+    <section id="skills" class="skills">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">My Skills</h2>
+                <div class="section-line"></div>
+            </div>
+            <div class="skills-content">
+                <div class="skills-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 3rem; max-width: 90rem; margin: 0 auto;">
+                    {{#each skills}}
+                    <div class="skill-card" style="height: 7rem; width: 100%;">
+                        <div class="skill-icon">
+                            <i class="fas fa-code"></i>
+                        </div>
+                        <h3 class="skill-name">{{name}}</h3>
+                    </div>
+                    {{/each}}
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Experience Section -->
+    <section id="experience" class="experience">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Work Experience</h2>
+                <div class="section-line"></div>
+            </div>
+            <div class="experience-timeline">
+                {{#each experience}}
+                <div class="exp-card">
+                    <div class="exp-date">
+                        <span>{{period}}</span>
+                    </div>
+                    <div class="exp-content">
+                        <h3 class="exp-title">{{position}}</h3>
+                        <h4 class="exp-company">{{company}}</h4>
+                        <p class="exp-description">{{description}}</p>
+                    </div>
+                </div>
+                {{/each}}
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects" class="projects">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">My Projects</h2>
+                <div class="section-line"></div>
+            </div>
+            <div class="projects-content">
+                {{#each projects}}
+                <div class="project-item">
+                    <div class="device-card">
+                        <div class="monitor">
+                            <div class="control-lights">
+                                <div class="light red"></div>
+                                <div class="light yellow"></div>
+                                <div class="light green"></div>
+                            </div>
+                            <div class="screen">
+                                <img src="{{imageUrl}}" alt="{{name}}" class="screen-content" onerror="this.src='https://placehold.co/600x400/e2e8f0/1e293b?text=Project+Image'">
+                                <div class="reflection"></div>
+                            </div>
+                        </div>
+                        <div class="monitor-stand"></div>
+                        <div class="monitor-base"></div>
+                        <div class="keyboard"></div>
+                    </div>
+                    <div class="project-info">
+                        <h3 class="project-title">{{name}}</h3>
+                        <p class="project-description">{{description}}</p>
+                    </div>
+                </div>
+                {{/each}}
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Contact Me</h2>
+                <div class="section-line"></div>
+            </div>
+            <div class="contact-content">
+                <div class="contact-cards">
+                    <div class="contact-card">
+                        <div class="contact-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <h3>Email</h3>
+                        <a href="mailto:{{email}}" class="contact-link">{{email}}</a>
+                    </div>
+                    <div class="contact-card">
+                        <div class="contact-icon">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <h3>Phone</h3>
+                        <a href="tel:{{phone}}" class="contact-link">{{phone}}</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-info">
+                    <div class="footer-logo">{{initials}}</div>
+                    <p>&copy; <span class="currentYear">2023</span> {{fullName}}. All rights reserved.</p>
+                </div>
+                <div class="social-links">
+                    <a href="#" class="social-link"><i class="fab fa-github"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-linkedin"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Script -->
+    <script src="js/script.js"></script>
+</body>
+</html> 

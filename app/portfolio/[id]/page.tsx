@@ -183,7 +183,22 @@ export default function PortfolioViewPage() {
         body: JSON.stringify({ portfolioId: id }),
       });
       
-      const data = await response.json();
+      // Check if response is empty before trying to parse JSON
+      const responseText = await response.text();
+      
+      if (!responseText || responseText.trim() === '') {
+        console.error('Empty response received from API');
+        throw new Error('Server returned an empty response. Please try again.');
+      }
+      
+      // Parse the response text to JSON
+      let data;
+      try {
+        data = JSON.parse(responseText);
+      } catch (parseError) {
+        console.error('Failed to parse JSON response:', responseText);
+        throw new Error('Invalid response from server. Please try again.');
+      }
       
       if (!response.ok) {
         console.error('Error response from API:', data);

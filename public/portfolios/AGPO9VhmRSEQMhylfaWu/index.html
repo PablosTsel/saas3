@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pablos Tselioudis | AI Engineer</title>
+    <style>
+:root {
+  /* Colors */
+  --bg-color: #ffffff;
+  --text-color: #111111;
+  --text-secondary: #555555;
+  --accent-color: #3a86ff;
+  --border-color: #eeeeee;
+  --tag-bg: #f5f5f5;
+  --tag-text: #333333;
+
+  /* Typography */
+  --font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans",
+    "Helvetica Neue", sans-serif;
+
+  /* Spacing */
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 1rem;
+  --spacing-md: 2rem;
+  --spacing-lg: 3rem;
+  --spacing-xl: 5rem;
+
+  /* Transitions */
+  --transition: all 0.3s ease;
+}
+
+/* Dark Theme */
+.dark-theme {
+  --bg-color: #111111;
+  --text-color: #f5f5f5;
+  --text-secondary: #aaaaaa;
+  --accent-color: #4895ef;
+  --border-color: #333333;
+  --tag-bg: #222222;
+  --tag-text: #dddddd;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  line-height: 1.6;
+  transition: var(--transition);
+  padding: var(--spacing-md);
+}
+
+/* Container */
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding-top: var(--spacing-lg);
+}
+
+/* Theme Toggle */
+.theme-toggle {
+  position: fixed;
+  top: var(--spacing-md);
+  right: var(--spacing-md);
+  z-index: 100;
+}
+
+#theme-toggle-btn {
+  background: none;
+  border: none;
+  color: var(--text-color);
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: var(--spacing-xs);
+  transition: var(--transition);
+}
+
+#theme-toggle-btn:hover {
+  color: var(--accent-color);
+}
+
+/* Header */
+.header {
+  margin-bottom: var(--spacing-xl);
+}
+
+.profile {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+}
+
+.profile-image {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.profile-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-content h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: var(--spacing-xs);
+}
+
+.profile-content h2 {
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.intro {
+  font-size: 1.5rem;
+  font-weight: 300;
+  max-width: 600px;
+}
+
+/* Sections */
+.section {
+  margin-bottom: var(--spacing-xl);
+  padding-bottom: var(--spacing-lg);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.section:last-child {
+  border-bottom: none;
+}
+
+.section-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: var(--spacing-md);
+  position: relative;
+}
+
+/* About Section */
+.about-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+/* Skills Section */
+.skills-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.skill-group h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: var(--spacing-sm);
+}
+
+.skill-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+}
+
+.tag {
+  background-color: var(--tag-bg);
+  color: var(--tag-text);
+  padding: 0.3rem 0.8rem;
+  border-radius: 30px;
+  font-size: 0.9rem;
+  transition: var(--transition);
+}
+
+.tag:hover {
+  background-color: var(--accent-color);
+  color: white;
+}
+
+/* Experience Section */
+.experience-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.experience-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.experience-header {
+  margin-bottom: var(--spacing-xs);
+}
+
+.experience-header h4 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.2rem;
+}
+
+.company {
+  font-weight: 500;
+  color: var(--accent-color);
+  margin-right: var(--spacing-sm);
+}
+
+.period {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.experience-details {
+  list-style-position: inside;
+  padding-left: var(--spacing-xs);
+}
+
+.experience-details li {
+  margin-bottom: var(--spacing-xs);
+}
+
+/* Projects Section */
+.projects-content {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: var(--spacing-md);
+}
+
+.project-item {
+  padding: var(--spacing-md);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  transition: var(--transition);
+}
+
+.project-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+}
+
+.project-item h4 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: var(--spacing-xs);
+}
+
+.project-item p {
+  margin-bottom: var(--spacing-sm);
+  color: var(--text-secondary);
+}
+
+.project-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-sm);
+}
+
+.project-links {
+  display: flex;
+  gap: var(--spacing-md);
+}
+
+.link {
+  color: var(--accent-color);
+  text-decoration: none;
+  font-weight: 500;
+  transition: var(--transition);
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+/* Contact Section */
+.contact-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.contact-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.contact-item i {
+  color: var(--accent-color);
+}
+
+.contact-message {
+  padding: var(--spacing-md);
+  background-color: var(--tag-bg);
+  border-radius: 4px;
+}
+
+/* Footer */
+footer {
+  text-align: center;
+  padding: var(--spacing-md) 0;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .profile {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .intro {
+    text-align: center;
+  }
+
+  .projects-content {
+    grid-template-columns: 1fr;
+  }
+
+  .contact-info {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 480px) {
+  body {
+    padding: var(--spacing-sm);
+  }
+
+  .profile-content h1 {
+    font-size: 2rem;
+  }
+
+  .intro {
+    font-size: 1.2rem;
+  }
+}
+
+</style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="description" content="Pablos Tselioudis's professional portfolio showcasing projects and skills in AI Engineer">
+</head>
+<body>
+    <div class="theme-toggle">
+        <button id="theme-toggle-btn" aria-label="Toggle dark mode">
+            <i class="fas fa-moon"></i>
+        </button>
+    </div>
+
+    <main class="container">
+        <!-- Header Section -->
+        <header class="header">
+            <div class="profile">
+                <div class="profile-image">
+                    
+                    <img src="https://firebasestorage.googleapis.com/v0/b/makeportfolio-2bd67.firebasestorage.app/o/users%2FxJNLPOUgWQP8AL4X864Cl8Y18zn2%2Fportfolios%2FAGPO9VhmRSEQMhylfaWu%2Fprofile%2F1744573969744-ProfilePic.png?alt=media&token=8df42d3a-3640-48b2-88e3-786ff5c03859" alt="Pablos Tselioudis">
+                    
+                </div>
+                <div class="profile-content">
+                    <h1>Pablos Tselioudis</h1>
+                    <h2>AI Engineer</h2>
+                </div>
+            </div>
+            <div class="intro">
+                <p>I'm a skilled AI Engineer with a passion for developing innovative solutions.</p>
+            </div>
+        </header>
+
+        <!-- About Section -->
+        <section class="section" id="about">
+            <h3 class="section-title">About</h3>
+            <div class="about-content">
+                <p>Hello! I'm Pablos Tselioudis Garmendia, a dedicated Data Scientist currently studying the bachelor of "Data Science and Engineering" at UC3M and Northeastern University. My academic journey is enriched by my active participation in various competitions, including the prestigious Math and Informatics Olympiads, the CANSAT project, and my role as the captain of a team of 3 in the UCSAS 2024 USOPC DATA CHALLENGE. Beyond the realm of data science, I have a profound passion for AI.</p>
+                
+                
+                <div class="resume-link">
+                    <a href="https://firebasestorage.googleapis.com/v0/b/makeportfolio-2bd67.firebasestorage.app/o/users%2FxJNLPOUgWQP8AL4X864Cl8Y18zn2%2Fportfolios%2FAGPO9VhmRSEQMhylfaWu%2Fcv%2F1744573969746-PablosTselioudis(ENG).pdf?alt=media&token=c61b8b37-e136-42b1-a6d9-f13dfd5f1e2f" class="link" target="_blank">Download Resume</a>
+                </div>
+                
+            </div>
+        </section>
+
+        <!-- Skills Section -->
+        <section class="section" id="skills">
+            <h3 class="section-title">Skills</h3>
+            <div class="skills-content">
+                <div class="skill-group">
+                    <h4>Technical Skills</h4>
+                    <div class="skill-tags">
+                        
+          <span class="tag">Python</span>
+        
+          <span class="tag">Excel</span>
+        
+          <span class="tag">R</span>
+        
+          <span class="tag">SQL</span>
+        
+          <span class="tag">HTML/CSS</span>
+        
+          <span class="tag">MongoDB</span>
+        
+          <span class="tag">Docker</span>
+        
+          <span class="tag">Langchain</span>
+        
+          <span class="tag">Firebase</span>
+        
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Experience Section -->
+        <section class="section" id="experience">
+            <h3 class="section-title">Experience</h3>
+            <div class="experience-content">
+                
+          <div class="experience-item">
+            <div class="experience-header">
+              <h4>Summer Intern</h4>
+              <span class="company">MOTIX CONNECTED (TOYOTA)</span>
+              <span class="period"></span>
+            </div>
+            <div class="experience-details">
+              <p>AI and Machine Learning Summer Intern Jun 2023-Aug 2023 <br>• Strengthened image processing skills through 40+ hours of specialized training, contributing to internal knowledge development for computer vision applications in automotive technologies. <br>• Developed an AI chatbot for customer support using Flowise AI and LangChain, reducing response time by 13% and improving query accuracy. Integrated NLP capabilities and existing knowledge bases. </p>
+            </div>
+          </div>
+        
+          <div class="experience-item">
+            <div class="experience-header">
+              <h4>AI and Machine Learning Intern</h4>
+              <span class="company">Aioi Nissay Dowa</span>
+              <span class="period"></span>
+            </div>
+            <div class="experience-details">
+              <p>• Employed by Aioi in the UK, working onsite at Toyota Madrid's offices on a 6-month internship <br>• Spearheading improvements on the churn model of the company to enhance customer retention. </p>
+            </div>
+          </div>
+        
+          <div class="experience-item">
+            <div class="experience-header">
+              <h4>Referee</h4>
+              <span class="company">Official Basketball</span>
+              <span class="period"></span>
+            </div>
+            <div class="experience-details">
+              <p>Refereefor the Federation of Basketball in Madrid Dec 2022-Present <br>• Officiated as a referee for over 70 basketball games maintaining a 100% attendance record <br>• Promoted to officiate competitive basketball games for older youth racking up 100+ hours of work. </p>
+            </div>
+          </div>
+        
+            </div>
+        </section>
+
+        <!-- Projects Section -->
+        <section class="section" id="projects">
+            <h3 class="section-title">Projects</h3>
+            <div class="projects-content">
+                
+          <div class="project-item">
+            <h4>UCSAS 2024 USOPC DATA CHALLENGE</h4>
+            <p>In developing this Python script, my team and I set out to tackle the challenge of strategically selecting the most promising athletes for Team USA Olympic Men's and Women's Artistic Gymnastics teams, optimizing their success at the Paris 2024 Olympics. The script incorporates techniques such as linear regression modeling to predict gymnastic scores. We carefully considered historical means for adjusting scores, ensuring fair comparisons across different apparatus and genders.</p>
+            <div class="project-tags">
+              <span class="tag">Project</span>
+            </div>
+            <div class="project-image">
+              <img src="https://firebasestorage.googleapis.com/v0/b/makeportfolio-2bd67.firebasestorage.app/o/users%2FxJNLPOUgWQP8AL4X864Cl8Y18zn2%2Fportfolios%2FAGPO9VhmRSEQMhylfaWu%2Fprojects%2F0%2F1744573969747-USOPC.png?alt=media&token=442a9a81-28ca-4678-a6b8-2709f20e052f" alt="UCSAS 2024 USOPC DATA CHALLENGE" onerror="this.src='https://placehold.co/400x250/e2e8f0/1e293b?text=Project+Image'">
+            </div>
+          </div>
+        
+          <div class="project-item">
+            <h4>Spotify Song Recommender</h4>
+            <p>This project aimes to create a machine learning-based Spotify song recommender system that enhances user satisfaction by personalizing music playlists according to individual preferences. By analyzing user listening data and using features such as danceability, energy, and valence, the system predicts and recommends songs that align with users' tastes.</p>
+            <div class="project-tags">
+              <span class="tag">Project</span>
+            </div>
+            <div class="project-image">
+              <img src="https://firebasestorage.googleapis.com/v0/b/makeportfolio-2bd67.firebasestorage.app/o/users%2FxJNLPOUgWQP8AL4X864Cl8Y18zn2%2Fportfolios%2FAGPO9VhmRSEQMhylfaWu%2Fprojects%2F1%2F1744573969747-SPOTIFY.png?alt=media&token=e8573685-e1e9-4d8b-8968-9a4223373bde" alt="Spotify Song Recommender" onerror="this.src='https://placehold.co/400x250/e2e8f0/1e293b?text=Project+Image'">
+            </div>
+          </div>
+        
+          <div class="project-item">
+            <h4>Football Fantasy Predictive Model</h4>
+            <p>In developing this data-driven approach, I set out to tackle the challenge of identifying the most promising La Liga players for Fantasy Football, ensuring that users can optimize their weekly lineups with confidence. I integrated various techniques—most notably Random Forest and Gradient Boosting—to predict both player points and market values.</p>
+            <div class="project-tags">
+              <span class="tag">Project</span>
+            </div>
+            <div class="project-image">
+              <img src="https://firebasestorage.googleapis.com/v0/b/makeportfolio-2bd67.firebasestorage.app/o/users%2FxJNLPOUgWQP8AL4X864Cl8Y18zn2%2Fportfolios%2FAGPO9VhmRSEQMhylfaWu%2Fprojects%2F2%2F1744573969747-FOOTBALL.png?alt=media&token=022d51db-e6f0-4d45-91e4-e45d3b90b521" alt="Football Fantasy Predictive Model" onerror="this.src='https://placehold.co/400x250/e2e8f0/1e293b?text=Project+Image'">
+            </div>
+          </div>
+        
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section class="section" id="contact">
+            <h3 class="section-title">Contact</h3>
+            <div class="contact-content">
+                <div class="contact-info">
+                    {{#if email}}
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <span>pablos.tselioudis@gmail.com</span>
+                    </div>
+                    {{/if}}
+                    
+                    {{#if phone}}
+                    <div class="contact-item">
+                        <i class="fas fa-phone"></i>
+                        <span>+34 606 97 06 31</span>
+                    </div>
+                    {{/if}}
+                </div>
+                <div class="contact-message">
+                    {{#if email}}
+                    <p>You can reach out to me at pablos.tselioudis@gmail.com</p>
+                    {{else}}
+                    <p>Feel free to get in touch for collaborations and opportunities.</p>
+                    {{/if}}
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; <span class="currentYear">2023</span> Pablos Tselioudis. All rights reserved.</p>
+    </footer>
+
+    <script>
+document.addEventListener("DOMContentLoaded", () => {
+  // Initialize Matrix Canvas
+  const canvas = document.getElementById("matrixCanvas")
+  const ctx = canvas.getContext("2d")
+
+  // Set canvas dimensions
+  canvas.width = window.innerWidth
+  canvas.height = window.innerHeight
+
+  // Characters to be used in the matrix
+  const chars = "01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン"
+  const fontSize = 14
+  const columns = Math.floor(canvas.width / fontSize)
+
+  // Array to track the y position of each column
+  const drops = []
+  for (let i = 0; i < columns; i++) {
+    drops[i] = 1
+  }
+
+  // Matrix rain drawing function
+  function drawMatrix() {
+    // Semi-transparent black to create trail effect
+    ctx.fillStyle = "rgba(10, 25, 47, 0.05)"
+    ctx.fillRect(0, 0, canvas.width, canvas.height)
+
+    // Set text color and font
+    ctx.fillStyle = "#00ff00"
+    ctx.font = `${fontSize}px monospace`
+
+    // Loop through each drop
+    for (let i = 0; i < drops.length; i++) {
+      // Get random character
+      const text = chars[Math.floor(Math.random() * chars.length)]
+
+      // Draw the character
+      ctx.fillText(text, i * fontSize, drops[i] * fontSize)
+
+      // Reset drop to top with random reset after it has crossed the screen
+      if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+        drops[i] = 0
+      }
+
+      // Increment y coordinate
+      drops[i]++
+    }
+  }
+
+  // Set interval for matrix animation
+  const matrixInterval = setInterval(drawMatrix, 50)
+
+  // Resize canvas when window is resized
+  window.addEventListener("resize", () => {
+    canvas.width = window.innerWidth
+    canvas.height = window.innerHeight
+  })
+
+  // DOM Elements
+  const body = document.body
+  const header = document.querySelector(".header")
+  const menuToggle = document.querySelector(".menu-toggle")
+  const mobileMenu = document.querySelector(".mobile-menu")
+  const closeMenu = document.querySelector(".close-menu")
+  const mobileNavLinks = document.querySelectorAll(".mobile-nav-link")
+  const themeToggle = document.querySelector(".theme-toggle")
+  const navLinks = document.querySelectorAll(".nav-link")
+  const sections = document.querySelectorAll(".section")
+  const filterBtns = document.querySelectorAll(".filter-btn")
+  const projectCards = document.querySelectorAll(".project-card")
+  const backToTop = document.querySelector(".back-to-top")
+  const skillBars = document.querySelectorAll(".skill-progress")
+  const contactForm = document.getElementById("contactForm")
+  const cursor = document.querySelector(".cursor")
+  const cursorFollower = document.querySelector(".cursor-follower")
+  const portfolioItems = document.querySelectorAll(".portfolio-item")
+  const lookbookSlides = document.querySelectorAll(".lookbook-slide")
+  const lookbookPrev = document.querySelector(".lookbook-prev")
+  const lookbookNext = document.querySelector(".lookbook-next")
+  const lookbookDots = document.querySelector(".lookbook-dots")
+
+  // Custom Cursor
+  document.addEventListener("mousemove", (e) => {
+    cursor.style.left = e.clientX + "px"
+    cursor.style.top = e.clientY + "px"
+
+    // Add a slight delay to the follower for a smooth effect
+    setTimeout(() => {
+      cursorFollower.style.left = e.clientX + "px"
+      cursorFollower.style.top = e.clientY + "px"
+    }, 100)
+  })
+
+  // Make cursor larger when hovering over links and buttons
+  document.querySelectorAll("a, button, .portfolio-item, .skill-item").forEach((item) => {
+    item.addEventListener("mouseenter", () => {
+      cursor.style.transform = "translate(-50%, -50%) scale(1.5)"
+      cursorFollower.style.transform = "translate(-50%, -50%) scale(1.5)"
+      cursorFollower.style.backgroundColor = "rgba(212, 175, 55, 0.2)"
+      cursorFollower.style.border = "none"
+    })
+
+    item.addEventListener("mouseleave", () => {
+      cursor.style.transform = "translate(-50%, -50%) scale(1)"
+      cursorFollower.style.transform = "translate(-50%, -50%) scale(1)"
+      cursorFollower.style.backgroundColor = "transparent"
+      cursorFollower.style.border = "1px solid var(--primary-color)"
+    })
+  })
+
+  // Check for saved theme preference or use default
+  const currentTheme = localStorage.getItem("theme")
+  if (currentTheme) {
+    body.classList.add(currentTheme)
+    if (currentTheme === "dark-theme") {
+      themeToggle.innerHTML = '<i class="fas fa-sun"></i>'
+    }
+  }
+
+  // Theme Toggle
+  themeToggle.addEventListener("click", () => {
+    body.classList.toggle("dark-theme")
+
+    if (body.classList.contains("dark-theme")) {
+      localStorage.setItem("theme", "dark-theme")
+      themeToggle.innerHTML = '<i class="fas fa-sun"></i>'
+    } else {
+      localStorage.setItem("theme", "")
+      themeToggle.innerHTML = '<i class="fas fa-moon"></i>'
+    }
+  })
+
+  // Mobile Menu Toggle
+  menuToggle.addEventListener("click", () => {
+    mobileMenu.classList.add("active")
+  })
+
+  closeMenu.addEventListener("click", () => {
+    mobileMenu.classList.remove("active")
+  })
+
+  // Close mobile menu when clicking a link
+  mobileNavLinks.forEach((link) => {
+    link.addEventListener("click", () => {
+      mobileMenu.classList.remove("active")
+    })
+  })
+
+  // Sticky Header
+  window.addEventListener("scroll", () => {
+    if (window.scrollY > 100) {
+      header.classList.add("scrolled")
+    } else {
+      header.classList.remove("scrolled")
+    }
+
+    // Back to top button visibility
+    if (window.scrollY > 500) {
+      backToTop.classList.add("active")
+    } else {
+      backToTop.classList.remove("active")
+    }
+
+    // Active section highlighting
+    let current = ""
+    sections.forEach((section) => {
+      const sectionTop = section.offsetTop - 100
+      const sectionHeight = section.offsetHeight
+      if (window.scrollY >= sectionTop && window.scrollY < sectionTop + sectionHeight) {
+        current = section.getAttribute("id")
+      }
+    })
+
+    navLinks.forEach((link) => {
+      link.classList.remove("active")
+      if (link.getAttribute("href").substring(1) === current) {
+        link.classList.add("active")
+      }
+    })
+  })
+
+  // Smooth scrolling for anchor links
+  document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+    anchor.addEventListener("click", function (e) {
+      e.preventDefault()
+      const target = document.querySelector(this.getAttribute("href"))
+      if (target) {
+        window.scrollTo({
+          top: target.offsetTop - 80,
+          behavior: "smooth",
+        })
+      }
+    })
+  })
+
+  // Portfolio filtering
+  filterBtns.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      // Remove active class from all buttons
+      filterBtns.forEach((b) => b.classList.remove("active"))
+      // Add active class to clicked button
+      btn.classList.add("active")
+
+      const filter = btn.getAttribute("data-filter")
+
+      projectCards.forEach((card) => {
+        if (filter === "all" || card.getAttribute("data-category") === filter) {
+          card.style.display = "block"
+        } else {
+          card.style.display = "none"
+        }
+      })
+    })
+  })
+
+  // Back to top button
+  backToTop.addEventListener("click", () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    })
+  })
+
+  // Contact form submission
+  if (contactForm) {
+    contactForm.addEventListener("submit", (e) => {
+      e.preventDefault()
+      // In a real implementation, you would send the form data to a server
+      alert("Thank you for your message! I will get back to you soon.")
+      contactForm.reset()
+    })
+  }
+
+  // Lookbook Slider
+  let currentSlide = 0
+  const totalSlides = lookbookSlides.length
+
+  // Create dots for each slide
+  if (lookbookDots && totalSlides > 0) {
+    for (let i = 0; i < totalSlides; i++) {
+      const dot = document.createElement("div")
+      dot.classList.add("lookbook-dot")
+      if (i === 0) dot.classList.add("active")
+      dot.addEventListener("click", () => {
+        goToSlide(i)
+      })
+      lookbookDots.appendChild(dot)
+    }
+  }
+
+  // Initialize slider
+  if (totalSlides > 0) {
+    lookbookSlides[0].classList.add("active")
+  }
+
+  // Previous slide
+  if (lookbookPrev) {
+    lookbookPrev.addEventListener("click", () => {
+      currentSlide = (currentSlide - 1 + totalSlides) % totalSlides
+      goToSlide(currentSlide)
+    })
+  }
+
+  // Next slide
+  if (lookbookNext) {
+    lookbookNext.addEventListener("click", () => {
+      currentSlide = (currentSlide + 1) % totalSlides
+      goToSlide(currentSlide)
+    })
+  }
+
+  // Go to specific slide
+  function goToSlide(slideIndex) {
+    lookbookSlides.forEach((slide) => {
+      slide.classList.remove("active")
+    })
+    lookbookSlides[slideIndex].classList.add("active")
+
+    // Update dots
+    const dots = document.querySelectorAll(".lookbook-dot")
+    dots.forEach((dot, index) => {
+      dot.classList.toggle("active", index === slideIndex)
+    })
+  }
+
+  // Auto slide (optional)
+  let slideInterval
+  function startSlideShow() {
+    slideInterval = setInterval(() => {
+      currentSlide = (currentSlide + 1) % totalSlides
+      goToSlide(currentSlide)
+    }, 5000)
+  }
+
+  // Start slideshow if there are slides
+  if (totalSlides > 0) {
+    startSlideShow()
+  }
+
+  // Pause slideshow on hover
+  const lookbookSection = document.querySelector(".lookbook-section")
+  if (lookbookSection) {
+    lookbookSection.addEventListener("mouseenter", () => {
+      clearInterval(slideInterval)
+    })
+
+    lookbookSection.addEventListener("mouseleave", () => {
+      startSlideShow()
+    })
+  }
+
+  // Animate skill bars on scroll
+  const animateSkillBars = () => {
+    skillBars.forEach((bar) => {
+      const barTop = bar.getBoundingClientRect().top
+      if (barTop < window.innerHeight - 100) {
+        const width = bar.style.width
+        bar.style.width = "0%"
+        setTimeout(() => {
+          bar.style.width = width
+        }, 100)
+      }
+    })
+  }
+
+  // Reveal animations on scroll
+  const revealElements = document.querySelectorAll(
+    ".section-header, .about-content, .project-card, .timeline-item, .skill-item, .certification-item",
+  )
+
+  function revealOnScroll() {
+    revealElements.forEach((element) => {
+      const elementTop = element.getBoundingClientRect().top
+      const elementVisible = 150
+
+      if (elementTop < window.innerHeight - elementVisible) {
+        element.classList.add("revealed")
+      }
+    })
+  }
+
+  window.addEventListener("scroll", revealOnScroll)
+  window.addEventListener("scroll", animateSkillBars)
+
+  // Initial animation of visible elements
+  revealOnScroll()
+  animateSkillBars()
+
+  // Initialize code highlighting
+  let hljs
+  if (typeof hljs !== "undefined") {
+    hljs.highlightAll()
+  }
+
+  // Typing animation for hero section
+  const typedText = document.querySelector(".typed-text")
+  if (typedText) {
+    const text = typedText.textContent
+    typedText.textContent = ""
+    let i = 0
+
+    function typeWriter() {
+      if (i < text.length) {
+        typedText.textContent += text.charAt(i)
+        i++
+        setTimeout(typeWriter, 100)
+      }
+    }
+
+    setTimeout(typeWriter, 1000)
+  }
+})
+
+document.addEventListener("DOMContentLoaded", () => {
+  // DOM Elements
+  const themeSwitch = document.getElementById("theme-switch")
+  const body = document.body
+  const navButtons = document.querySelectorAll(".nav-btn")
+  const backButtons = document.querySelectorAll(".back-btn")
+  const mainCard = document.getElementById("main-card")
+  const cards = document.querySelectorAll(".card")
+
+  // Check for saved theme preference
+  const savedTheme = localStorage.getItem("theme")
+  if (savedTheme === "dark") {
+    body.classList.add("dark-theme")
+    themeSwitch.checked = true
+  }
+
+  // Theme Toggle
+  themeSwitch.addEventListener("change", function () {
+    if (this.checked) {
+      body.classList.add("dark-theme")
+      localStorage.setItem("theme", "dark")
+    } else {
+      body.classList.remove("dark-theme")
+      localStorage.setItem("theme", "light")
+    }
+  })
+
+  // Card Navigation
+  navButtons.forEach((button) => {
+    button.addEventListener("click", function () {
+      const targetId = this.getAttribute("data-target")
+      const targetCard = document.getElementById(targetId)
+
+      // Hide main card
+      mainCard.classList.remove("active")
+
+      // Show target card
+      targetCard.classList.add("active")
+
+      // Add animation class
+      targetCard.classList.add("card-transition")
+      setTimeout(() => {
+        targetCard.classList.remove("card-transition")
+      }, 500)
+    })
+  })
+
+  // Back Button
+  backButtons.forEach((button) => {
+    button.addEventListener("click", function () {
+      // Get current card
+      const currentCard = this.closest(".card")
+
+      // Hide current card
+      currentCard.classList.remove("active")
+
+      // Show main card
+      mainCard.classList.add("active")
+
+      // Add animation class
+      mainCard.classList.add("card-transition")
+      setTimeout(() => {
+        mainCard.classList.remove("card-transition")
+      }, 500)
+    })
+  })
+
+  // Project image hover effect
+  const projectImages = document.querySelectorAll(".project-image")
+  projectImages.forEach((image) => {
+    image.addEventListener("mouseenter", function () {
+      this.querySelector("img").style.transform = "scale(1.05)"
+    })
+
+    image.addEventListener("mouseleave", function () {
+      this.querySelector("img").style.transform = "scale(1)"
+    })
+  })
+
+  // Skill tag hover effect
+  const skillTags = document.querySelectorAll(".skill-tag")
+  skillTags.forEach((tag) => {
+    tag.addEventListener("mouseenter", function () {
+      this.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--accent-color")
+      this.style.color = "white"
+    })
+
+    tag.addEventListener("mouseleave", function () {
+      this.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--bg-color")
+      this.style.color = getComputedStyle(document.documentElement).getPropertyValue("--text-color")
+    })
+  })
+
+  // Add subtle entrance animation for main card
+  setTimeout(() => {
+    mainCard.style.opacity = "0"
+    mainCard.style.transform = "translateY(20px)"
+    mainCard.classList.add("active")
+
+    setTimeout(() => {
+      mainCard.style.transition = "opacity 0.5s ease, transform 0.5s ease"
+      mainCard.style.opacity = "1"
+      mainCard.style.transform = "translateY(0)"
+    }, 100)
+  }, 300)
+})
+
+document.addEventListener("DOMContentLoaded", () => {
+  // Theme toggle functionality
+  const themeToggleBtn = document.getElementById("theme-toggle-btn")
+  const body = document.body
+
+  // Check for saved theme preference or use default
+  const currentTheme = localStorage.getItem("theme")
+  if (currentTheme) {
+    body.classList.add(currentTheme)
+    updateThemeIcon(currentTheme === "dark-theme")
+  }
+
+  // Toggle theme on button click
+  themeToggleBtn.addEventListener("click", () => {
+    body.classList.toggle("dark-theme")
+
+    // Save theme preference
+    if (body.classList.contains("dark-theme")) {
+      localStorage.setItem("theme", "dark-theme")
+      updateThemeIcon(true)
+    } else {
+      localStorage.setItem("theme", "")
+      updateThemeIcon(false)
+    }
+  })
+
+  // Update theme icon based on current theme
+  function updateThemeIcon(isDark) {
+    if (isDark) {
+      themeToggleBtn.innerHTML = '<i class="fas fa-sun"></i>'
+    } else {
+      themeToggleBtn.innerHTML = '<i class="fas fa-moon"></i>'
+    }
+  }
+
+  // Smooth scrolling for anchor links
+  document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+    anchor.addEventListener("click", function (e) {
+      e.preventDefault()
+
+      const targetId = this.getAttribute("href")
+      const targetElement = document.querySelector(targetId)
+
+      if (targetElement) {
+        window.scrollTo({
+          top: targetElement.offsetTop - 50,
+          behavior: "smooth",
+        })
+      }
+    })
+  })
+
+  // Subtle reveal animations on scroll
+  const revealElements = document.querySelectorAll(".section")
+
+  function revealOnScroll() {
+    revealElements.forEach((element) => {
+      const elementTop = element.getBoundingClientRect().top
+      const elementVisible = 150
+
+      if (elementTop < window.innerHeight - elementVisible) {
+        element.classList.add("revealed")
+      }
+    })
+  }
+
+  // Add CSS for reveal animation
+  const style = document.createElement("style")
+  style.textContent = `
+    .section {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    
+    .section.revealed {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  `
+  document.head.appendChild(style)
+
+  // Initial check and add scroll event listener
+  revealOnScroll()
+  window.addEventListener("scroll", revealOnScroll)
+
+  // Project hover effects
+  const projectItems = document.querySelectorAll(".project-item")
+
+  projectItems.forEach((item) => {
+    item.addEventListener("mouseenter", function () {
+      this.style.borderColor = getComputedStyle(document.documentElement).getPropertyValue("--accent-color")
+    })
+
+    item.addEventListener("mouseleave", function () {
+      this.style.borderColor = getComputedStyle(document.documentElement).getPropertyValue("--border-color")
+    })
+  })
+})
+
+</script>
+</body>
+</html> 

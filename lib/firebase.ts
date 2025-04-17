@@ -364,7 +364,8 @@ export const createPortfolio = async (
       projects: portfolioData.projects.map((project: any) => ({
         name: project.name,
         description: project.description,
-        imageUrl: DEFAULT_PLACEHOLDER // Default placeholder until upload succeeds
+        imageUrl: DEFAULT_PLACEHOLDER, // Default placeholder until upload succeeds
+        technologies: project.technologies || [] // Include technologies array if available
       })),
       templateId: portfolioData.templateId,
       createdAt: new Date().toISOString(),

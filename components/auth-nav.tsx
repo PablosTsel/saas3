@@ -54,23 +54,23 @@ export function AuthNav() {
           ) : user ? (
             <>
               <Link href="/dashboard">
-                <Button variant="outline" size="sm" className="border-indigo-200 hover:border-indigo-300 hover:bg-indigo-50 text-gray-700">
+                <Button variant="outline" size="sm" className="border-indigo-200 hover:border-indigo-300 hover:bg-indigo-50 text-gray-700 rounded-md">
                   Dashboard
                 </Button>
               </Link>
-              <Button onClick={handleLogout} size="sm" className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white">
+              <Button onClick={handleLogout} size="sm" className="bg-black hover:bg-gray-800 text-white rounded-md">
                 Sign out
               </Button>
             </>
           ) : (
             <>
               <Link href="/auth/login">
-                <Button variant="outline" size="sm" className="border-indigo-200 hover:border-indigo-300 hover:bg-indigo-50 text-gray-700">
+                <Button variant="outline" size="sm" className="border-indigo-200 hover:border-indigo-300 hover:bg-indigo-50 text-gray-700 rounded-md">
                   Sign in
                 </Button>
               </Link>
               <Link href="/auth/signup">
-                <Button size="sm" className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-sm hover:shadow-md transition-all">
+                <Button size="sm" className="bg-black hover:bg-gray-800 text-white rounded-md shadow-sm hover:shadow-md transition-all">
                   Sign up
                 </Button>
               </Link>
