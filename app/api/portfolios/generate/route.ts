@@ -291,132 +291,192 @@ export async function POST(request: NextRequest) {
       }
       htmlContent = htmlContent.replace(/{{initials}}/g, initials);
       
-      // Handle skills HTML generation per template
+      // Initialize HTML variables for template sections
       let skillsHtml = '';
-      if (templateId === 'template3') {
-        skillsHtml = portfolioData.skills.map((skill: Skill) => `
-          <span class="skill-tag">${skill.name || ''}</span>
-        `).join('');
-      } else if (templateId === 'template1') {
-        skillsHtml = portfolioData.skills.map((skill: Skill) => `
-          <div class="skill-tag">
-            <span class="skill-icon"><i class="fas fa-code"></i></span>
-            <span class="skill-name">${skill.name || ''}</span>
-          </div>
-        `).join('');
-      } else if (templateId === 'template5') {
-        skillsHtml = portfolioData.skills.map((skill: Skill) => `
-          <div class="skill-card">
-            <div class="skill-info">
-              <h3 class="skill-name">${skill.name || ''}</h3>
-              <div class="skill-level-container">
-                <div class="skill-level"></div>
-              </div>
-            </div>
-          </div>
-        `).join('');
-      } else if (templateId === 'template4') {
-        skillsHtml = portfolioData.skills.map((skill: Skill) => `
-          <div class="skill-card">
-            <div class="skill-icon">
-              <i class="fas fa-code"></i>
-            </div>
-            <span class="skill-name">${skill.name || ''}</span>
-          </div>
-        `).join('');
-      } else {
-        skillsHtml = portfolioData.skills.map((skill: Skill) => `
-          <div class="skill-item">
-            <div class="skill-icon">
-              <i class="fas fa-code"></i>
-            </div>
-            <span class="skill-name">${skill.name || ''}</span>
-          </div>
-        `).join('');
-      }
-      htmlContent = htmlContent.replace(/{{#each skills}}[\s\S]*?{{\/each}}/g, skillsHtml);
+      let experienceHtml = '';
+      let educationHtml = '';
+      let projectsHtml = '';
       
-      // Process skills HTML for each template - fixing Template4
-      if (templateId === 'template4') {
-        // Create a special scrolling container for skills
-        const skillsItems = portfolioData.skills.map((skill: Skill) => `
-          <div class="skill-card">
-            <div class="skill-icon">
-              <i class="fas fa-code"></i>
-            </div>
-            <span class="skill-name">${skill.name || ''}</span>
-          </div>
-        `).join('');
+      // Handle template-specific logic
+      if (templateId === 'template3') {
+        // Format code snippets properly for code highlighting in template3
+        // Convert newlines in about text for the code snippet
+        const formattedAbout = portfolioData.about.replace(/\n/g, '\n  ');
+        htmlContent = htmlContent.replace(/```{{about}}```/g, formattedAbout);
         
-        // Create the scrolling container with duplicated skills for seamless looping
-        const skillsHtml = `
-        <style>
-          .skills-container {
-            width: 100%;
-            overflow: hidden;
-            position: relative;
-            padding: 20px 0;
-          }
-          
-          .skills-track {
-            display: flex;
-            width: max-content;
-            animation: scroll 30s linear infinite;
-          }
-          
-          .skill-card {
-            margin: 0 15px;
-            flex-shrink: 0;
-          }
-          
-          @keyframes scroll {
-            0% {
-              transform: translateX(0);
+        // Add line breaks to description in timeline items for template3
+        if (portfolioData.experience && portfolioData.experience.length > 0) {
+          portfolioData.experience.forEach((exp: Experience, index: number) => {
+            if (exp.description) {
+              const formattedDescription = exp.description.replace(/\n/g, '<br>').replace(/\r/g, '<br>');
+              htmlContent = htmlContent.replace(
+                new RegExp(`experience\\[${index}\\]\\.description`, 'g'),
+                formattedDescription
+              );
             }
-            100% {
-              transform: translateX(-50%);
-            }
-          }
-        </style>
+          });
+        }
         
-        <div class="skills-container">
-          <div class="skills-track">
-            ${skillsItems}
-            ${skillsItems} <!-- Duplicate skills for seamless loop -->
-          </div>
-        </div>
-        `;
-        
-        // Replace skills section in the template
-        htmlContent = htmlContent.replace(/{{#each skills}}[\s\S]*?{{\/each}}/g, skillsHtml);
-        
-        // Now fix the projects section for Template4
-        const projectsHtml = portfolioData.projects.map((project: Project) => {
+        // Special handling for Template3 with GitHub and report buttons
+        projectsHtml = portfolioData.projects.map((project: Project) => {
           // Check if we have GitHub URL or report URL
           const hasGithub = project.githubUrl && project.githubUrl.trim() !== '';
           const hasReport = project.reportUrl && project.reportUrl.trim() !== '';
           
-          // Generate buttons HTML based on available URLs
-          let actionsHtml = '';
-          if (hasGithub || hasReport) {
-            actionsHtml = '<div class="project-actions">';
-            
-            if (hasGithub) {
-              actionsHtml += `
-                <a href="${project.githubUrl}" class="btn-project github-button" target="_blank">
-                  <i class="fab fa-github"></i> GitHub
-                </a>`;
-            }
-            
-            if (hasReport) {
-              actionsHtml += `
-                <a href="${project.reportUrl}" class="btn-project report-button" target="_blank">
-                  <i class="fas fa-file-alt"></i> Report
-                </a>`;
-            }
-            
-            actionsHtml += '</div>';
+          // Generate appropriate button HTML
+          const buttonHtml = (hasGithub || hasReport) ? `
+            <div class="project-links">
+              ${hasGithub ? `<a href="${project.githubUrl}" class="project-link github" target="_blank">
+                <i class="fab fa-github"></i> GitHub
+              </a>` : ''}
+              ${hasReport ? `<a href="${project.reportUrl}" class="project-link report" target="_blank">
+                <i class="fas fa-file-alt"></i> Report
+              </a>` : ''}
+            </div>
+          ` : '';
+          
+          return `
+          <div class="project-card">
+            <div class="project-image">
+              <img src="${project.imageUrl || ''}" alt="${project.name || 'Project'}" onerror="this.src='https://placehold.co/600x400/e2e8f0/1e293b?text=Project+Image'">
+            </div>
+            <div class="project-info">
+              <h3>${project.name || ''}</h3>
+              <p>${project.description || ''}</p>
+              ${buttonHtml}
+            </div>
+          </div>
+          `;
+        }).join('');
+        
+        // Add custom CSS for Template3 buttons
+        const template3Css = `
+        <style>
+          /* Project card structure */
+          .project-card {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px var(--shadow-color);
+            transition: transform 0.3s;
+            border: 1px solid var(--border-color);
           }
+          
+          .project-card:hover {
+            transform: translateY(-10px);
+          }
+          
+          .project-info {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+          }
+          
+          .project-info h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+          }
+          
+          .project-info p {
+            color: var(--secondary-color);
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+            flex-grow: 1;
+          }
+          
+          /* Project Links/Buttons */
+          .project-links {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: auto;
+          }
+          
+          .project-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.6rem 1.2rem;
+            border-radius: 4px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            flex: 1;
+            justify-content: center;
+          }
+          
+          .project-link.github {
+            background-color: var(--highlight-color);
+            color: white;
+          }
+          
+          .project-link.github:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+          }
+          
+          .project-link.report {
+            background-color: var(--button-bg);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+          }
+          
+          .project-link.report:hover {
+            background-color: var(--button-hover);
+            transform: translateY(-2px);
+          }
+          
+          @media (max-width: 768px) {
+            .project-links {
+              flex-direction: column;
+            }
+          }
+        </style>
+        `;
+        
+        // Insert custom CSS
+        htmlContent = htmlContent.replace('</head>', `${template3Css}</head>`);
+      } else if (templateId === 'template1') {
+        // Special handling for Template1 with GitHub and report buttons
+        projectsHtml = portfolioData.projects.map((project: Project) => {
+          // Check if we have GitHub URL or report URL
+          const hasGithub = project.githubUrl && project.githubUrl.trim() !== '';
+          const hasReport = project.reportUrl && project.reportUrl.trim() !== '';
+          
+          // Determine button classes based on what we have
+          let buttonContainerClass = '';
+          let githubButtonClass = '';
+          let reportButtonClass = '';
+          
+          if (hasGithub && hasReport) {
+            buttonContainerClass = 'project-button-container two-buttons';
+            githubButtonClass = 'project-button github-button half-width';
+            reportButtonClass = 'project-button report-button half-width';
+          } else if (hasGithub) {
+            buttonContainerClass = 'project-button-container one-button';
+            githubButtonClass = 'project-button github-button full-width';
+          } else if (hasReport) {
+            buttonContainerClass = 'project-button-container one-button';
+            reportButtonClass = 'project-button report-button full-width';
+          }
+          
+          // Only render the button container if we have at least one URL
+          const buttonHtml = (hasGithub || hasReport) ? `
+            <div class="${buttonContainerClass}">
+              ${hasGithub ? `<a href="${project.githubUrl}" target="_blank" class="${githubButtonClass}">
+                <i class="fab fa-github"></i> GitHub
+              </a>` : ''}
+              ${hasReport ? `<a href="${project.reportUrl}" target="_blank" class="${reportButtonClass}">
+                <i class="fas fa-file-alt"></i> Report
+              </a>` : ''}
+            </div>
+          ` : '';
           
           return `
           <div class="project-card">
@@ -426,17 +486,804 @@ export async function POST(request: NextRequest) {
             <div class="project-content">
               <h3>${project.name || ''}</h3>
               <p>${project.description || ''}</p>
-              ${project.technologies && project.technologies.length > 0 
-                ? `<div class="project-tags">${project.technologies.map((tag: string) => `<span class="tag">${tag}</span>`).join('')}</div>` 
-                : ''}
-              ${actionsHtml}
+              ${buttonHtml}
             </div>
-          </div>`;
+          </div>
+          `;
         }).join('');
         
-        // Replace projects section in the template
-        htmlContent = htmlContent.replace(/{{#each projects}}[\s\S]*?{{\/each}}/g, projectsHtml);
+        // Add custom CSS for the buttons and card layout
+        const buttonCss = `
+        <style>
+          /* Flexbox layout for project cards to ensure buttons are at the bottom */
+          .project-card {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+          }
+          
+          .project-content {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            padding: 1.5rem;
+          }
+          
+          .project-content h3 {
+            margin-top: 0;
+            margin-bottom: 0.75rem;
+          }
+          
+          .project-content p {
+            flex-grow: 1;
+            margin-bottom: 1rem;
+          }
+          
+          .project-button-container {
+            margin-top: auto;
+            display: flex;
+            gap: 0.5rem;
+          }
+          
+          .project-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1rem;
+            border-radius: 0.25rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.3s ease;
+          }
+          
+          .project-button i {
+            margin-right: 0.5rem;
+          }
+          
+          .github-button {
+            background-color: #333;
+            color: white;
+          }
+          
+          .github-button:hover {
+            background-color: #24292e;
+          }
+          
+          .report-button {
+            background-color: #0070f3;
+            color: white;
+          }
+          
+          .report-button:hover {
+            background-color: #0051cc;
+          }
+          
+          .half-width {
+            flex: 1;
+          }
+          
+          .full-width {
+            width: 100%;
+          }
+          
+          /* Ensure consistent height for project cards */
+          .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+          }
+        </style>
+        `;
+        
+        // Generate skills HTML for Template 1
+        skillsHtml = portfolioData.skills.map((skill: Skill) => `
+          <div class="skill-tag">
+            <span class="skill-icon"><i class="fas fa-code"></i></span>
+            <span class="skill-name">${skill.name || ''}</span>
+          </div>
+        `).join('');
+        
+        // Append the custom CSS to the HTML content
+        htmlContent = htmlContent.replace('</head>', `${buttonCss}</head>`);
+      } else if (templateId === 'template5') {
+        // Add skills HTML for Template 5
+        skillsHtml = portfolioData.skills.map((skill: Skill) => `
+          <div class="skill-item">
+            <div class="skill-icon">
+              <i class="fas fa-code"></i>
+            </div>
+            <h4>${skill.name || ''}</h4>
+            <div class="skill-bar">
+                <div class="skill-level"></div>
+            </div>
+          </div>
+        `).join('');
+        
+        // Generate projects HTML for Template 5
+        projectsHtml = portfolioData.projects.map((project: Project) => {
+          // Check if we have GitHub URL or report URL
+          const hasGithub = project.githubUrl && project.githubUrl.trim() !== '';
+          const hasReport = project.reportUrl && project.reportUrl.trim() !== '';
+          
+          return `
+          <div class="project-card" data-category="all">
+            <div class="project-image">
+              <img src="${project.imageUrl || ''}" alt="${project.name || 'Project'}" onerror="this.src='https://placehold.co/600x400/e2e8f0/1e293b?text=Project+Image'">
+              <div class="project-overlay">
+                <div class="project-links">
+                  ${hasGithub ? `<a href="${project.githubUrl}" class="project-link" target="_blank" rel="noopener noreferrer">
+                    <i class="fab fa-github"></i>
+                  </a>` : ''}
+                  ${hasReport ? `<a href="${project.reportUrl}" class="project-link" target="_blank" rel="noopener noreferrer">
+                    <i class="fas fa-file-alt"></i>
+                  </a>` : ''}
+                </div>
+              </div>
+            </div>
+            
+            <div class="project-info">
+              <h3>${project.name || ''}</h3>
+              <p>${project.description || ''}</p>
+            </div>
+          </div>
+          `;
+        }).join('');
+      } else if (templateId === 'template4') {
+        // Template 4 - Minimal portfolio with moving background
+        // Replace the initials for avatar if needed
+        const initials = portfolioData.fullName
+          ? (portfolioData.fullName.split(' ').map(name => name[0]).join(''))
+          : portfolioData.name.substring(0, 2).toUpperCase();
+          
+        htmlContent = htmlContent.replace(/{{initials}}/g, initials);
+        
+        // Handle current year
+        const currentYear = new Date().getFullYear().toString();
+        htmlContent = htmlContent.replace(/{{currentYear}}/g, currentYear);
+        
+        // Generate projects HTML for Template 4
+        projectsHtml = portfolioData.projects.map((project: Project) => {
+          // Check if we have GitHub URL or report URL
+          const hasGithub = project.githubUrl && project.githubUrl.trim() !== '';
+          const hasReport = project.reportUrl && project.reportUrl.trim() !== '';
+          
+          // Generate action buttons HTML
+          const buttonsHtml = `
+            <div class="project-actions">
+              ${hasGithub ? `
+              <a href="${project.githubUrl}" class="btn btn-sm" target="_blank">
+                <i class="fab fa-github"></i> GitHub
+              </a>
+              ` : ''}
+              ${hasReport ? `
+              <a href="${project.reportUrl}" class="btn btn-sm" target="_blank">
+                <i class="fas fa-file-alt"></i> Report
+              </a>
+              ` : ''}
+            </div>
+          `;
+          
+          return `
+          <div class="project-card">
+            <div class="project-image">
+              <img src="${project.imageUrl || ''}" alt="${project.name || 'Project'}" onerror="this.src='https://placehold.co/600x400/e2e8f0/1e293b?text=Project+Image'">
+              <div class="project-overlay">
+                ${(hasGithub || hasReport) ? buttonsHtml : ''}
+              </div>
+            </div>
+            <div class="project-content">
+              <h3 class="project-title">${project.name || ''}</h3>
+              <p class="project-description">${project.description || ''}</p>
+            </div>
+          </div>
+          `;
+        }).join('');
+        
+        // Add custom CSS for Template 4 buttons
+        const template4Css = `
+        <style>
+          .project-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+          }
+          
+          .project-card:hover .project-overlay {
+            opacity: 1;
+          }
+          
+          .project-actions {
+            display: flex;
+            gap: 1rem;
+          }
+          
+          .project-actions .btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.6rem 1rem;
+            border-radius: 4px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+          }
+          
+          .project-actions .btn i {
+            margin-right: 0.5rem;
+          }
+          
+          .project-actions .btn:hover {
+            background-color: var(--accent-color);
+            transform: translateY(-3px);
+          }
+        </style>
+        `;
+        
+        // Append the custom CSS to the HTML content
+        htmlContent = htmlContent.replace('</head>', `${template4Css}</head>`);
+        
+        // Generate skills HTML for Template 4
+        skillsHtml = portfolioData.skills.map((skill: Skill) => `
+          <div class="skill-card">
+            <div class="skill-icon">
+              <i class="fas fa-code"></i>
+            </div>
+            <h3 class="skill-name">${skill.name || ''}</h3>
+          </div>
+        `).join('');
+      } else if (templateId === 'template2') {
+        // Template 2 has laptop-style project cards
+        projectsHtml = portfolioData.projects.map((project: Project) => {
+          // Check if we have GitHub URL or report URL
+          const hasGithub = project.githubUrl && project.githubUrl.trim() !== '';
+          const hasReport = project.reportUrl && project.reportUrl.trim() !== '';
+          
+          // Create HTML for buttons
+          const buttonHtml = (hasGithub || hasReport) ? `
+            <div class="project-actions">
+              ${hasGithub ? `<a href="${project.githubUrl}" class="btn btn-sm btn-primary" target="_blank">
+                <i class="fab fa-github"></i> GitHub
+              </a>` : ''}
+              ${hasReport ? `<a href="${project.reportUrl}" class="btn btn-sm btn-secondary" target="_blank">
+                <i class="fas fa-file-alt"></i> Report
+              </a>` : ''}
+            </div>
+          ` : '';
+          
+          return `
+          <div class="project-item">
+            <div class="device-card">
+              <div class="monitor">
+                <div class="control-lights">
+                  <div class="light red"></div>
+                  <div class="light yellow"></div>
+                  <div class="light green"></div>
+                </div>
+                <div class="screen">
+                  <img 
+                    src="${project.imageUrl || ''}" 
+                    alt="${project.name || 'Project'}" 
+                    class="screen-content"
+                    onerror="this.src='https://placehold.co/1200x675/000000/555555?text=Project+Preview'"
+                  >
+                  <div class="reflection"></div>
+                </div>
+              </div>
+              <div class="monitor-stand"></div>
+              <div class="monitor-base"></div>
+              <div class="keyboard"></div>
+            </div>
+            
+            <div class="project-body">
+              <h3 class="project-title">${project.name || ''}</h3>
+              <p class="project-description">${project.description || ''}</p>
+              ${buttonHtml}
+            </div>
+          </div>
+          `;
+        }).join('');
+        
+        // Add skills HTML for Template 2
+        skillsHtml = portfolioData.skills.map((skill: Skill) => `
+          <div class="skill-card" style="height: 7rem; width: 100%;">
+            <div class="skill-icon">
+              <i class="fas fa-code"></i>
+            </div>
+            <h3 class="skill-name">${skill.name || ''}</h3>
+          </div>
+        `).join('');
+        
+        const template2Css = `
+        <style>
+          /* Override standard card styles with laptop display styling */
+          .projects-content {
+            display: grid !important;
+            grid-template-columns: repeat(1, 1fr) !important;
+            gap: 8rem !important;
+            max-width: 100rem !important;
+            margin: 0 auto !important;
+            width: 100% !important;
+          }
+          
+          /* Hide any legacy project-card styles that might be present */
+          .project-card {
+            display: none !important;
+          }
+          
+          /* Important device card styles */
+          .device-card {
+            position: relative !important;
+            margin-bottom: 2rem !important;
+            transform-style: preserve-3d !important;
+            perspective: 1500px !important;
+            transition: all 0.5s ease !important;
+            max-width: 50% !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25) !important;
+          }
+          
+          .project-item {
+            position: relative !important;
+            margin-bottom: 6rem !important;
+            transition: transform 0.4s ease !important;
+          }
+          
+          .project-item:hover .device-card {
+            transform: translateY(-3px) !important;
+          }
+          
+          /* Monitor components */
+          .monitor {
+            position: relative !important;
+            width: 100% !important;
+            background: linear-gradient(to bottom, #222, #111) !important;
+            border-radius: 7px !important;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25) !important;
+            padding: 8px !important;
+            margin-bottom: 3px !important;
+            border: 1px solid #333 !important;
+            overflow: hidden !important;
+          }
+          
+          /* Screen */
+          .screen {
+            position: relative !important;
+            background-color: #000 !important;
+            border-radius: 5px !important;
+            overflow: hidden !important;
+            padding-top: 56.25% !important; /* 16:9 aspect ratio */
+            border: 1px solid #444 !important;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5) !important;
+          }
+          
+          /* Control lights */
+          .control-lights {
+            position: absolute !important;
+            top: 4px !important;
+            left: 6px !important;
+            display: flex !important;
+            gap: 3px !important;
+            z-index: 10 !important;
+          }
+          
+          .light {
+            width: 4px !important;
+            height: 4px !important;
+            border-radius: 50% !important;
+            box-shadow: 0 0 1px rgba(0, 0, 0, 0.3) !important;
+            opacity: 0.8 !important;
+            transition: opacity 0.3s ease !important;
+          }
+          
+          .project-item:hover .light {
+            opacity: 1 !important;
+          }
+          
+          .light.red { background-color: #ff5f57 !important; }
+          .light.yellow { background-color: #ffbd2e !important; }
+          .light.green { background-color: #28c940 !important; }
+          
+          /* Screen content */
+          .screen-content {
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: cover !important;
+            display: block !important;
+            transform: scale(1) !important;
+            filter: brightness(0.95) contrast(1.1) !important;
+            transition: transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1), filter 0.6s ease !important;
+          }
+          
+          .project-item:hover .screen-content {
+            transform: scale(1.05) !important;
+            filter: brightness(1.1) contrast(1.15) !important;
+          }
+          
+          /* Screen reflection */
+          .reflection {
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0) 20%) !important;
+            pointer-events: none !important;
+            opacity: 0.5 !important;
+            transition: opacity 0.5s ease !important;
+          }
+          
+          .project-item:hover .reflection {
+            opacity: 0.8 !important;
+          }
+          
+          /* Stand and base */
+          .monitor-stand {
+            position: relative !important;
+            width: 15% !important;
+            height: 12px !important;
+            background: linear-gradient(to bottom, #333, #222) !important;
+            margin: 0 auto !important;
+            border-radius: 0 0 3px 3px !important;
+            box-shadow: 0 4px 8px -3px rgba(0, 0, 0, 0.4) !important;
+          }
+          
+          .monitor-base {
+            width: 35% !important;
+            height: 6px !important;
+            background: linear-gradient(to bottom, #222, #111) !important;
+            margin: 0 auto !important;
+            border-radius: 50% !important;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3) !important;
+            border: 1px solid #333 !important;
+          }
+          
+          .keyboard {
+            position: relative !important;
+            width: 70% !important;
+            margin: -2px auto 0 !important;
+            height: 10px !important;
+            background: linear-gradient(to bottom, #444, #222) !important;
+            border-radius: 2px 2px 6px 6px !important;
+            transform: rotateX(75deg) !important;
+            transform-origin: top center !important;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2) !important;
+            z-index: -1 !important;
+            opacity: 0.7 !important;
+            border: 1px solid #333 !important;
+          }
+          
+          /* Project text content */
+          .project-body {
+            text-align: center !important;
+            padding: 2rem !important;
+            max-width: 60rem !important;
+            margin: 0 auto !important;
+          }
+          
+          .project-title {
+            font-size: 2.4rem !important;
+            margin-bottom: 1.5rem !important;
+            color: var(--text-primary) !important;
+          }
+          
+          .project-description {
+            font-size: 1.6rem !important;
+            color: var(--text-secondary) !important;
+            margin-bottom: 2rem !important;
+          }
+          
+          .project-actions {
+            display: flex !important;
+            gap: 1rem !important;
+            justify-content: center !important;
+          }
+
+          /* Button styling */
+          .project-button-container {
+            display: flex !important;
+            gap: 0.5rem !important;
+            margin-top: 1rem !important;
+            justify-content: center !important;
+          }
+          
+          .project-button {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            padding: 0.5rem 1rem !important;
+            border-radius: 0.25rem !important;
+            font-weight: 500 !important;
+            text-decoration: none !important;
+            transition: all 0.3s ease !important;
+            flex: 1 !important;
+          }
+          
+          .project-button i {
+            margin-right: 0.5rem !important;
+          }
+          
+          .github-button {
+            background-color: var(--primary-color) !important;
+            color: white !important;
+          }
+          
+          .github-button:hover {
+            background-color: var(--primary-dark) !important;
+          }
+          
+          .report-button {
+            background-color: var(--secondary-color) !important;
+            color: white !important;
+          }
+          
+          .report-button:hover {
+            background-color: var(--secondary-dark) !important;
+          }
+          
+          /* Responsive adjustments */
+          @media (max-width: 768px) {
+            .device-card {
+              max-width: 80% !important;
+            }
+            .project-button-container {
+              flex-direction: column !important;
+            }
+          }
+        </style>
+        `;
+        
+        // Insert after the primary CSS but before the closing head tag
+        htmlContent = htmlContent.replace('</head>', `${template2Css}</head>`);
+      } else if (templateId === 'template6') {
+        // Template 6 styling for buttons
+        projectsHtml = portfolioData.projects.map((project: Project) => {
+          // Check if we have GitHub URL or report URL
+          const hasGithub = project.githubUrl && project.githubUrl.trim() !== '';
+          const hasReport = project.reportUrl && project.reportUrl.trim() !== '';
+          
+          // Generate button HTML for template6
+          const buttonHtml = (hasGithub || hasReport) ? `
+            <div class="project-actions">
+              ${hasGithub ? `<a href="${project.githubUrl}" class="project-action github">
+                <i class="fab fa-github"></i> Code
+              </a>` : ''}
+              ${hasReport ? `<a href="${project.reportUrl}" class="project-action report">
+                <i class="fas fa-file-alt"></i> Report
+              </a>` : ''}
+            </div>
+          ` : '';
+          
+          return `
+          <div class="project-card">
+            <div class="project-image">
+              <img src="${project.imageUrl || ''}" alt="${project.name || 'Project'}" onerror="this.src='https://placehold.co/600x400/e2e8f0/1e293b?text=Project+Image'">
+            </div>
+            <div class="project-content">
+              <h3>${project.name || ''}</h3>
+              <p>${project.description || ''}</p>
+              <div class="project-tags">
+                ${project.technologies && project.technologies.length > 0 ? 
+                  project.technologies.map((tech: string) => `<span class="project-tag">${tech}</span>`).join('') : ''}
+          </div>
+              ${buttonHtml}
+              </div>
+            </div>
+        `;
+        }).join('');
+        
+        // Add custom CSS for template6 buttons
+        const template6Css = `
+        <style>
+          .project-card {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+          }
+          
+          .project-content {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            padding: 1.5rem;
+          }
+          
+          .project-actions {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: auto;
+            padding-top: 1rem;
+          }
+          
+          .project-action {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1rem;
+            border-radius: 0.25rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            flex: 1;
+          }
+          
+          .project-action i {
+            margin-right: 0.5rem;
+          }
+          
+          .project-action.github {
+            background-color: #333;
+            color: white;
+          }
+          
+          .project-action.github:hover {
+            background-color: #24292e;
+          }
+          
+          .project-action.report {
+            background-color: #0070f3;
+            color: white;
+          }
+          
+          .project-action.report:hover {
+            background-color: #0051cc;
+          }
+        </style>
+        `;
+        
+        // Append the custom CSS to the HTML content
+        htmlContent = htmlContent.replace('</head>', `${template6Css}</head>`);
+      } else if (templateId === 'template7') {
+        // Template 7 - Portfolio with gradient wave animation
+        // Replace the initials for avatar if needed
+        const initials = portfolioData.fullName
+          ? (portfolioData.fullName.split(' ').map(name => name[0]).join(''))
+          : portfolioData.name.substring(0, 2).toUpperCase();
+          
+        htmlContent = htmlContent.replace(/{{initials}}/g, initials);
+        
+        // Handle current year
+        const currentYear = new Date().getFullYear().toString();
+        htmlContent = htmlContent.replace(/{{currentYear}}/g, currentYear);
+        
+        // Generate projects HTML for Template 7
+        projectsHtml = portfolioData.projects.map((project: Project) => {
+          // Check if we have GitHub URL or report URL
+          const hasGithub = project.githubUrl && project.githubUrl.trim() !== '';
+          const hasReport = project.reportUrl && project.reportUrl.trim() !== '';
+          
+          return `
+          <div class="project-card">
+            <div class="project-image">
+              <img src="${project.imageUrl}" alt="${project.name}" onerror="this.src='https://placehold.co/600x400/e2e8f0/1e293b?text=Project+Image'">
+            </div>
+            <div class="project-content">
+              <h3 class="project-title">${project.name}</h3>
+              <p class="project-description">${project.description}</p>
+              <div class="project-links">
+                ${hasGithub ? `
+                <a href="${project.githubUrl}" class="btn btn-outline" target="_blank">
+                  <i class="fab fa-github"></i> GitHub
+                </a>
+                ` : ''}
+                ${hasReport ? `
+                <a href="${project.reportUrl}" class="btn btn-outline" target="_blank">
+                  <i class="fas fa-file-alt"></i> Report
+                </a>
+              ` : ''}
+            </div>
+          </div>
+            </div>
+          `;
+        }).join('');
+        
+        // Generate skills HTML for Template 7
+        skillsHtml = portfolioData.skills.map((skill: Skill) => `
+          <div class="skill-card">
+            <div class="skill-icon">
+              <i class="fas fa-code"></i>
+            </div>
+            <h3 class="skill-name">${skill.name || ''}</h3>
+          </div>
+        `).join('');
+      } else {
+        // Default projects HTML for any other templates not specifically handled above
+        projectsHtml = portfolioData.projects.map((project: Project) => {
+          // Check if we have GitHub URL or report URL
+          const hasGithub = project.githubUrl && project.githubUrl.trim() !== '';
+          const hasReport = project.reportUrl && project.reportUrl.trim() !== '';
+          
+          // Generate button HTML for default templates
+          const buttonHtml = (hasGithub || hasReport) ? `
+            <div class="project-links">
+              ${hasGithub ? `<a href="${project.githubUrl}" class="project-link" target="_blank" aria-label="View GitHub Repository">
+                <i class="fab fa-github"></i> GitHub
+              </a>` : ''}
+              ${hasReport ? `<a href="${project.reportUrl}" class="project-link" target="_blank" aria-label="View Project Report">
+                <i class="fas fa-file-alt"></i> Report
+              </a>` : ''}
+                </div>
+          ` : `
+            <div class="project-links">
+              <a href="#" class="project-link" aria-label="View Project Details">
+                <i class="fas fa-external-link-alt"></i>
+              </a>
+              </div>
+          `;
+          
+          return `
+          <div class="project-card" data-category="all">
+            <div class="project-image">
+              <img src="${project.imageUrl || ''}" alt="${project.name || 'Project'}" onerror="this.style.display='none'">
+            </div>
+            <div class="project-content">
+              <h3>${project.name || ''}</h3>
+              <p>${project.description || ''}</p>
+              ${buttonHtml}
+              </div>
+              </div>
+        `;
+        }).join('');
+        
+        // Add custom CSS for default template buttons
+        const defaultCss = `
+        <style>
+          .project-card {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+          }
+          
+          .project-content {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            padding: 1.5rem;
+          }
+          
+          .project-links {
+            margin-top: auto;
+            display: flex;
+            gap: 0.5rem;
+          }
+        </style>
+        `;
+        
+        // Append the custom CSS to the HTML content
+        htmlContent = htmlContent.replace('</head>', `${defaultCss}</head>`);
       }
+      htmlContent = htmlContent.replace(/{{#each projects}}[\s\S]*?{{\/each}}/g, projectsHtml);
+      
+      // Generate skills HTML for templates that don't have specific handling
+      if (!skillsHtml && portfolioData.skills && portfolioData.skills.length > 0) {
+        skillsHtml = portfolioData.skills.map((skill: Skill) => `
+          <div class="skill-tag">
+            <span class="skill-icon"><i class="fas fa-code"></i></span>
+            <span class="skill-name">${skill.name || ''}</span>
+          </div>
+        `).join('');
+      }
+      
+      // Replace skills template tags
+      htmlContent = htmlContent.replace(/{{#each skills}}[\s\S]*?{{\/each}}/g, skillsHtml);
+      
+      // Cleanup any remaining Handlebars tags that weren't properly replaced
+      // This will catch any orphaned closing tags or malformed template tags
+      htmlContent = htmlContent.replace(/{{\/each}}/g, '');
+      htmlContent = htmlContent.replace(/{{#each.*?}}/g, '');
       
       // Inline CSS and JS directly into the HTML
       htmlContent = htmlContent.replace(/<link rel="stylesheet" href="css\/styles.css">/, `<style>\n${cssContent}\n</style>`);

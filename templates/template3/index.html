@@ -127,6 +127,20 @@
                     <div class="project-info">
                         <h3>{{name}}</h3>
                         <p>{{description}}</p>
+                        {{#if githubUrl}}
+                        <div class="project-links">
+                            {{#if githubUrl}}
+                            <a href="{{githubUrl}}" class="project-link github" target="_blank">
+                                <i class="fab fa-github"></i> GitHub
+                            </a>
+                            {{/if}}
+                            {{#if reportUrl}}
+                            <a href="{{reportUrl}}" class="project-link report" target="_blank">
+                                <i class="fas fa-file-alt"></i> Report
+                            </a>
+                            {{/if}}
+                        </div>
+                        {{/if}}
                     </div>
                 </div>
                 {{/each}}

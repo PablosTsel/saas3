@@ -682,6 +682,7 @@ export default function PortfolioEditorPage() {
                         <SelectItem value="template4">Template 4 (Minimal Portfolio)</SelectItem>
                         <SelectItem value="template5">Template 5 (Visual Portfolio)</SelectItem>
                         <SelectItem value="template6">Template 6 (Glass Morphism)</SelectItem>
+                        <SelectItem value="template7">Template 7 (Gradient Wave)</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>

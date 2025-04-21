@@ -153,15 +153,40 @@
                 <h2 class="section-title">My Projects</h2>
                 <div class="section-line"></div>
             </div>
-            <div class="projects-content" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 3rem; max-width: 90rem; margin: 0 auto;">
+            <div class="projects-content">
                 {{#each projects}}
-                <div class="project-card" style="width: 100%; border-radius: 1rem; overflow: hidden;">
-                    <div class="project-img" style="height: 22rem;">
-                        <img src="{{imageUrl}}" alt="{{name}}" onerror="this.src='https://placehold.co/600x400/e2e8f0/1e293b?text=Project+Image'">
+                <div class="project-item">
+                    <div class="device-card">
+                        <div class="monitor">
+                            <div class="control-lights">
+                                <div class="light red"></div>
+                                <div class="light yellow"></div>
+                                <div class="light green"></div>
+                            </div>
+                            <div class="screen">
+                                <img src="{{imageUrl}}" alt="{{name}}" class="screen-content" onerror="this.src='https://placehold.co/600x400/e2e8f0/1e293b?text=Project+Image'">
+                                <div class="reflection"></div>
+                            </div>
+                        </div>
+                        <div class="monitor-stand"></div>
+                        <div class="monitor-base"></div>
+                        <div class="keyboard"></div>
                     </div>
                     <div class="project-body">
                         <h3 class="project-title">{{name}}</h3>
                         <p class="project-description">{{description}}</p>
+                        <div class="project-actions">
+                            {{#if githubUrl}}
+                            <a href="{{githubUrl}}" class="btn btn-sm btn-primary" target="_blank">
+                                <i class="fab fa-github"></i> GitHub
+                            </a>
+                            {{/if}}
+                            {{#if reportUrl}}
+                            <a href="{{reportUrl}}" class="btn btn-sm btn-secondary" target="_blank">
+                                <i class="fas fa-file-alt"></i> Report
+                            </a>
+                            {{/if}}
+                        </div>
                     </div>
                 </div>
                 {{/each}}

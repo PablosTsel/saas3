@@ -87,6 +87,37 @@ When editing or modifying portfolio templates in this application, please be min
 - Preserve unique visual elements that define each template's identity
 - Test template-specific interactions after making changes
 
+### 9. Template Rendering and Replacement Issues
+
+**Problem:** Template placeholders like `{{#each skills}}` and `{{/each}}` weren't being properly replaced in the generated HTML, causing raw template syntax to be displayed instead of actual content.
+
+**Example:** 
+- Skills section showed `{{#each skills}}` instead of the actual skills in multiple templates
+- After fixing projects, an orphaned `{{/each}}` tag appeared at the bottom left of Template 5's projects section
+
+**Root Cause:**
+Changes to the template replacement logic for one section (e.g., projects) inadvertently affected other sections (e.g., skills) due to:
+1. Missing template-specific HTML generation for different templates
+2. Reliance on generic replacement patterns that didn't handle all template variations
+3. Lack of cleanup for orphaned template tags
+
+**Solution:**
+1. Implemented a template-first approach where each template gets its own specific HTML generation
+2. Added explicit HTML generation code for both projects AND skills sections for each template
+3. Added cleanup code to catch and remove any remaining template tags:
+```javascript
+// Cleanup any remaining Handlebars tags that weren't properly replaced
+htmlContent = htmlContent.replace(/{{\/each}}/g, '');
+htmlContent = htmlContent.replace(/{{#each.*?}}/g, '');
+```
+
+**Best Practices:**
+- When modifying template generation code, consider ALL sections that use similar template patterns
+- Always test all sections of ALL templates after making changes to shared template logic
+- Add template-specific logic for each template rather than using catch-all approaches
+- Include a final cleanup step to remove any template tags that might have been missed
+- When fixing issues in one template, check if the same issue exists in other templates
+
 ## Testing Guidelines
 
 After making changes to templates:
@@ -105,20 +136,6 @@ When developing new features for templates:
 3. **Document Special Cases:** Add comments for any unusual handling or workarounds
 4. **Consider Reusability:** Design components that can be shared across templates where appropriate
 5. **Avoid Magic Numbers:** Use CSS variables for values that might need to be adjusted
-
-## Template4 Specific Issues to Avoid
-
-When working with Template4 (or any template), be aware of these specific issues encountered:
-
-1. **Handlebars Template Tag Rendering:** If you see raw template tags like `{{#each skills}}` or `{{/each}}` in the output, it means the replacement logic isn't working properly. Always make specific overrides for each template when changing structure.
-
-2. **CSS Class Inconsistencies:** Pay careful attention to CSS class names in the template HTML vs. your generated code. For example, using `project-img` when the template expects `project-image` will break styling.
-
-3. **Targeted Edits vs. Global Changes:** When fixing template-specific issues, make targeted edits that only affect that template rather than changing global code that might affect other templates.
-
-4. **Variable Redeclaration:** Avoid adding duplicate variable declarations when fixing template-specific sections. If adding specialized handling for a template, check if the variable is already declared elsewhere.
-
-5. **HTML Structure Alignment:** Ensure the HTML structure you're generating exactly matches what the template expects, including the nesting of elements and their classes.
 
 By following these guidelines, you can avoid common pitfalls when editing and extending portfolio templates. 
 
@@ -212,3 +229,52 @@ Here are specific mistakes that have occurred during template development and ma
 - Consider using relative paths that work in both development and production
 
 By being aware of these specific mistakes, you can prevent them from recurring in future template development and maintenance work.
+
+## Specific Template Interactions and Fixes
+
+### Template Tag Processing Order
+
+**Problem:** The order of template tag replacement affected the final output, causing some sections to break when others were fixed.
+
+**Example:** When we fixed the projects section in Template 3 and 5, it broke the skills section because the skills template tags were being processed after projects.
+
+**Solution:**
+- Ensure that template replacements follow a consistent order (e.g., skills before projects)
+- Add template-specific HTML generation for each type of content (skills, projects, etc.)
+- Process all replacements before moving to the next template-specific customization
+
+### Template Section Interdependencies
+
+**Problem:** Changes made to one section's replacement logic affected other sections due to shared template syntax.
+
+**Example:** Adding project HTML generation for Template 2 without also adding skills HTML generation left the skills section showing raw template syntax.
+
+**Solution:**
+1. Group HTML generation by template ID rather than by section type
+2. For each template ID, generate HTML for ALL sections that need customization
+3. Apply a consistent approach to template replacements across all sections
+
+### Missing Template-Specific Content
+
+**Problem:** Some templates had custom styling and structure but no corresponding custom HTML generation logic.
+
+**Example:** Template 5 had a custom project card design but was using generic project HTML generation.
+
+**Solution:**
+- Added explicit template-specific HTML generation for each template that has custom styling
+- Created a template registry approach where each template's unique features are handled separately
+- Used conditional blocks (`if (templateId === 'templateX')`) for each template rather than catch-all else clauses
+
+By following these guidelines, we can prevent template rendering issues and ensure that changes to one section don't unexpectedly affect other sections or templates.
+
+## Template Debugging Tips
+
+When you encounter template rendering issues:
+
+1. **Examine the Raw Output:** Check the generated HTML to see any template tags that weren't replaced
+2. **Check All Templates:** An issue in one template may exist in others
+3. **Test Every Section:** Verify that fixing one section doesn't break others
+4. **Add Cleanup Logic:** Include fallback code to clean up any template tags that weren't replaced
+5. **Use Template-Specific Handling:** Avoid generic replacements for templates with unique structures
+
+Remember that changes to the template generation code can have wide-ranging effects across multiple templates and sections. Always test thoroughly after making any changes to the template rendering logic.

@@ -1,4 +1,4 @@
-// Template 4 JavaScript
+// Template 7 JavaScript - Gradient Wave Animation
 
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize all components
@@ -7,7 +7,6 @@ document.addEventListener('DOMContentLoaded', function() {
     setupMobileMenu();
     setupSectionAnimations();
     updateCurrentYear();
-    enhanceBubbleAnimations();
     
     // Add scroll event listener for sticky header
     window.addEventListener('scroll', function() {
@@ -19,6 +18,9 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', handleSmoothScroll);
     });
+    
+    // Initialize wave animation enhancement
+    setupWaveAnimation();
 });
 
 // Initialize theme based on user preference or saved setting
@@ -76,6 +78,9 @@ function setupMobileMenu() {
         link.addEventListener('click', function() {
             nav.classList.remove('nav-active');
             burger.classList.remove('toggle');
+            navLinks.forEach(link => {
+                link.style.animation = '';
+            });
         });
     });
 }
@@ -183,39 +188,84 @@ function handleSmoothScroll(e) {
     }
 }
 
-// Enhance moving background with mouse movement
-document.addEventListener('mousemove', function(e) {
-    const bubbles = document.querySelectorAll('.bubble');
-    const x = e.clientX / window.innerWidth;
-    const y = e.clientY / window.innerHeight;
+// Setup advanced wave animation with parallax effect
+function setupWaveAnimation() {
+    const waves = document.querySelectorAll('.wave');
+    const container = document.querySelector('.gradient-waves');
     
-    bubbles.forEach((bubble, index) => {
-        // Create different movement factors for each bubble
-        const factorX = (index + 1) * 5; // Reduced from 10 for subtler effect
-        const factorY = (index + 1) * 7; // Reduced from 15 for subtler effect
+    if (!container) return;
+    
+    // Add mouse move parallax effect that enhances rather than overrides the base animation
+    document.addEventListener('mousemove', function(e) {
+        const x = e.clientX / window.innerWidth;
+        const y = e.clientY / window.innerHeight;
         
-        const translateX = (x * factorX) - (factorX / 2);
-        const translateY = (y * factorY) - (factorY / 2);
-        
-        // Add a slight delay for a more natural feel
-        setTimeout(() => {
-            bubble.style.transform = `translate(${translateX}px, ${translateY}px)`;
-        }, index * 50);
+        // Different effect for each wave that adds to the base animation
+        waves.forEach((wave, index) => {
+            const speed = (index + 1) * 8;
+            const offsetX = (x - 0.5) * speed;
+            const offsetY = (y - 0.5) * speed;
+            
+            // Use CSS variables to apply transforms without overriding the animation
+            wave.style.setProperty('--wave-translate-x', `${offsetX}px`);
+            wave.style.setProperty('--wave-translate-y', `${offsetY}px`);
+            wave.style.setProperty('--wave-extra-rotate', `${offsetX * 2}deg`);
+            
+            // Adjust the scale slightly based on mouse position
+            const scale = 1 + Math.abs(x - 0.5) * 0.05 + Math.abs(y - 0.5) * 0.05;
+            wave.style.setProperty('--wave-scale', scale);
+        });
     });
-});
+    
+    // Add a subtle pulse effect to the waves
+    let pulseDirection = 1;
+    let pulseValue = 0;
+    
+    function animatePulse() {
+        pulseValue += 0.01 * pulseDirection;
+        
+        if (pulseValue >= 1) {
+            pulseDirection = -1;
+        } else if (pulseValue <= 0) {
+            pulseDirection = 1;
+        }
+        
+        waves.forEach((wave, index) => {
+            const pulseScale = 1 + (pulseValue * 0.05 * (index + 1) / waves.length);
+            wave.style.setProperty('--wave-pulse', pulseScale);
+        });
+        
+        requestAnimationFrame(animatePulse);
+    }
+    
+    animatePulse();
+}
 
-// Add bubble animations dynamically to allow them to continue their
-// base animation while also responding to mouse movement
-function enhanceBubbleAnimations() {
-    const bubbles = document.querySelectorAll('.bubble');
+// Enhance skill cards with hover animation
+document.addEventListener('DOMContentLoaded', function() {
+    const skillCards = document.querySelectorAll('.skill-card');
     
-    bubbles.forEach((bubble, index) => {
-        // Set initial random positions for more organic feel
-        const randomX = Math.random() * 20 - 10;
-        const randomY = Math.random() * 20 - 10;
-        bubble.style.transform = `translate(${randomX}px, ${randomY}px)`;
+    skillCards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            // Small pulse animation
+            this.classList.add('animate-pulse');
+            
+            // Highlight the icon
+            const icon = this.querySelector('.skill-icon');
+            if (icon) {
+                icon.style.transform = 'scale(1.1)';
+            }
+        });
         
-        // Allow CSS animations and JS transforms to coexist
-        bubble.style.transition = 'transform 0.8s ease-out';
+        card.addEventListener('mouseleave', function() {
+            // Remove animation
+            this.classList.remove('animate-pulse');
+            
+            // Reset icon
+            const icon = this.querySelector('.skill-icon');
+            if (icon) {
+                icon.style.transform = 'scale(1)';
+            }
+        });
     });
-} 
+}); 

@@ -535,6 +535,9 @@ section {
   box-shadow: 0 5px 15px var(--shadow-color);
   transition: transform 0.3s;
   border: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .project-card:hover {
@@ -554,6 +557,9 @@ section {
 
 .project-info {
   padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
 }
 
 .project-info h3 {
@@ -564,9 +570,52 @@ section {
 }
 
 .project-info p {
-  font-size: 0.95rem;
   color: var(--secondary-color);
-  margin-bottom: 0;
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+  flex-grow: 1;
+}
+
+/* Project Links/Buttons */
+.project-links {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: auto;
+}
+
+.project-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.2rem;
+  border-radius: 4px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  flex: 1;
+  justify-content: center;
+}
+
+.project-link.github {
+  background-color: var(--highlight-color);
+  color: white;
+}
+
+.project-link.github:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
+}
+
+.project-link.report {
+  background-color: var(--button-bg);
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+}
+
+.project-link.report:hover {
+  background-color: var(--button-hover);
+  transform: translateY(-2px);
 }
 
 /* Contact Section */
@@ -783,6 +832,10 @@ section {
   
   .about-left, .about-right {
     width: 100%;
+  }
+
+  .project-links {
+    flex-direction: column;
   }
 }
 

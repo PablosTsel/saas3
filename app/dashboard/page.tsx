@@ -2057,6 +2057,29 @@ export default function DashboardPage() {
                         <div className="text-xs text-gray-500">Glass Morphism</div>
                       </div>
                     </div>
+
+                    <div 
+                      className={`border rounded-lg overflow-hidden cursor-pointer transition-all ${
+                        selectedTemplate === "template7" 
+                          ? "border-indigo-500 ring-2 ring-indigo-200" 
+                          : "border-gray-200 hover:border-indigo-300"
+                      }`}
+                      onClick={() => handleTemplateSelect("template7")}
+                    >
+                      <div className="aspect-[16/9] bg-white flex items-center justify-center relative overflow-hidden">
+                        <div className="absolute inset-0 w-full h-full">
+                          <img 
+                            src="/templates/template7/thumbnail_dash.svg" 
+                            alt="Template 7 Preview" 
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      </div>
+                      <div className="p-3 bg-white text-center">
+                        <div className="font-medium text-gray-800">Template 7</div>
+                        <div className="text-xs text-gray-500">Gradient Wave</div>
+                      </div>
+                    </div>
                   </div>
                   
                   <div className="mt-4 p-4 bg-indigo-50 rounded-lg border border-indigo-100">

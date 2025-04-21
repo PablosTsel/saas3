@@ -5,20 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{fullName}} | {{title}}</title>
     <link rel="stylesheet" href="css/styles.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Lora:wght@400;500;600;700&display=swap">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <meta name="description" content="{{fullName}}'s professional portfolio showcasing projects and skills in {{title}}">
 </head>
 <body>
-    <!-- Background Animation -->
     <div class="background-container">
-        <div class="floating-bubbles">
-            <div class="bubble bubble-1"></div>
-            <div class="bubble bubble-2"></div>
-            <div class="bubble bubble-3"></div>
-            <div class="bubble bubble-4"></div>
-            <div class="bubble bubble-5"></div>
-            <div class="bubble bubble-6"></div>
+        <div class="gradient-waves">
+            <div class="wave wave-1"></div>
+            <div class="wave wave-2"></div>
+            <div class="wave wave-3"></div>
+            <div class="wave wave-4"></div>
         </div>
     </div>
 
@@ -61,8 +58,9 @@
         <div class="container">
             <div class="hero-content">
                 <div class="hero-text">
-                    <h1>Hello, I'm <span>{{fullName}}</span></h1>
-                    <h2>{{title}}</h2>
+                    <div class="hero-greeting">Hello, I'm</div>
+                    <h1><span>{{fullName}}</span></h1>
+                    <h2 class="animate-gradient">{{title}}</h2>
                     <p class="intro">{{smallIntro}}</p>
                     <div class="cta-buttons">
                         {{#if hasCv}}
@@ -92,7 +90,6 @@
     <section id="about" class="about">
         <div class="container">
             <div class="section-header">
-                <span class="section-subtitle">Who I Am</span>
                 <h2 class="section-title">About Me</h2>
                 <div class="title-line"></div>
             </div>
@@ -133,7 +130,9 @@
                     </div>
                     {{#if hasCv}}
                     <div class="resume-link">
-                        <a href="{{cvUrl}}" class="btn btn-primary" target="_blank">Download Resume</a>
+                        <a href="{{cvUrl}}" class="btn btn-primary" target="_blank">
+                            <i class="fas fa-download"></i> Download Resume
+                        </a>
                     </div>
                     {{/if}}
                 </div>
@@ -145,7 +144,6 @@
     <section id="skills" class="skills">
         <div class="container">
             <div class="section-header">
-                <span class="section-subtitle">What I Know</span>
                 <h2 class="section-title">My Skills</h2>
                 <div class="title-line"></div>
             </div>
@@ -168,8 +166,7 @@
     <section id="projects" class="projects">
         <div class="container">
             <div class="section-header">
-                <span class="section-subtitle">My Work</span>
-                <h2 class="section-title">Projects</h2>
+                <h2 class="section-title">My Projects</h2>
                 <div class="title-line"></div>
             </div>
             <div class="projects-content">
@@ -178,24 +175,22 @@
                     <div class="project-card">
                         <div class="project-image">
                             <img src="{{imageUrl}}" alt="{{name}}" onerror="this.src='https://placehold.co/600x400/e2e8f0/1e293b?text=Project+Image'">
-                            <div class="project-overlay">
-                                <div class="project-actions">
-                                    {{#if githubUrl}}
-                                    <a href="{{githubUrl}}" class="btn btn-sm" target="_blank">
-                                        <i class="fab fa-github"></i> GitHub
-                                    </a>
-                                    {{/if}}
-                                    {{#if reportUrl}}
-                                    <a href="{{reportUrl}}" class="btn btn-sm" target="_blank">
-                                        <i class="fas fa-file-alt"></i> Report
-                                    </a>
-                                    {{/if}}
-                                </div>
-                            </div>
                         </div>
                         <div class="project-content">
                             <h3 class="project-title">{{name}}</h3>
                             <p class="project-description">{{description}}</p>
+                            <div class="project-links">
+                                {{#if githubUrl}}
+                                <a href="{{githubUrl}}" class="btn btn-outline" target="_blank">
+                                    <i class="fab fa-github"></i> GitHub
+                                </a>
+                                {{/if}}
+                                {{#if reportUrl}}
+                                <a href="{{reportUrl}}" class="btn btn-outline" target="_blank">
+                                    <i class="fas fa-file-alt"></i> Report
+                                </a>
+                                {{/if}}
+                            </div>
                         </div>
                     </div>
                     {{/each}}
@@ -208,7 +203,6 @@
     <section id="contact" class="contact">
         <div class="container">
             <div class="section-header">
-                <span class="section-subtitle">Get In Touch</span>
                 <h2 class="section-title">Contact Me</h2>
                 <div class="title-line"></div>
             </div>

@@ -1,3 +1,10 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>John Doe - AI Engineer</title>
+    <style>
 /* RESET & BASE STYLES */
 :root {
   /* Light Theme Variables */
@@ -1105,3 +1112,405 @@ footer {
     gap: 1rem;
   }
 } 
+</style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta name="description" content="{{description}}">
+</head>
+<body data-theme="dark">
+    <!-- Custom Cursor -->
+    <div class="cursor"></div>
+    <div class="cursor-follower"></div>
+    
+    <!-- Background Canvas -->
+    <canvas id="gradient-canvas"></canvas>
+    
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="logo">
+                
+                <div class="header-profile">
+                    <img src="https://firebasestorage.googleapis.com/v0/b/makeportfolio-2bd67.firebasestorage.app/o/users%2FIEn3lXLfA5MwVO5K2icpC3WTnxV2%2Fportfolios%2FjhX9BMqrIMPXlpE0ARdF%2Fprofile%2F1745255695121-ProfilePic.png?alt=media&token=ca6bda01-4c43-4f1d-addb-9767bfb58bf5" alt="John Doe">
+                </div>
+                
+                <a href="#home">John Doe</a>
+            </div>
+            
+            <button class="menu-button">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            
+            <nav>
+                <ul class="menu">
+                    <li><a href="#home" class="active">Home</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#skills">Skills</a></li>
+                    <li><a href="#projects">Projects</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </nav>
+            
+            <button id="theme-toggle" aria-label="Toggle dark/light mode">
+                <i class="fas fa-sun"></i>
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </header>
+    
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-intro">
+                    
+                    <div class="hero-profile">
+                        <img src="https://firebasestorage.googleapis.com/v0/b/makeportfolio-2bd67.firebasestorage.app/o/users%2FIEn3lXLfA5MwVO5K2icpC3WTnxV2%2Fportfolios%2FjhX9BMqrIMPXlpE0ARdF%2Fprofile%2F1745255695121-ProfilePic.png?alt=media&token=ca6bda01-4c43-4f1d-addb-9767bfb58bf5" alt="John Doe">
+                    </div>
+                    
+                    <div class="hero-text">
+                        <h1 class="reveal-text">Hi, I'm <span class="accent">John Doe</span></h1>
+                        <h2 class="reveal-text">AI Engineer <span class="changing-title" data-titles='["Developer", "Designer", "Creator"]'>Developer</span></h2>
+                        <p class="reveal-text">I'm a skilled AI Engineer with a passion for developing innovative solutions.</p>
+                    </div>
+                </div>
+                
+                <div class="hero-cta reveal-text">
+                    <a href="#projects" class="btn primary">View My Work</a>
+                    <a href="#contact" class="btn secondary">Get In Touch</a>
+                </div>
+                
+                <div class="social-links reveal-text">
+                    <a href="#" class="social-link" target="_blank" rel="noopener noreferrer">
+                        <i class="fab fa-github"></i>
+                    </a>
+                    <a href="#" class="social-link" target="_blank" rel="noopener noreferrer">
+                        <i class="fab fa-linkedin"></i>
+                    </a>
+                    <a href="#" class="social-link" target="_blank" rel="noopener noreferrer">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="scroll-indicator">
+                <div class="mouse">
+                    <div class="wheel"></div>
+                </div>
+                <div class="arrows">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- About Section -->
+    <section id="about" class="about">
+        <div class="container">
+            <div class="section-header">
+                <h2>About Me</h2>
+                <div class="section-line"></div>
+            </div>
+            
+            <div class="about-content">
+                <div class="about-image">
+                    <div class="image-container">
+                        
+                        <img src="https://firebasestorage.googleapis.com/v0/b/makeportfolio-2bd67.firebasestorage.app/o/users%2FIEn3lXLfA5MwVO5K2icpC3WTnxV2%2Fportfolios%2FjhX9BMqrIMPXlpE0ARdF%2Fprofile%2F1745255695121-ProfilePic.png?alt=media&token=ca6bda01-4c43-4f1d-addb-9767bfb58bf5" alt="John Doe">
+                        
+                    </div>
+                </div>
+                
+                <div class="about-text">
+                    <h3>Who I Am</h3>
+                    <p>Hello! I'm John Doe, a dedicated AI Engineer with expertise in machine learning, deep learning, and natural language processing. I have experience building and deploying AI models that solve real-world problems and drive business value. My approach combines technical excellence with a strong focus on practical applications and ethical considerations.</p>
+                    
+                    <div class="about-details">
+                        <div class="detail">
+                            <i class="fas fa-envelope"></i>
+                            <span>johndoe@gmail.com</span>
+                        </div>
+                        
+                        <div class="detail">
+                            <i class="fas fa-phone"></i>
+                            <span>+34 606 97 06 31</span>
+                        </div>
+                    </div>
+                    
+                    <div class="about-cta">
+                        <a href="{{resumeUrl}}" class="btn primary" target="_blank" rel="noopener noreferrer">
+                            <i class="fas fa-download"></i> Download Resume
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Skills Section -->
+    <section id="skills" class="skills">
+        <div class="container">
+            <div class="section-header">
+                <h2>My Skills</h2>
+                <div class="section-line"></div>
+            </div>
+            
+            <div class="skills-content">
+                <div class="skill-category">
+                    <h3>Technical Skills</h3>
+                    <div class="skills-grid">
+                        
+          <div class="skill-item">
+            <div class="skill-icon">
+              <i class="fas fa-code"></i>
+            </div>
+            <h4>Python</h4>
+            <div class="skill-bar">
+                <div class="skill-level"></div>
+            </div>
+          </div>
+        
+          <div class="skill-item">
+            <div class="skill-icon">
+              <i class="fas fa-code"></i>
+            </div>
+            <h4>Excel</h4>
+            <div class="skill-bar">
+                <div class="skill-level"></div>
+            </div>
+          </div>
+        
+          <div class="skill-item">
+            <div class="skill-icon">
+              <i class="fas fa-code"></i>
+            </div>
+            <h4>R</h4>
+            <div class="skill-bar">
+                <div class="skill-level"></div>
+            </div>
+          </div>
+        
+          <div class="skill-item">
+            <div class="skill-icon">
+              <i class="fas fa-code"></i>
+            </div>
+            <h4>SQL</h4>
+            <div class="skill-bar">
+                <div class="skill-level"></div>
+            </div>
+          </div>
+        
+          <div class="skill-item">
+            <div class="skill-icon">
+              <i class="fas fa-code"></i>
+            </div>
+            <h4>HTML/CSS</h4>
+            <div class="skill-bar">
+                <div class="skill-level"></div>
+            </div>
+          </div>
+        
+          <div class="skill-item">
+            <div class="skill-icon">
+              <i class="fas fa-code"></i>
+            </div>
+            <h4>MongoDB</h4>
+            <div class="skill-bar">
+                <div class="skill-level"></div>
+            </div>
+          </div>
+        
+          <div class="skill-item">
+            <div class="skill-icon">
+              <i class="fas fa-code"></i>
+            </div>
+            <h4>Docker</h4>
+            <div class="skill-bar">
+                <div class="skill-level"></div>
+            </div>
+          </div>
+        
+          <div class="skill-item">
+            <div class="skill-icon">
+              <i class="fas fa-code"></i>
+            </div>
+            <h4>Langchain</h4>
+            <div class="skill-bar">
+                <div class="skill-level"></div>
+            </div>
+          </div>
+        
+          <div class="skill-item">
+            <div class="skill-icon">
+              <i class="fas fa-code"></i>
+            </div>
+            <h4>Firebase</h4>
+            <div class="skill-bar">
+                <div class="skill-level"></div>
+            </div>
+          </div>
+        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Projects Section -->
+    <section id="projects" class="projects">
+        <div class="container">
+            <div class="section-header">
+                <h2>My Projects</h2>
+                <div class="section-line"></div>
+            </div>
+            
+            <div class="projects-filter">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="web">Web</button>
+                <button class="filter-btn" data-filter="app">App</button>
+                <button class="filter-btn" data-filter="design">Design</button>
+            </div>
+            
+            <div class="projects-grid">
+                
+          <div class="project-card" data-category="all">
+            <div class="project-image">
+              <img src="https://firebasestorage.googleapis.com/v0/b/makeportfolio-2bd67.firebasestorage.app/o/users%2FIEn3lXLfA5MwVO5K2icpC3WTnxV2%2Fportfolios%2FjhX9BMqrIMPXlpE0ARdF%2Fprojects%2F0%2F1745255695122-FOOTBALL.png?alt=media&token=d8c7ebb6-c2cb-4775-a21c-5476acb8ddae" alt="NBA Dashboard" onerror="this.src='https://placehold.co/600x400/e2e8f0/1e293b?text=Project+Image'">
+              <div class="project-overlay">
+                <div class="project-links">
+                  <a href="https://github.com/PablosTsel/USOPC" class="project-link" target="_blank" rel="noopener noreferrer">
+                    <i class="fab fa-github"></i>
+                  </a>
+                  <a href="https://firebasestorage.googleapis.com/v0/b/makeportfolio-2bd67.firebasestorage.app/o/users%2FIEn3lXLfA5MwVO5K2icpC3WTnxV2%2Fportfolios%2FjhX9BMqrIMPXlpE0ARdF%2Fprojects%2F0%2Freports%2F1745255695122-PablosTselioudis(ENG).pdf?alt=media&token=cee9a1a1-6adc-442a-8416-6c16bdb2ac1a" class="project-link" target="_blank" rel="noopener noreferrer">
+                    <i class="fas fa-file-alt"></i>
+                  </a>
+                </div>
+              </div>
+            </div>
+            
+            <div class="project-info">
+              <h3>NBA Dashboard</h3>
+              <p>Developed an Excel file containing various data and statistics from the 2015-2017 NBA seasons. The dashboard provides insights on players, teams, and games, including player stats, team performance metrics, and game-by-game analysis. Users can filter and sort the data to identify trends and patterns in player performance across different seasons.</p>
+            </div>
+          </div>
+          
+          <div class="project-card" data-category="all">
+            <div class="project-image">
+              <img src="https://firebasestorage.googleapis.com/v0/b/makeportfolio-2bd67.firebasestorage.app/o/users%2FIEn3lXLfA5MwVO5K2icpC3WTnxV2%2Fportfolios%2FjhX9BMqrIMPXlpE0ARdF%2Fprojects%2F1%2F1745255695122-nbadashboard.png?alt=media&token=582d45c5-c874-42d9-b394-c9baef854be7" alt="AI Recommendation System" onerror="this.src='https://placehold.co/600x400/e2e8f0/1e293b?text=Project+Image'">
+              <div class="project-overlay">
+                <div class="project-links">
+                  <a href="https://github.com/PablosTsel/DammageAssesment" class="project-link" target="_blank" rel="noopener noreferrer">
+                    <i class="fab fa-github"></i>
+                  </a>
+                  
+                </div>
+              </div>
+            </div>
+            
+            <div class="project-info">
+              <h3>AI Recommendation System</h3>
+              <p>Developed a sophisticated recommendation engine using collaborative filtering and content-based algorithms to provide personalized suggestions to users, resulting in a 35% increase in user engagement.</p>
+            </div>
+          </div>
+          
+          <div class="project-card" data-category="all">
+            <div class="project-image">
+              <img src="https://firebasestorage.googleapis.com/v0/b/makeportfolio-2bd67.firebasestorage.app/o/users%2FIEn3lXLfA5MwVO5K2icpC3WTnxV2%2Fportfolios%2FjhX9BMqrIMPXlpE0ARdF%2Fprojects%2F2%2F1745255695122-SPOTIFY.png?alt=media&token=42af8aa2-07ef-45c6-b865-ddb7a8bfad91" alt="Natural Language Processing Tool" onerror="this.src='https://placehold.co/600x400/e2e8f0/1e293b?text=Project+Image'">
+              <div class="project-overlay">
+                <div class="project-links">
+                  
+                  
+                </div>
+              </div>
+            </div>
+            
+            <div class="project-info">
+              <h3>Natural Language Processing Tool</h3>
+              <p>Created an NLP tool that analyzes customer feedback across multiple channels, automatically categorizing issues and identifying sentiment to help businesses understand customer needs better.</p>
+            </div>
+          </div>
+          
+          <div class="project-card" data-category="all">
+            <div class="project-image">
+              <img src="https://firebasestorage.googleapis.com/v0/b/makeportfolio-2bd67.firebasestorage.app/o/users%2FIEn3lXLfA5MwVO5K2icpC3WTnxV2%2Fportfolios%2FjhX9BMqrIMPXlpE0ARdF%2Fprojects%2F3%2F1745255695122-USOPC.png?alt=media&token=94aeb025-f9e1-4bd3-aa5d-0281d99e8f1d" alt="Computer Vision Project" onerror="this.src='https://placehold.co/600x400/e2e8f0/1e293b?text=Project+Image'">
+              <div class="project-overlay">
+                <div class="project-links">
+                  
+                  
+                </div>
+              </div>
+            </div>
+            
+            <div class="project-info">
+              <h3>Computer Vision Project</h3>
+              <p>Built a computer vision system for object detection and classification in real-time video streams, achieving 94% accuracy in identifying specific items in complex environments.</p>
+            </div>
+          </div>
+          
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </section>
+    
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <div class="container">
+            <div class="section-header">
+                <h2>Get In Touch</h2>
+                <div class="section-line"></div>
+            </div>
+            
+            <div class="contact-content">
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="contact-details">
+                            <h3>Email</h3>
+                            <p>johndoe@gmail.com</p>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <div class="contact-details">
+                            <h3>Phone</h3>
+                            <p>+34 606 97 06 31</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <p>&copy; <span id="year">2023</span> John Doe. All rights reserved.</p>
+                <div class="social-links large">
+                    <a href="#" class="social-link" target="_blank" rel="noopener noreferrer">
+                        <i class="fab fa-github"></i>
+                    </a>
+                    <a href="#" class="social-link" target="_blank" rel="noopener noreferrer">
+                        <i class="fab fa-linkedin"></i>
+                    </a>
+                    <a href="#" class="social-link" target="_blank" rel="noopener noreferrer">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    <script src="js/main.js"></script>
+</body>
+</html> 
