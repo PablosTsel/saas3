@@ -22,7 +22,6 @@
                     <li><a href="#home" class="active">Home</a></li>
                     <li><a href="#about">About</a></li>
                     <li><a href="#skills">Skills</a></li>
-                    <li><a href="#experience">Experience</a></li>
                     <li><a href="#projects">Projects</a></li>
                     <li><a href="#contact">Contact</a></li>
                 </ul>
@@ -147,30 +146,6 @@
         </div>
     </section>
 
-    <!-- Experience Section -->
-    <section id="experience" class="experience">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">Work Experience</h2>
-                <div class="section-line"></div>
-            </div>
-            <div class="experience-timeline">
-                {{#each experience}}
-                <div class="exp-card">
-                    <div class="exp-date">
-                        <span>{{period}}</span>
-                    </div>
-                    <div class="exp-content">
-                        <h3 class="exp-title">{{position}}</h3>
-                        <h4 class="exp-company">{{company}}</h4>
-                        <p class="exp-description">{{description}}</p>
-                    </div>
-                </div>
-                {{/each}}
-            </div>
-        </div>
-    </section>
-
     <!-- Projects Section -->
     <section id="projects" class="projects">
         <div class="container">
@@ -197,7 +172,7 @@
                         <div class="monitor-base"></div>
                         <div class="keyboard"></div>
                     </div>
-                    <div class="project-info">
+                    <div class="project-body">
                         <h3 class="project-title">{{name}}</h3>
                         <p class="project-description">{{description}}</p>
                     </div>

@@ -170,7 +170,6 @@ a {
 
 /* Hero Section */
 .hero {
-  padding-top: 6rem;
   min-height: 100vh;
   display: flex;
   align-items: center;
@@ -179,42 +178,43 @@ a {
 .hero-content {
   display: flex;
   align-items: center;
-  gap: 3rem;
-  max-width: 1000px;
-  margin: 0 auto;
+  gap: 4rem;
+  flex-wrap: wrap;
 }
 
 .hero-text {
   flex: 1;
+  min-width: 300px;
 }
 
 .hero-image {
-  flex-shrink: 0;
-  position: relative;
+  flex: 1;
+  min-width: 300px;
+  display: flex;
+  justify-content: center;
 }
 
 .hero-image img {
-  width: 300px;
-  height: 300px;
+  max-width: 100%;
+  height: auto;
+  max-height: 400px;
   border-radius: 50%;
   object-fit: cover;
-  border: 8px solid var(--bg-color);
-  box-shadow: 0 0 25px var(--shadow-color);
+  box-shadow: var(--shadow);
 }
 
 .hero-avatar {
-  width: 300px;
-  height: 300px;
+  width: 350px;
+  height: 350px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 100px;
-  font-weight: 700;
-  color: var(--bg-color);
   background-color: var(--highlight-color);
-  border: 8px solid var(--bg-color);
-  box-shadow: 0 0 25px var(--shadow-color);
+  color: white;
+  font-size: 6rem;
+  font-weight: bold;
+  box-shadow: var(--shadow);
 }
 
 h1 {
@@ -226,27 +226,26 @@ h1 {
 
 h1 span {
   color: var(--highlight-color);
-  display: inline-block;
 }
 
 h2 {
-  font-size: 1.8rem;
+  font-size: 1.5rem;
   font-weight: 500;
   margin-bottom: 1.5rem;
   color: var(--text-color);
 }
 
 p {
-  font-size: 1.1rem;
   color: var(--secondary-color);
+  line-height: 1.6;
   margin-bottom: 2rem;
-  max-width: 600px;
-  line-height: 1.7;
+  font-size: 1.1rem;
 }
 
 .hero-buttons {
   display: flex;
   gap: 1rem;
+  flex-wrap: wrap;
 }
 
 .btn {
@@ -313,15 +312,89 @@ section {
 }
 
 /* About Section */
-.about {
-  background-color: var(--section-bg);
+.about-section {
+  background-color: var(--bg-color);
+  position: relative;
+  z-index: 1;
 }
 
 .about-content {
-  max-width: 800px;
-  margin: 0 auto;
-  text-align: center;
-  padding-left: 80px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  margin-top: 2rem;
+  align-items: flex-start;
+}
+
+.about-left {
+  flex: 1;
+  min-width: 300px;
+}
+
+.about-right {
+  flex: 2;
+  min-width: 300px;
+}
+
+.about-contact-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.about-contact-info .contact-item {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  background-color: var(--card-bg);
+  padding: 1.5rem;
+  border-radius: 8px;
+  transition: transform 0.3s;
+  box-shadow: 0 4px 10px var(--shadow-color);
+}
+
+.about-contact-info .contact-item:hover {
+  transform: translateY(-5px);
+}
+
+.about-contact-info .contact-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  background-color: var(--highlight-color);
+  border-radius: 50%;
+  color: white;
+}
+
+.about-contact-info .contact-icon svg {
+  width: 24px;
+  height: 24px;
+  stroke: white;
+}
+
+.about-contact-info .contact-details h3 {
+  font-size: 1rem;
+  margin-bottom: 0.25rem;
+  color: var(--text-color);
+}
+
+.about-contact-info .contact-details a {
+  color: var(--secondary-color);
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.about-contact-info .contact-details a:hover {
+  color: var(--highlight-color);
+}
+
+.about-right .code-block {
+  margin: 0;
+  width: 100%;
+  max-width: 100%;
 }
 
 /* Skills Section */
@@ -710,6 +783,14 @@ section {
   .contact-item {
     width: 100%;
   }
+
+  .about-content {
+    flex-direction: column;
+  }
+  
+  .about-left, .about-right {
+    width: 100%;
+  }
 }
 
 @media (min-width: 769px) and (max-width: 1024px) {
@@ -763,15 +844,16 @@ section {
                     <h1>Hi, I'm <span>John Doe</span></h1>
                     <h2>AI Engineer</h2>
                     <p>I'm a skilled AI Engineer with a passion for developing innovative solutions.</p>
-                    <div class="hero-buttons">
-                        
-                        <a href="https://firebasestorage.googleapis.com/v0/b/makeportfolio-2bd67.firebasestorage.app/o/users%2FxJNLPOUgWQP8AL4X864Cl8Y18zn2%2Fportfolios%2FK1wjcavOBLI5mv9IjK3e%2Fcv%2F1744846503662-PablosTselioudis(ENG).pdf?alt=media&token=c98b0b99-227e-4bea-ae0e-541c9815e923" class="btn primary-btn" target="_blank">
-                            <i class="fas fa-file-alt"></i> Download CV
+                    <div class="profile-buttons">
+                        <a href="#contact" class="btn btn-contact">
+                            Contact
                         </a>
                         
-                        <a href="#contact" class="btn secondary-btn">
-                            <i class="fas fa-envelope"></i> Contact Me
+                        <a href="https://firebasestorage.googleapis.com/v0/b/makeportfolio-2bd67.firebasestorage.app/o/users%2FxJNLPOUgWQP8AL4X864Cl8Y18zn2%2Fportfolios%2FK1wjcavOBLI5mv9IjK3e%2Fcv%2F1744846503662-PablosTselioudis(ENG).pdf?alt=media&token=c98b0b99-227e-4bea-ae0e-541c9815e923" target="_blank" class="btn btn-secondary">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                            Download CV
                         </a>
+                        
                     </div>
                 </div>
                 <div class="hero-image">
@@ -789,7 +871,31 @@ section {
                 <h2>About Me</h2>
             </div>
             <div class="about-content">
-                <p>Hello! I'm John Doe, a dedicated AI Engineer with expertise in machine learning, deep learning, and natural language processing. I have experience building and deploying AI models that solve real-world problems and drive business value. My approach combines technical excellence with a strong focus on practical applications and ethical considerations.</p>
+                <div class="about-left">
+                    <div class="about-contact-info">
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div class="contact-details">
+                                <h3>Email</h3>
+                                <a href="mailto:johndoe@gmail.com">johndoe@gmail.com</a>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <i class="fas fa-phone"></i>
+                            </div>
+                            <div class="contact-details">
+                                <h3>Phone</h3>
+                                <a href="tel:+34 606 97 06 31">+34 606 97 06 31</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="about-right">
+                    <p>Hello! I'm John Doe, a dedicated AI Engineer with expertise in machine learning, deep learning, and natural language processing. I have experience building and deploying AI models that solve real-world problems and drive business value. My approach combines technical excellence with a strong focus on practical applications and ethical considerations.</p>
+                </div>
             </div>
         </div>
     </section>
@@ -832,61 +938,73 @@ section {
                 
           <div class="project-card">
             <div class="project-image">
-              <img src="https://firebasestorage.googleapis.com/v0/b/makeportfolio-2bd67.firebasestorage.app/o/users%2FxJNLPOUgWQP8AL4X864Cl8Y18zn2%2Fportfolios%2FK1wjcavOBLI5mv9IjK3e%2Fprojects%2F0%2F1744846503662-USOPC.png?alt=media&token=8e4db4fe-b419-40e0-9658-25e017c2d214" alt="NBA Dashboard" onerror="this.src='https://placehold.co/600x400/e2e8f0/1e293b?text=Project+Image'">
+              <img src="https://firebasestorage.googleapis.com/v0/b/makeportfolio-2bd67.firebasestorage.app/o/users%2FxJNLPOUgWQP8AL4X864Cl8Y18zn2%2Fportfolios%2FK1wjcavOBLI5mv9IjK3e%2Fprojects%2F0%2F1744846503662-USOPC.png?alt=media&token=8e4db4fe-b419-40e0-9658-25e017c2d214" alt="NBA Dashboard" onerror="this.style.display='none'">
             </div>
             <div class="project-info">
-              <h3 class="project-title">NBA Dashboard</h3>
-              <p class="project-description">Developed an Excel file containing various data and statistics from the 2015-2017 NBA seasons. The dashboard provides insights on players, teams, and games, including player stats, team performance metrics, and game-by-game analysis. Users can filter and sort the data to identify trends and patterns in player performance across different seasons.</p>
-              
+              <h3>NBA Dashboard</h3>
+              <p>Developed an Excel file containing various data and statistics from the 2015-2017 NBA seasons. The dashboard provides insights on players, teams, and games, including player stats, team performance metrics, and game-by-game analysis. Users can filter and sort the data to identify trends and patterns in player performance across different seasons.</p>
               <div class="project-tags">
-                <span class="project-tag">Excel</span><span class="project-tag">Data Analysis</span><span class="project-tag">Sports Analytics</span><span class="project-tag">Dashboard</span>
+                <span>Excel</span><span>Data Analysis</span><span>Sports Analytics</span><span>Dashboard</span>
               </div>
-              
+              <div class="project-links">
+                <a href="#" class="project-link" aria-label="View Project Details">
+                  <i class="fas fa-external-link-alt"></i>
+                </a>
+              </div>
             </div>
           </div>
         
           <div class="project-card">
             <div class="project-image">
-              <img src="https://firebasestorage.googleapis.com/v0/b/makeportfolio-2bd67.firebasestorage.app/o/users%2FxJNLPOUgWQP8AL4X864Cl8Y18zn2%2Fportfolios%2FK1wjcavOBLI5mv9IjK3e%2Fprojects%2F1%2F1744846503663-SPOTIFY.png?alt=media&token=6f57bf59-bf75-4e7e-abfa-a20a3eeb4122" alt="AI Recommendation System" onerror="this.src='https://placehold.co/600x400/e2e8f0/1e293b?text=Project+Image'">
+              <img src="https://firebasestorage.googleapis.com/v0/b/makeportfolio-2bd67.firebasestorage.app/o/users%2FxJNLPOUgWQP8AL4X864Cl8Y18zn2%2Fportfolios%2FK1wjcavOBLI5mv9IjK3e%2Fprojects%2F1%2F1744846503663-SPOTIFY.png?alt=media&token=6f57bf59-bf75-4e7e-abfa-a20a3eeb4122" alt="AI Recommendation System" onerror="this.style.display='none'">
             </div>
             <div class="project-info">
-              <h3 class="project-title">AI Recommendation System</h3>
-              <p class="project-description">Developed a sophisticated recommendation engine using collaborative filtering and content-based algorithms to provide personalized suggestions to users, resulting in a 35% increase in user engagement.</p>
-              
+              <h3>AI Recommendation System</h3>
+              <p>Developed a sophisticated recommendation engine using collaborative filtering and content-based algorithms to provide personalized suggestions to users, resulting in a 35% increase in user engagement.</p>
               <div class="project-tags">
-                <span class="project-tag">Python</span><span class="project-tag">Machine Learning</span><span class="project-tag">Collaborative Filtering</span><span class="project-tag">User Engagement</span>
+                <span>Python</span><span>Machine Learning</span><span>Collaborative Filtering</span><span>User Engagement</span>
               </div>
-              
+              <div class="project-links">
+                <a href="#" class="project-link" aria-label="View Project Details">
+                  <i class="fas fa-external-link-alt"></i>
+                </a>
+              </div>
             </div>
           </div>
         
           <div class="project-card">
             <div class="project-image">
-              <img src="https://firebasestorage.googleapis.com/v0/b/makeportfolio-2bd67.firebasestorage.app/o/users%2FxJNLPOUgWQP8AL4X864Cl8Y18zn2%2Fportfolios%2FK1wjcavOBLI5mv9IjK3e%2Fprojects%2F2%2F1744846503663-nbadashboard.png?alt=media&token=bf31bef4-2aac-4345-93b5-5891f65bb4fe" alt="Natural Language Processing Tool" onerror="this.src='https://placehold.co/600x400/e2e8f0/1e293b?text=Project+Image'">
+              <img src="https://firebasestorage.googleapis.com/v0/b/makeportfolio-2bd67.firebasestorage.app/o/users%2FxJNLPOUgWQP8AL4X864Cl8Y18zn2%2Fportfolios%2FK1wjcavOBLI5mv9IjK3e%2Fprojects%2F2%2F1744846503663-nbadashboard.png?alt=media&token=bf31bef4-2aac-4345-93b5-5891f65bb4fe" alt="Natural Language Processing Tool" onerror="this.style.display='none'">
             </div>
             <div class="project-info">
-              <h3 class="project-title">Natural Language Processing Tool</h3>
-              <p class="project-description">Created an NLP tool that analyzes customer feedback across multiple channels, automatically categorizing issues and identifying sentiment to help businesses understand customer needs better.</p>
-              
+              <h3>Natural Language Processing Tool</h3>
+              <p>Created an NLP tool that analyzes customer feedback across multiple channels, automatically categorizing issues and identifying sentiment to help businesses understand customer needs better.</p>
               <div class="project-tags">
-                <span class="project-tag">NLP</span><span class="project-tag">Python</span><span class="project-tag">Sentiment Analysis</span><span class="project-tag">Text Classification</span>
+                <span>NLP</span><span>Python</span><span>Sentiment Analysis</span><span>Text Classification</span>
               </div>
-              
+              <div class="project-links">
+                <a href="#" class="project-link" aria-label="View Project Details">
+                  <i class="fas fa-external-link-alt"></i>
+                </a>
+              </div>
             </div>
           </div>
         
           <div class="project-card">
             <div class="project-image">
-              <img src="https://firebasestorage.googleapis.com/v0/b/makeportfolio-2bd67.firebasestorage.app/o/users%2FxJNLPOUgWQP8AL4X864Cl8Y18zn2%2Fportfolios%2FK1wjcavOBLI5mv9IjK3e%2Fprojects%2F3%2F1744846503663-FOOTBALL.png?alt=media&token=e133155a-3aec-4b03-905c-d3ac7c3f6aa8" alt="Computer Vision Project" onerror="this.src='https://placehold.co/600x400/e2e8f0/1e293b?text=Project+Image'">
+              <img src="https://firebasestorage.googleapis.com/v0/b/makeportfolio-2bd67.firebasestorage.app/o/users%2FxJNLPOUgWQP8AL4X864Cl8Y18zn2%2Fportfolios%2FK1wjcavOBLI5mv9IjK3e%2Fprojects%2F3%2F1744846503663-FOOTBALL.png?alt=media&token=e133155a-3aec-4b03-905c-d3ac7c3f6aa8" alt="Computer Vision Project" onerror="this.style.display='none'">
             </div>
             <div class="project-info">
-              <h3 class="project-title">Computer Vision Project</h3>
-              <p class="project-description">Built a computer vision system for object detection and classification in real-time video streams, achieving 94% accuracy in identifying specific items in complex environments.</p>
-              
+              <h3>Computer Vision Project</h3>
+              <p>Built a computer vision system for object detection and classification in real-time video streams, achieving 94% accuracy in identifying specific items in complex environments.</p>
               <div class="project-tags">
-                <span class="project-tag">Computer Vision</span><span class="project-tag">TensorFlow</span><span class="project-tag">Object Detection</span><span class="project-tag">Real-time Processing</span>
+                <span>Computer Vision</span><span>TensorFlow</span><span>Object Detection</span><span>Real-time Processing</span>
               </div>
-              
+              <div class="project-links">
+                <a href="#" class="project-link" aria-label="View Project Details">
+                  <i class="fas fa-external-link-alt"></i>
+                </a>
+              </div>
             </div>
           </div>
         

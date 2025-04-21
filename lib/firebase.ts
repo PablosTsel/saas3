@@ -365,7 +365,9 @@ export const createPortfolio = async (
         name: project.name,
         description: project.description,
         imageUrl: DEFAULT_PLACEHOLDER, // Default placeholder until upload succeeds
-        technologies: project.technologies || [] // Include technologies array if available
+        technologies: project.technologies || [], // Include technologies array if available
+        githubUrl: project.githubUrl || "", // Include GitHub URL if available
+        reportUrl: "" // Will update after upload if successful
       })),
       templateId: portfolioData.templateId,
       createdAt: new Date().toISOString(),
@@ -463,51 +465,103 @@ export const createPortfolio = async (
       url: string;
       success: boolean;
     }> = [];
+    
+    // Project report uploads
+    const projectReportResults: Array<{
+      index: number;
+      url: string;
+      success: boolean;
+    }> = [];
+    
     const projectUpdates = [];
     
     if (portfolioData.projects?.length > 0) {
       for (let i = 0; i < portfolioData.projects.length; i++) {
         const project = portfolioData.projects[i];
-        if (!project.image) continue;
         
-        const projectUploadPromise = (async () => {
-          try {
-            console.log(`Starting project ${i} image upload for portfolio ${portfolioId}`);
-            const uploadPath = `users/${userId}/portfolios/${portfolioId}/projects/${i}/${Date.now()}-${project.image.name}`;
-            
-            const uploadResult = await uploadFile(
-              project.image,
-              uploadPath,
-              { portfolioId, projectIndex: i.toString(), fileType: 'projectImage' }
-            );
-
-            if (uploadResult.url) {
-              // Store the result for batch update later
-              projectImageResults.push({
-                index: i,
-                url: uploadResult.url,
-                success: true
-              });
+        // Handle project image upload
+        if (project.image) {
+          const projectUploadPromise = (async () => {
+            try {
+              console.log(`Starting project ${i} image upload for portfolio ${portfolioId}`);
+              const uploadPath = `users/${userId}/portfolios/${portfolioId}/projects/${i}/${Date.now()}-${project.image.name}`;
               
-              console.log(`Project ${i} image uploaded successfully: ${uploadResult.url}`);
-              return { success: true, type: 'project', index: i, url: uploadResult.url };
-            } else {
+              const uploadResult = await uploadFile(
+                project.image,
+                uploadPath,
+                { portfolioId, projectIndex: i.toString(), fileType: 'projectImage' }
+              );
+
+              if (uploadResult.url) {
+                // Store the result for batch update later
+                projectImageResults.push({
+                  index: i,
+                  url: uploadResult.url,
+                  success: true
+                });
+                
+                console.log(`Project ${i} image uploaded successfully: ${uploadResult.url}`);
+                return { success: true, type: 'project', index: i, url: uploadResult.url };
+              } else {
+                hasFileUploadIssues = true;
+                const errorMsg = `Project "${project.name}" image upload failed: ${uploadResult.error || "Unknown error"}`;
+                fileErrorMessages.push(errorMsg);
+                console.error(errorMsg);
+                return { success: false, type: 'project', index: i, error: errorMsg };
+              }
+            } catch (err) {
               hasFileUploadIssues = true;
-              const errorMsg = `Project "${project.name}" image upload failed: ${uploadResult.error || "Unknown error"}`;
+              const errorMsg = `Project "${project.name}" image error: ${err instanceof Error ? err.message : "Unknown error"}`;
               fileErrorMessages.push(errorMsg);
               console.error(errorMsg);
               return { success: false, type: 'project', index: i, error: errorMsg };
             }
-          } catch (err) {
-            hasFileUploadIssues = true;
-            const errorMsg = `Project "${project.name}" image error: ${err instanceof Error ? err.message : "Unknown error"}`;
-            fileErrorMessages.push(errorMsg);
-            console.error(errorMsg);
-            return { success: false, type: 'project', index: i, error: errorMsg };
-          }
-        })();
+          })();
+          
+          uploadPromises.push(projectUploadPromise);
+        }
         
-        uploadPromises.push(projectUploadPromise);
+        // Handle project report upload
+        if (project.reportFile) {
+          const reportUploadPromise = (async () => {
+            try {
+              console.log(`Starting project ${i} report upload for portfolio ${portfolioId}`);
+              const uploadPath = `users/${userId}/portfolios/${portfolioId}/projects/${i}/reports/${Date.now()}-${project.reportFile.name}`;
+              
+              const uploadResult = await uploadFile(
+                project.reportFile,
+                uploadPath,
+                { portfolioId, projectIndex: i.toString(), fileType: 'projectReport' }
+              );
+
+              if (uploadResult.url) {
+                // Store the result for batch update later
+                projectReportResults.push({
+                  index: i,
+                  url: uploadResult.url,
+                  success: true
+                });
+                
+                console.log(`Project ${i} report uploaded successfully: ${uploadResult.url}`);
+                return { success: true, type: 'projectReport', index: i, url: uploadResult.url };
+              } else {
+                hasFileUploadIssues = true;
+                const errorMsg = `Project "${project.name}" report upload failed: ${uploadResult.error || "Unknown error"}`;
+                fileErrorMessages.push(errorMsg);
+                console.error(errorMsg);
+                return { success: false, type: 'projectReport', index: i, error: errorMsg };
+              }
+            } catch (err) {
+              hasFileUploadIssues = true;
+              const errorMsg = `Project "${project.name}" report error: ${err instanceof Error ? err.message : "Unknown error"}`;
+              fileErrorMessages.push(errorMsg);
+              console.error(errorMsg);
+              return { success: false, type: 'projectReport', index: i, error: errorMsg };
+            }
+          })();
+          
+          uploadPromises.push(reportUploadPromise);
+        }
       }
     }
 
@@ -530,12 +584,15 @@ export const createPortfolio = async (
           }
         }
         
-        // Single update for all projects
-        if (projectImageResults.length > 0) {
-          console.log('Batch updating all project images...');
-          await updateDoc(portfolioRef, { projects: updatedProjects });
-          console.log('All project images updated successfully');
+        // Update all project report URLs in one batch
+        for (const result of projectReportResults) {
+          if (result.success && updatedProjects[result.index]) {
+            updatedProjects[result.index].reportUrl = result.url;
+          }
         }
+        
+        // Save the updated projects back to Firestore
+        await updateDoc(portfolioRef, { projects: updatedProjects });
       }
     }
 

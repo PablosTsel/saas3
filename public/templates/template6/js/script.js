@@ -123,7 +123,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const pointY = Math.sin(angle) * size;
             if (i === 0) {
               ctx.moveTo(pointX, pointY);
-    } else {
+            } else {
               ctx.lineTo(pointX, pointY);
             }
           }
@@ -215,12 +215,12 @@ document.addEventListener("DOMContentLoaded", () => {
         
         // Update active link
         document.querySelectorAll('.nav-links a').forEach(link => {
-            link.classList.remove('active');
+          link.classList.remove('active');
         });
         this.classList.add('active');
-            }
-        });
+      }
     });
+  });
 
   // Highlight active section on scroll
   window.addEventListener('scroll', function() {

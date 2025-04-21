@@ -4,7 +4,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { BarChart3, Edit, Eye, Globe, Plus, Settings, Sparkles, User, Users, Bell, LogOut, ChevronRight, ChevronLeft, Upload, X, Check } from "lucide-react"
+import { BarChart3, Edit, Eye, Globe, Plus, Settings, Sparkles, User, Users, Bell, LogOut, ChevronRight, ChevronLeft, Upload, X, Check, File } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
   DropdownMenu,
@@ -50,6 +50,8 @@ interface Project {
   description: string;
   image: File | null;
   technologies: string[];
+  githubUrl?: string;
+  reportFile?: File | null;
 }
 
 interface PortfolioData {
@@ -295,43 +297,240 @@ export default function DashboardPage() {
     setIsCreateModalOpen(true)
   }
 
+  // Add a state to track validation errors for each field
+  const [validationErrors, setValidationErrors] = useState<Record<string, boolean>>({});
+
   const handleNextStep = () => {
+    // Reset validation errors
+    setValidationErrors({});
+    
     // Validation for each step
-    if (currentStep === 1 && !portfolioData.name) {
-      toast.error("Please enter a portfolio name")
-      return
+    if (currentStep === 1) {
+      const errors: Record<string, boolean> = {};
+      
+      // Validate mandatory fields in step 1
+      if (!portfolioData.name.trim()) errors.name = true;
+      if (!portfolioData.fullName.trim()) errors.fullName = true;
+      if (!portfolioData.title.trim()) errors.title = true;
+      if (!portfolioData.smallIntro.trim()) errors.smallIntro = true;
+      if (!portfolioData.about.trim()) errors.about = true;
+      if (!portfolioData.profilePicture) errors.profilePicture = true;
+      
+      // If there are validation errors, don't proceed
+      if (Object.keys(errors).length > 0) {
+        setValidationErrors(errors);
+        
+        // Scroll to the first error field
+        const firstErrorField = Object.keys(errors)[0];
+        
+        // Use a timeout to ensure DOM is updated with error states
+        setTimeout(() => {
+          let scrollTarget = null;
+          
+          // Special handling for profile picture
+          if (firstErrorField === 'profilePicture') {
+            // Try to find the profile picture upload container
+            const uploadContainer = document.querySelector('[data-upload-container="profilePicture"]');
+            if (uploadContainer) {
+              scrollTarget = uploadContainer;
+            }
+          } else {
+            // For regular input fields, use the ID
+            const element = document.getElementById(firstErrorField);
+            if (element) {
+              scrollTarget = element;
+            }
+          }
+
+          // If we found a target element, scroll to it
+          if (scrollTarget) {
+            console.log("Scrolling to:", scrollTarget);
+            scrollTarget.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            
+            // Try to focus the element if it's an input
+            if (scrollTarget.tagName === 'INPUT' || scrollTarget.tagName === 'TEXTAREA') {
+              try {
+                (scrollTarget as HTMLInputElement | HTMLTextAreaElement).focus();
+              } catch (e) {
+                console.log("Could not focus element", e);
+              }
+            }
+            
+            // Highlight the element temporarily to make it more visible
+            scrollTarget.classList.add('ring-2', 'ring-red-400');
+            setTimeout(() => {
+              scrollTarget.classList.remove('ring-2', 'ring-red-400');
+            }, 2000);
+          }
+        }, 100);
+        
+        // Show toast with error message
+        toast.error("Please fill in all required fields before proceeding", {
+          duration: 3000,
+        });
+        
+        return;
+      }
     }
     
-    // CV is optional now, no need for validation based on hasCv
-    
-    if (currentStep === 3) {
-      // Only validate project name and description
-      const hasEmptyProjects = portfolioData.projects.some(project => !project.name || !project.description)
-      if (hasEmptyProjects) {
-        toast.warning("Some projects are missing a name or description. This is recommended but not required.")
-        // Don't block progress
+    // Step 2 validations
+    if (currentStep === 2) {
+      const errors: Record<string, boolean> = {};
+      
+      // Email and phone are mandatory
+      if (!portfolioData.email.trim()) errors.email = true;
+      if (!portfolioData.phone.trim()) errors.phone = true;
+      
+      // At least 3 skills are required
+      if (portfolioData.skills.length < 3) {
+        errors.skills = true;
+        toast.error("Please add at least 3 skills", {
+          duration: 3000,
+        });
+        return;
       }
       
-      // Images are completely optional
-      const missingImages = portfolioData.projects.some(project => !project.image)
-      if (missingImages) {
-        toast.info("Some projects don't have images. Default placeholders will be used.", 
-          { duration: 3000 })
-        // Continue anyway - don't return
+      // Check if skills have names
+      const emptySkills = portfolioData.skills.some((skill, index) => {
+        if (!skill.name.trim()) {
+          errors[`skill-${index}`] = true;
+          return true;
+        }
+        return false;
+      });
+      
+      // If there are validation errors, don't proceed
+      if (Object.keys(errors).length > 0 || emptySkills) {
+        setValidationErrors(errors);
+        
+        // Scroll to the first error field
+        const firstErrorField = Object.keys(errors)[0];
+        
+        // Add a small delay to ensure DOM is updated with error states
+        setTimeout(() => {
+          const element = document.getElementById(firstErrorField);
+          if (element) {
+            // Make sure to scroll with enough offset to account for sticky header
+            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            element.focus();
+          }
+        }, 100);
+        
+        // Show toast with error message
+        toast.error("Please fill in all required fields before proceeding", {
+          duration: 3000,
+        });
+        
+        return;
       }
     }
     
-    if (currentStep === 4 && !selectedTemplate) {
-      toast.warning("Please select a template")
-      // Continue anyway with default template
-      setSelectedTemplate("template1")
+    // Step 3 validations for projects
+    if (currentStep === 3) {
+      const errors: Record<string, boolean> = {};
+      let hasErrors = false;
+      
+      // Check each project for required fields
+      portfolioData.projects.forEach((project, index) => {
+        if (!project.name.trim()) {
+          errors[`project-${index}-name`] = true;
+          hasErrors = true;
+        }
+        
+        if (!project.description.trim()) {
+          errors[`project-${index}-description`] = true;
+          hasErrors = true;
+        }
+        
+        if (!project.image) {
+          errors[`project-${index}-image`] = true;
+          hasErrors = true;
+        }
+      });
+      
+      // If there are validation errors, don't proceed
+      if (hasErrors) {
+        setValidationErrors(errors);
+        
+        // Find the first error field
+        const firstErrorKey = Object.keys(errors)[0];
+        const errorParts = firstErrorKey.split('-');
+        const projectIndex = errorParts[1];
+        const fieldType = errorParts[2];
+        
+        // Use a timeout to ensure React has updated the DOM with error states
+        setTimeout(() => {
+          let scrollTarget = null;
+          
+          // First try direct element ID
+          const directElement = document.getElementById(firstErrorKey);
+          if (directElement) {
+            scrollTarget = directElement;
+          } 
+          // For image uploads, try the upload container
+          else if (fieldType === 'image') {
+            // Try to find the image upload container
+            const imageContainer = document.querySelector(`[data-image-upload-container="project-${projectIndex}"]`);
+            if (imageContainer) {
+              scrollTarget = imageContainer;
+            }
+          }
+          
+          // If we still don't have a target, try the project container
+          if (!scrollTarget) {
+            const projectContainer = document.getElementById(`project-container-${projectIndex}`);
+            if (projectContainer) {
+              scrollTarget = projectContainer;
+            }
+          }
+          
+          // Last resort - try any element with project index in class name
+          if (!scrollTarget) {
+            const projectElements = document.querySelectorAll(`.project-container`);
+            if (projectElements && projectElements.length > parseInt(projectIndex)) {
+              scrollTarget = projectElements[parseInt(projectIndex)];
+            }
+          }
+          
+          // Scroll to the target element if found
+          if (scrollTarget) {
+            console.log("Scrolling to:", scrollTarget);
+            scrollTarget.scrollIntoView({ 
+              behavior: 'smooth', 
+              block: 'center'
+            });
+            
+            // Try to focus if it's an input
+            if (scrollTarget.tagName === 'INPUT' || scrollTarget.tagName === 'TEXTAREA') {
+              try {
+                (scrollTarget as HTMLInputElement | HTMLTextAreaElement).focus();
+              } catch (e) {
+                console.log("Could not focus element", e);
+              }
+            }
+            
+            // Highlight the element temporarily to make it more visible
+            scrollTarget.classList.add('ring-2', 'ring-red-400');
+            setTimeout(() => {
+              scrollTarget.classList.remove('ring-2', 'ring-red-400');
+            }, 2000);
+          }
+        }, 100);
+        
+        // Show toast with error message
+        toast.error("Please fill in all required fields for each project", {
+          duration: 3000,
+        });
+        
+        return;
+      }
     }
     
     if (currentStep < totalSteps) {
-      setCurrentStep(currentStep + 1)
+      setCurrentStep(currentStep + 1);
     } else {
       // Handle form submission
-      handleSubmitPortfolio()
+      handleSubmitPortfolio();
     }
   }
 
@@ -422,7 +621,9 @@ export default function DashboardPage() {
           canvas.toBlob((blob) => {
             if (blob) {
               // Create new file from blob
-              const newFile = new File([blob], file.name, {
+              const newFile = new (File as unknown as {
+                new(bits: BlobPart[], name: string, options?: FilePropertyBag): File;
+              })([blob], file.name, {
                 type: outputFormat,
                 lastModified: Date.now(),
               });
@@ -449,92 +650,67 @@ export default function DashboardPage() {
   };
 
   // Update the handleFileUpload function to better handle different file types
-  const handleFileUpload = async (file: File, field: 'cv' | 'projectImage' | 'profilePicture', projectIndex?: number) => {
-    try {
-      // Check file size and type
-      const isImage = file.type.startsWith('image/');
-      const isPDF = file.type === 'application/pdf' || file.type === 'application/msword' || 
-                   file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
-      
-      // Size limits based on file type
-      let maxSize;
-      let fileTypeMsg;
-      
-      if (field === 'cv' && !isPDF) {
-        toast.error(`Only PDF, DOC, or DOCX files are allowed for CV uploads.`);
-        return;
-      }
-      
-      if (field === 'projectImage' && !isImage) {
-        toast.error(`Only image files (PNG, JPG, JPEG, GIF) are allowed for project screenshots.`);
-        return;
-      }
-      
-      if (isImage) {
-        maxSize = 5 * 1024 * 1024; // 5MB for images
-        fileTypeMsg = "image";
-      } else if (isPDF) {
-        maxSize = 10 * 1024 * 1024; // 10MB for PDFs/documents
-        fileTypeMsg = "document";
-      } else {
-        maxSize = 3 * 1024 * 1024; // 3MB default
-        fileTypeMsg = "file";
-      }
-      
-      if (file.size > maxSize) {
-        toast.warning(
-          `The ${fileTypeMsg} "${file.name}" (${(file.size / (1024 * 1024)).toFixed(1)}MB) exceeds the recommended size limit of ${(maxSize / (1024 * 1024))}MB. It may upload slowly.`,
-          { duration: 5000 }
-        );
-      }
-      
-      // For images, try to compress them
-      let processedFile = file;
-      if (field === 'projectImage' && isImage) {
-        toast.loading(`Optimizing image "${file.name}"...`, { id: `compress-${file.name}` });
-        try {
-          processedFile = await compressImage(file);
-          toast.dismiss(`compress-${file.name}`);
-          if (processedFile.size < file.size) {
-            toast.success(`Image optimized: ${(file.size / (1024 * 1024)).toFixed(1)}MB → ${(processedFile.size / (1024 * 1024)).toFixed(1)}MB`);
-          }
-        } catch (err) {
-          toast.dismiss(`compress-${file.name}`);
-          console.error("Image compression failed:", err);
-          // Continue with original file
+  const handleFileUpload = async (file: File, field: 'cv' | 'projectImage' | 'profilePicture' | 'projectReport', projectIndex?: number) => {
+    // Compress images to reduce size
+    let processedFile = file;
+    
+    if (field !== 'cv' && field !== 'projectReport' && file.type.startsWith('image/')) {
+      try {
+        const maxSizeMB = 2; // 2MB max for images
+        if (file.size > maxSizeMB * 1024 * 1024) {
+          processedFile = await compressImage(file, maxSizeMB);
         }
+      } catch (error) {
+        console.error('Error compressing image:', error);
+        toast.error('Failed to compress image. Using original file.');
+        processedFile = file;
+      }
+    }
+    
+    if (field === 'cv') {
+      // Validate PDF size (max 10MB)
+      if (file.size > 10 * 1024 * 1024) {
+        toast.error('CV file is too large. Maximum size is 10MB.');
+        return;
       }
       
-      // Update the appropriate state with the processed file
-      if (field === 'cv') {
-        setPortfolioData({
-          ...portfolioData,
-          cv: processedFile
-        });
-        toast.success(`CV file "${file.name}" selected`);
-      } else if (field === 'projectImage' && typeof projectIndex === 'number') {
-        const newProjects = [...portfolioData.projects];
-        newProjects[projectIndex] = { 
-          ...newProjects[projectIndex], 
-          image: processedFile 
-        };
-        setPortfolioData({
-          ...portfolioData,
-          projects: newProjects
-        });
-        toast.success(`Project image "${file.name}" selected`);
-      } else if (field === 'profilePicture') {
-        setPortfolioData({
-          ...portfolioData,
-          profilePicture: processedFile
-        });
-        toast.success(`Profile picture "${file.name}" selected`);
+      setPortfolioData({
+        ...portfolioData,
+        cv: processedFile
+      });
+    } else if (field === 'projectImage' && typeof projectIndex === 'number') {
+      const newProjects = [...portfolioData.projects];
+      newProjects[projectIndex] = { 
+        ...newProjects[projectIndex], 
+        image: processedFile 
+      };
+      setPortfolioData({
+        ...portfolioData,
+        projects: newProjects
+      });
+    } else if (field === 'projectReport' && typeof projectIndex === 'number') {
+      // Validate report size (max 10MB)
+      if (file.size > 10 * 1024 * 1024) {
+        toast.error('Report file is too large. Maximum size is 10MB.');
+        return;
       }
-    } catch (error) {
-      console.error("Error handling file upload:", error);
-      toast.error("There was a problem processing the file. Please try again.");
+      
+      const newProjects = [...portfolioData.projects];
+      newProjects[projectIndex] = { 
+        ...newProjects[projectIndex], 
+        reportFile: processedFile 
+      };
+      setPortfolioData({
+        ...portfolioData,
+        projects: newProjects
+      });
+    } else if (field === 'profilePicture') {
+      setPortfolioData({
+        ...portfolioData,
+        profilePicture: processedFile
+      });
     }
-  };
+  }
 
   const handleSubmitPortfolio = async () => {
     if (!user) {
@@ -885,6 +1061,15 @@ export default function DashboardPage() {
     }
   };
 
+  // Helper function to determine if a field has an error
+  const hasError = (fieldName: string): boolean => {
+    return validationErrors[fieldName] === true;
+  }
+
+  // CSS class for input fields with errors
+  const errorInputClass = "border-red-500 focus:border-red-500 focus:ring-red-200 bg-red-50";
+  const errorLabelClass = "text-red-500";
+
   return (
     <div className="flex min-h-screen flex-col bg-gradient-to-br from-blue-50 to-indigo-50">
       {/* Header */}
@@ -1177,26 +1362,36 @@ export default function DashboardPage() {
                 <div className="py-4 space-y-4">
                   <h3 className="text-lg font-medium text-gray-800">Basic Information</h3>
                   
-                  {/* Full Name Field - first required field */}
+                  {/* Full Name Field - required */}
                   <div className="space-y-2">
-                    <Label htmlFor="fullName">Full Name *</Label>
+                    <Label htmlFor="fullName" className={hasError('fullName') ? errorLabelClass : ""}>
+                      Full Name <span className="text-red-500">*</span>
+                    </Label>
                     <Input 
                       id="fullName" 
                       name="fullName" 
                       placeholder="Pablos Tselioudis" 
                       value={portfolioData.fullName}
                       onChange={handleInputChange}
-                      className="border-indigo-100 focus:border-indigo-300 focus:ring-indigo-200"
+                      className={`border-indigo-100 focus:border-indigo-300 focus:ring-indigo-200 ${
+                        hasError('fullName') ? errorInputClass : ""
+                      }`}
                       required
                     />
                     <p className="text-xs text-gray-500">Your complete name as it will appear on your portfolio.</p>
                   </div>
                   
-                  {/* Profile Picture Upload */}
+                  {/* Profile Picture Upload - required */}
                   <div className="space-y-2">
-                    <Label htmlFor="profilePicture">Profile Picture</Label>
+                    <Label htmlFor="profilePicture" className={hasError('profilePicture') ? errorLabelClass : ""}>
+                      Profile Picture <span className="text-red-500">*</span>
+                    </Label>
                     <div className="flex items-center gap-4">
-                      <div className="w-24 h-24 rounded-full overflow-hidden bg-indigo-50 flex items-center justify-center border border-indigo-100">
+                      <div className={`w-24 h-24 rounded-full overflow-hidden flex items-center justify-center ${
+                        hasError('profilePicture') 
+                          ? "bg-red-50 border border-red-300" 
+                          : "bg-indigo-50 border border-indigo-100"
+                      }`}>
                         {portfolioData.profilePicture ? (
                           <img 
                             src={URL.createObjectURL(portfolioData.profilePicture)} 
@@ -1204,12 +1399,20 @@ export default function DashboardPage() {
                             className="w-full h-full object-cover"
                           />
                         ) : (
-                          <User className="w-12 h-12 text-indigo-300" />
+                          <User className={`w-12 h-12 ${hasError('profilePicture') ? "text-red-300" : "text-indigo-300"}`} />
                         )}
                       </div>
                       
                       <div className="flex-1">
-                        <div className="border-2 border-dashed border-indigo-100 rounded-lg p-4 text-center hover:border-indigo-300 transition-colors">
+                        <div 
+                          id="profile-picture-container"
+                          data-upload-container="profilePicture"
+                          className={`border-2 border-dashed rounded-lg p-4 text-center transition-colors ${
+                            hasError('profilePicture') 
+                              ? "border-red-300 hover:border-red-500 bg-red-50" 
+                              : "border-indigo-100 hover:border-indigo-300"
+                          }`}
+                        >
                           {portfolioData.profilePicture ? (
                             <div className="space-y-2">
                               <div className="text-sm text-indigo-600">
@@ -1226,7 +1429,7 @@ export default function DashboardPage() {
                             </div>
                           ) : (
                             <>
-                              <Upload className="h-8 w-8 text-indigo-300 mx-auto mb-2" />
+                              <Upload className={`h-8 w-8 mx-auto mb-2 ${hasError('profilePicture') ? "text-red-300" : "text-indigo-300"}`} />
                               <div className="text-sm text-gray-600 mb-2">
                                 Upload a profile picture
                               </div>
@@ -1248,6 +1451,8 @@ export default function DashboardPage() {
                             onChange={(e) => {
                               if (e.target.files?.[0]) {
                                 handleFileUpload(e.target.files[0], 'profilePicture');
+                                // Clear the validation error for this field
+                                setValidationErrors({...validationErrors, profilePicture: false});
                               }
                             }}
                           />
@@ -1258,51 +1463,70 @@ export default function DashboardPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="name">Portfolio Name *</Label>
+                    <Label htmlFor="name" className={hasError('name') ? errorLabelClass : ""}>
+                      Portfolio Name <span className="text-red-500">*</span>
+                    </Label>
                     <Input 
                       id="name" 
                       name="name" 
                       placeholder="My Professional Portfolio" 
                       value={portfolioData.name}
                       onChange={handleInputChange}
-                      className="border-indigo-100 focus:border-indigo-300 focus:ring-indigo-200"
+                      className={`border-indigo-100 focus:border-indigo-300 focus:ring-indigo-200 ${
+                        hasError('name') ? errorInputClass : ""
+                      }`}
                       required
                     />
                     <p className="text-xs text-gray-500">This name is only used to identify your portfolio in your dashboard. It will NOT appear on the actual portfolio.</p>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="title">Professional Title</Label>
+                    <Label htmlFor="title" className={hasError('title') ? errorLabelClass : ""}>
+                      Professional Title <span className="text-red-500">*</span>
+                    </Label>
                     <Input 
                       id="title" 
                       name="title" 
                       placeholder="Frontend Developer" 
                       value={portfolioData.title}
                       onChange={handleInputChange}
-                      className="border-indigo-100 focus:border-indigo-300 focus:ring-indigo-200"
+                      className={`border-indigo-100 focus:border-indigo-300 focus:ring-indigo-200 ${
+                        hasError('title') ? errorInputClass : ""
+                      }`}
+                      required
                     />
                     <p className="text-xs text-gray-500">Your job title or professional focus.</p>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="smallIntro">Small Intro (1 sentence)</Label>
+                    <Label htmlFor="smallIntro" className={hasError('smallIntro') ? errorLabelClass : ""}>
+                      Small Intro <span className="text-red-500">*</span>
+                    </Label>
                     <Input 
                       id="smallIntro" 
                       name="smallIntro" 
                       placeholder="A brief one-sentence introduction" 
                       value={portfolioData.smallIntro}
                       onChange={handleInputChange}
-                      className="border-indigo-100 focus:border-indigo-300 focus:ring-indigo-200"
+                      className={`border-indigo-100 focus:border-indigo-300 focus:ring-indigo-200 ${
+                        hasError('smallIntro') ? errorInputClass : ""
+                      }`}
+                      required
                     />
                     <p className="text-xs text-gray-500">A short introduction for the homepage header (1 sentence).</p>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="about">About Me</Label>
+                    <Label htmlFor="about" className={hasError('about') ? errorLabelClass : ""}>
+                      About Me <span className="text-red-500">*</span>
+                    </Label>
                     <Textarea 
                       id="about" 
                       name="about" 
                       placeholder="I'm a passionate developer with 5 years of experience..." 
                       value={portfolioData.about}
                       onChange={handleInputChange}
-                      className="min-h-[120px] border-indigo-100 focus:border-indigo-300 focus:ring-indigo-200"
+                      className={`min-h-[120px] border-indigo-100 focus:border-indigo-300 focus:ring-indigo-200 ${
+                        hasError('about') ? errorInputClass : ""
+                      }`}
+                      required
                     />
                     <p className="text-xs text-gray-500">A brief introduction about yourself.</p>
                   </div>
@@ -1345,7 +1569,7 @@ export default function DashboardPage() {
                       </Button>
                     </div>
                     <p className="text-xs text-gray-500 font-medium">Accepted formats: PDF, DOC, DOCX, max 5MB.</p>
-                    <p className="text-xs text-indigo-600">Visitors to your portfolio will be able to download your CV. (No information will be automatically extracted)</p>
+                    <p className="text-xs text-indigo-600">Visitors to your portfolio will be able to download your CV.</p>
                   </div>
                   
                   {/* Personal Information Section */}
@@ -1353,7 +1577,9 @@ export default function DashboardPage() {
                     <Label className="text-gray-800 font-medium">Personal Information</Label>
                     <div className="space-y-3 p-3 rounded-lg border border-indigo-100 bg-indigo-50/30">
                       <div className="space-y-2">
-                        <Label htmlFor="email">Email Address</Label>
+                        <Label htmlFor="email" className={hasError('email') ? errorLabelClass : ""}>
+                          Email Address <span className="text-red-500">*</span>
+                        </Label>
                         <Input 
                           id="email"
                           name="email"
@@ -1361,30 +1587,40 @@ export default function DashboardPage() {
                           value={portfolioData.email || ""}
                           onChange={handleInputChange}
                           placeholder="email@example.com" 
-                          className="border-indigo-100 focus:border-indigo-300 focus:ring-indigo-200"
+                          className={`border-indigo-100 focus:border-indigo-300 focus:ring-indigo-200 ${
+                            hasError('email') ? errorInputClass : ""
+                          }`}
+                          required
                         />
                         <p className="text-xs text-gray-500">Your contact email for professional inquiries.</p>
                       </div>
                       
                       <div className="space-y-2">
-                        <Label htmlFor="phone">Phone Number</Label>
+                        <Label htmlFor="phone" className={hasError('phone') ? errorLabelClass : ""}>
+                          Phone Number <span className="text-red-500">*</span>
+                        </Label>
                         <Input 
                           id="phone"
                           name="phone"
                           value={portfolioData.phone || ""}
                           onChange={handleInputChange}
                           placeholder="+1 (555) 123-4567" 
-                          className="border-indigo-100 focus:border-indigo-300 focus:ring-indigo-200"
+                          className={`border-indigo-100 focus:border-indigo-300 focus:ring-indigo-200 ${
+                            hasError('phone') ? errorInputClass : ""
+                          }`}
+                          required
                         />
-                        <p className="text-xs text-gray-500">Your contact phone number (optional).</p>
+                        <p className="text-xs text-gray-500">Your contact phone number.</p>
                       </div>
                     </div>
                   </div>
                   
-                  {/* Skills Section - Simplified */}
+                  {/* Skills Section - At least 3 required */}
                   <div className="space-y-3">
                     <div className="flex justify-between items-center">
-                      <Label className="text-gray-800">Skills</Label>
+                      <Label className={`text-gray-800 ${hasError('skills') ? errorLabelClass : ""}`}>
+                        Skills <span className="text-red-500">*</span> <span className="text-xs font-normal">(at least 3 required)</span>
+                      </Label>
                       <Button 
                         type="button" 
                         size="sm" 
@@ -1397,16 +1633,29 @@ export default function DashboardPage() {
                     </div>
                     
                     {portfolioData.skills.length === 0 ? (
-                      <p className="text-sm text-gray-500 italic">No skills added yet. Click "Add Skill" to begin.</p>
+                      <p className={`text-sm italic ${hasError('skills') ? "text-red-500" : "text-gray-500"}`}>
+                        No skills added yet. Click "Add Skill" to begin.
+                      </p>
                     ) : (
                       <div className="space-y-3">
                         {portfolioData.skills.map((skill, index) => (
                           <div key={index} className="flex gap-2 items-center">
                             <Input 
+                              id={`skill-${index}`}
                               value={skill.name} 
-                              onChange={(e) => handleUpdateSkill(index, 'name', e.target.value)}
+                              onChange={(e) => {
+                                handleUpdateSkill(index, 'name', e.target.value);
+                                // Clear validation error for this field
+                                if (e.target.value.trim()) {
+                                  const newErrors = {...validationErrors};
+                                  delete newErrors[`skill-${index}`];
+                                  setValidationErrors(newErrors);
+                                }
+                              }}
                               placeholder="e.g. React, JavaScript, UI Design" 
-                              className="flex-1 border-indigo-100"
+                              className={`flex-1 border-indigo-100 ${
+                                hasError(`skill-${index}`) ? errorInputClass : ""
+                              }`}
                             />
                             <Button 
                               type="button" 
@@ -1414,12 +1663,16 @@ export default function DashboardPage() {
                               size="icon" 
                               className="h-8 w-8 text-gray-400 hover:text-red-500"
                               onClick={() => handleRemoveSkill(index)}
+                              disabled={portfolioData.skills.length <= 3} // Prevent removing if only 3 skills left
                             >
                               <X className="h-4 w-4" />
                             </Button>
                           </div>
                         ))}
                       </div>
+                    )}
+                    {hasError('skills') && (
+                      <p className="text-xs text-red-500">Please add at least 3 skills.</p>
                     )}
                   </div>
                 </div>
@@ -1447,37 +1700,86 @@ export default function DashboardPage() {
                   
                   <div className="space-y-6 mt-4">
                     {portfolioData.projects.map((project, index) => (
-                      <div key={index} className="p-4 border border-indigo-100 rounded-lg space-y-4 bg-indigo-50/30">
+                      <div 
+                        key={index} 
+                        data-project-index={index}
+                        id={`project-container-${index}`}
+                        className="project-container p-4 border border-indigo-100 rounded-lg space-y-4 bg-indigo-50/30"
+                      >
                         <h4 className="font-medium text-indigo-600 flex justify-between">
                           Project {index + 1}
                         </h4>
                         
                         <div className="space-y-3">
                           <div className="space-y-2">
-                            <Label htmlFor={`project-${index}-name`}>Project Name</Label>
+                            <Label 
+                              htmlFor={`project-${index}-name`}
+                              className={hasError(`project-${index}-name`) ? errorLabelClass : ""}
+                            >
+                              Project Name <span className="text-red-500">*</span>
+                            </Label>
                             <Input 
                               id={`project-${index}-name`}
                               value={project.name}
-                              onChange={(e) => handleUpdateProject(index, 'name', e.target.value)}
+                              onChange={(e) => {
+                                handleUpdateProject(index, 'name', e.target.value);
+                                // Clear validation error
+                                if (e.target.value.trim()) {
+                                  const newErrors = {...validationErrors};
+                                  delete newErrors[`project-${index}-name`];
+                                  setValidationErrors(newErrors);
+                                }
+                              }}
                               placeholder="My Awesome Project"
-                              className="border-indigo-100"
+                              className={`border-indigo-100 ${
+                                hasError(`project-${index}-name`) ? errorInputClass : ""
+                              }`}
+                              required
                             />
                           </div>
                           
                           <div className="space-y-2">
-                            <Label htmlFor={`project-${index}-description`}>Description</Label>
+                            <Label 
+                              htmlFor={`project-${index}-description`}
+                              className={hasError(`project-${index}-description`) ? errorLabelClass : ""}
+                            >
+                              Description <span className="text-red-500">*</span>
+                            </Label>
                             <Textarea 
                               id={`project-${index}-description`}
                               value={project.description}
-                              onChange={(e) => handleUpdateProject(index, 'description', e.target.value)}
+                              onChange={(e) => {
+                                handleUpdateProject(index, 'description', e.target.value);
+                                // Clear validation error
+                                if (e.target.value.trim()) {
+                                  const newErrors = {...validationErrors};
+                                  delete newErrors[`project-${index}-description`];
+                                  setValidationErrors(newErrors);
+                                }
+                              }}
                               placeholder="Describe what this project is about, technologies used, and your role"
-                              className="min-h-[80px] border-indigo-100"
+                              className={`min-h-[80px] border-indigo-100 ${
+                                hasError(`project-${index}-description`) ? errorInputClass : ""
+                              }`}
+                              required
                             />
                           </div>
                           
                           <div className="space-y-2">
-                            <Label htmlFor={`project-${index}-image`}>Project Image</Label>
-                            <div className="border-2 border-dashed border-indigo-100 rounded-lg p-4 text-center hover:border-indigo-300 transition-colors">
+                            <Label 
+                              htmlFor={`project-${index}-image`}
+                              className={hasError(`project-${index}-image`) ? errorLabelClass : ""}
+                            >
+                              Project Image <span className="text-red-500">*</span>
+                            </Label>
+                            <div 
+                              data-image-upload-container={`project-${index}`}
+                              className={`border-2 border-dashed rounded-lg p-4 text-center transition-colors ${
+                                hasError(`project-${index}-image`) 
+                                  ? "border-red-300 hover:border-red-500 bg-red-50" 
+                                  : "border-indigo-100 hover:border-indigo-300"
+                              }`}
+                            >
                               {project.image ? (
                                 <div className="space-y-2">
                                   <div className="text-sm text-indigo-600">
@@ -1494,7 +1796,9 @@ export default function DashboardPage() {
                                 </div>
                               ) : (
                                 <>
-                                  <Upload className="h-8 w-8 text-indigo-300 mx-auto mb-2" />
+                                  <Upload className={`h-8 w-8 mx-auto mb-2 ${
+                                    hasError(`project-${index}-image`) ? "text-red-300" : "text-indigo-300"
+                                  }`} />
                                   <div className="text-sm text-gray-600 mb-2">
                                     Upload a screenshot or image of your project
                                   </div>
@@ -1515,12 +1819,80 @@ export default function DashboardPage() {
                                 className="hidden" 
                                 onChange={(e) => {
                                   if (e.target.files?.[0]) {
-                                    handleFileUpload(e.target.files[0], 'projectImage', index)
+                                    handleFileUpload(e.target.files[0], 'projectImage', index);
+                                    // Clear validation error
+                                    const newErrors = {...validationErrors};
+                                    delete newErrors[`project-${index}-image`];
+                                    setValidationErrors(newErrors);
                                   }
                                 }}
                               />
                             </div>
                             <p className="text-xs text-gray-500">Recommended size: 1200x800px, max 2MB. Formats: JPG, PNG.</p>
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label htmlFor={`project-${index}-github`}>
+                              GitHub Repository URL <span className="text-xs text-gray-500 font-normal">(optional)</span>
+                            </Label>
+                            <Input 
+                              id={`project-${index}-github`}
+                              value={project.githubUrl || ''}
+                              onChange={(e) => handleUpdateProject(index, 'githubUrl', e.target.value)}
+                              placeholder="https://github.com/username/repository"
+                              className="border-indigo-100"
+                            />
+                            <p className="text-xs text-gray-500">Link to your GitHub repository</p>
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label htmlFor={`project-${index}-report`}>
+                              Project Report <span className="text-xs text-gray-500 font-normal">(optional)</span>
+                            </Label>
+                            <div className="border-2 border-dashed border-indigo-100 rounded-lg p-4 text-center hover:border-indigo-300 transition-colors">
+                              {project.reportFile ? (
+                                <div className="space-y-2">
+                                  <div className="text-sm text-indigo-600">
+                                    Selected file: {project.reportFile.name}
+                                  </div>
+                                  <Button 
+                                    variant="outline" 
+                                    size="sm" 
+                                    className="border-indigo-200 text-xs rounded-md"
+                                    onClick={() => document.getElementById(`project-${index}-report-upload`)?.click()}
+                                  >
+                                    Change Report
+                                  </Button>
+                                </div>
+                              ) : (
+                                <>
+                                  <File className="h-8 w-8 text-indigo-300 mx-auto mb-2" />
+                                  <div className="text-sm text-gray-600 mb-2">
+                                    Upload a report or documentation for your project
+                                  </div>
+                                  <Button 
+                                    variant="outline" 
+                                    size="sm" 
+                                    className="border-indigo-200 text-xs rounded-md"
+                                    onClick={() => document.getElementById(`project-${index}-report-upload`)?.click()}
+                                  >
+                                    Select Report
+                                  </Button>
+                                </>
+                              )}
+                              <input 
+                                type="file" 
+                                id={`project-${index}-report-upload`}
+                                accept=".pdf,.doc,.docx,.ppt,.pptx" 
+                                className="hidden" 
+                                onChange={(e) => {
+                                  if (e.target.files?.[0]) {
+                                    handleFileUpload(e.target.files[0], 'projectReport', index)
+                                  }
+                                }}
+                              />
+                            </div>
+                            <p className="text-xs text-gray-500">Upload project documentation (PDF, Word, PowerPoint). Max 10MB.</p>
                           </div>
                         </div>
                       </div>

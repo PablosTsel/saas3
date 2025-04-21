@@ -1062,13 +1062,173 @@ footer {
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <meta name="description" content="John Doe's professional portfolio showcasing projects and skills in AI Engineer">
-</head>
+
+        <style>
+          /* Flexbox layout for project cards to ensure buttons are at the bottom */
+          .project-card {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+          }
+          
+          .project-content {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            padding: 1.5rem;
+          }
+          
+          .project-content h3 {
+            margin-top: 0;
+            margin-bottom: 0.75rem;
+          }
+          
+          .project-content p {
+            flex-grow: 1;
+            margin-bottom: 1rem;
+          }
+          
+          .project-button-container {
+            margin-top: auto;
+            display: flex;
+            gap: 0.5rem;
+          }
+          
+          .project-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1rem;
+            border-radius: 0.25rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.3s ease;
+          }
+          
+          .project-button i {
+            margin-right: 0.5rem;
+          }
+          
+          .github-button {
+            background-color: #333;
+            color: white;
+          }
+          
+          .github-button:hover {
+            background-color: #24292e;
+          }
+          
+          .report-button {
+            background-color: #0070f3;
+            color: white;
+          }
+          
+          .report-button:hover {
+            background-color: #0051cc;
+          }
+          
+          .half-width {
+            flex: 1;
+          }
+          
+          .full-width {
+            width: 100%;
+          }
+          
+          /* Ensure consistent height for project cards */
+          .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+          }
+        </style>
+        
+        <style>
+          /* Flexbox layout for project cards to ensure buttons are at the bottom */
+          .project-card {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+          }
+          
+          .project-content {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            padding: 1.5rem;
+          }
+          
+          .project-content h3 {
+            margin-top: 0;
+            margin-bottom: 0.75rem;
+          }
+          
+          .project-content p {
+            flex-grow: 1;
+            margin-bottom: 1rem;
+          }
+          
+          .project-button-container {
+            margin-top: auto;
+            display: flex;
+            gap: 0.5rem;
+          }
+          
+          .project-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1rem;
+            border-radius: 0.25rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.3s ease;
+          }
+          
+          .project-button i {
+            margin-right: 0.5rem;
+          }
+          
+          .github-button {
+            background-color: #333;
+            color: white;
+          }
+          
+          .github-button:hover {
+            background-color: #24292e;
+          }
+          
+          .report-button {
+            background-color: #0070f3;
+            color: white;
+          }
+          
+          .report-button:hover {
+            background-color: #0051cc;
+          }
+          
+          .half-width {
+            flex: 1;
+          }
+          
+          .full-width {
+            width: 100%;
+          }
+          
+          /* Ensure consistent height for project cards */
+          .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+          }
+        </style>
+        </head>
 <body>
     <!-- Header -->
     <header>
         <div class="container">
             <nav id="navbar">
-                <div class="logo">J</div>
+                <div class="logo">P</div>
                 <ul class="nav-links">
                     <li><a href="#home" class="active">Home</a></li>
                     <li><a href="#about">About</a></li>
@@ -1104,11 +1264,13 @@ footer {
                     <h2>AI Engineer</h2>
                     <p>I'm a skilled AI Engineer with a passion for developing innovative solutions.</p>
                     
+                    <a href="https://firebasestorage.googleapis.com/v0/b/makeportfolio-2bd67.firebasestorage.app/o/users%2FxJNLPOUgWQP8AL4X864Cl8Y18zn2%2Fportfolios%2Fe9D4FulsKsDy2xS4Rh8O%2Fcv%2F1745203158145-PablosTselioudis(ENG).pdf?alt=media&token=5357bf5f-090b-4360-8434-ee9838dd1cee" class="btn" target="_blank">Download CV</a>
+                    
                 </div>
                 <div class="hero-image">
                     <div class="profile-img-container">
                         
-                        <img src="https://firebasestorage.googleapis.com/v0/b/makeportfolio-2bd67.firebasestorage.app/o/users%2FxJNLPOUgWQP8AL4X864Cl8Y18zn2%2Fportfolios%2FKuso9ZN1tStWsx9Cva6E%2Fprofile%2F1744821028289-ProfilePic.png?alt=media&token=54cc0409-f0ab-4803-8169-1990a7559f9d" alt="John Doe">
+                        <img src="https://firebasestorage.googleapis.com/v0/b/makeportfolio-2bd67.firebasestorage.app/o/users%2FxJNLPOUgWQP8AL4X864Cl8Y18zn2%2Fportfolios%2Fe9D4FulsKsDy2xS4Rh8O%2Fprofile%2F1745203158142-ProfilePic.png?alt=media&token=299f06b8-fb97-43d5-871c-9a1c17d43d78" alt="John Doe">
                         
                     </div>
                 </div>
@@ -1135,7 +1297,7 @@ footer {
                         </div>
                         <div class="detail-item">
                             <h3>Phone</h3>
-                            <p>+34 607980731</p>
+                            <p>+34 606 97 06 31</p>
                         </div>
                         <div class="detail-item">
                             <h3>Profession</h3>
@@ -1143,6 +1305,10 @@ footer {
                         </div>
                     </div>
                     
+                    
+                    <div class="resume-link">
+                        <a href="https://firebasestorage.googleapis.com/v0/b/makeportfolio-2bd67.firebasestorage.app/o/users%2FxJNLPOUgWQP8AL4X864Cl8Y18zn2%2Fportfolios%2Fe9D4FulsKsDy2xS4Rh8O%2Fcv%2F1745203158145-PablosTselioudis(ENG).pdf?alt=media&token=5357bf5f-090b-4360-8434-ee9838dd1cee" class="btn" target="_blank">Download Resume</a>
+                    </div>
                     
                 </div>
             </div>
@@ -1166,35 +1332,56 @@ footer {
             <div class="skill-icon">
               <i class="fa-solid fa-code"></i>
             </div>
-            <span class="skill-name">Machine Learning</span>
+            <span class="skill-name">Excel</span>
           </div>
         
           <div class="skill-item">
             <div class="skill-icon">
               <i class="fa-solid fa-code"></i>
             </div>
-            <span class="skill-name">TensorFlow</span>
+            <span class="skill-name">R</span>
           </div>
         
           <div class="skill-item">
             <div class="skill-icon">
               <i class="fa-solid fa-code"></i>
             </div>
-            <span class="skill-name">Natural Language Processing</span>
+            <span class="skill-name">SQL</span>
           </div>
         
           <div class="skill-item">
             <div class="skill-icon">
               <i class="fa-solid fa-code"></i>
             </div>
-            <span class="skill-name">Computer Vision</span>
+            <span class="skill-name">HTML/CSS</span>
           </div>
         
           <div class="skill-item">
             <div class="skill-icon">
               <i class="fa-solid fa-code"></i>
             </div>
-            <span class="skill-name">Data Structures & Algorithms</span>
+            <span class="skill-name">MongoDB</span>
+          </div>
+        
+          <div class="skill-item">
+            <div class="skill-icon">
+              <i class="fa-solid fa-code"></i>
+            </div>
+            <span class="skill-name">Docker</span>
+          </div>
+        
+          <div class="skill-item">
+            <div class="skill-icon">
+              <i class="fa-solid fa-code"></i>
+            </div>
+            <span class="skill-name">Langchain</span>
+          </div>
+        
+          <div class="skill-item">
+            <div class="skill-icon">
+              <i class="fa-solid fa-code"></i>
+            </div>
+            <span class="skill-name">Firebase</span>
           </div>
         
             </div>
@@ -1207,78 +1394,66 @@ footer {
             <h2 class="section-title">My Projects</h2>
             <div class="projects-grid">
                 
-          <div class="project-card" data-category="all">
-            <div class="project-image">
-              <img src="https://firebasestorage.googleapis.com/v0/b/makeportfolio-2bd67.firebasestorage.app/o/users%2FxJNLPOUgWQP8AL4X864Cl8Y18zn2%2Fportfolios%2FKuso9ZN1tStWsx9Cva6E%2Fprojects%2F0%2F1744821028292-USOPC.png?alt=media&token=dcf615a9-908f-441c-8b6b-93b20a6bf7e8" alt="NBA Dashboard" onerror="this.style.display='none'">
+          <div class="project-card">
+            <div class="project-img">
+              <img src="https://firebasestorage.googleapis.com/v0/b/makeportfolio-2bd67.firebasestorage.app/o/users%2FxJNLPOUgWQP8AL4X864Cl8Y18zn2%2Fportfolios%2Fe9D4FulsKsDy2xS4Rh8O%2Fprojects%2F0%2F1745203158146-USOPC.png?alt=media&token=7dc0116f-e559-4b19-9dc9-b57babb185b7" alt="NBA Dashboard" onerror="this.src='https://placehold.co/600x400/e2e8f0/1e293b?text=Project+Image'">
             </div>
             <div class="project-content">
               <h3>NBA Dashboard</h3>
               <p>Developed an Excel file containing various data and statistics from the 2015-2017 NBA seasons. The dashboard provides insights on players, teams, and games, including player stats, team performance metrics, and game-by-game analysis. Users can filter and sort the data to identify trends and patterns in player performance across different seasons.</p>
-              <div class="project-tags">
-                
-              </div>
-              <div class="project-links">
-                <a href="#" class="project-link" aria-label="View Project Details">
-                  <i class="fas fa-external-link-alt"></i>
-                </a>
-              </div>
+              
+            <div class="project-button-container two-buttons">
+              <a href="https://github.com/PablosTsel/USOPC" target="_blank" class="project-button github-button half-width">
+                <i class="fab fa-github"></i> GitHub
+              </a>
+              <a href="https://firebasestorage.googleapis.com/v0/b/makeportfolio-2bd67.firebasestorage.app/o/users%2FxJNLPOUgWQP8AL4X864Cl8Y18zn2%2Fportfolios%2Fe9D4FulsKsDy2xS4Rh8O%2Fprojects%2F0%2Freports%2F1745203158147-MA_03-android_intents_broadcast_receivers_v1.pdf?alt=media&token=b510b72f-f314-46a4-b4c6-77609bd712f5" target="_blank" class="project-button report-button half-width">
+                <i class="fas fa-file-alt"></i> Report
+              </a>
+            </div>
+          
             </div>
           </div>
-        
-          <div class="project-card" data-category="all">
-            <div class="project-image">
-              <img src="https://firebasestorage.googleapis.com/v0/b/makeportfolio-2bd67.firebasestorage.app/o/users%2FxJNLPOUgWQP8AL4X864Cl8Y18zn2%2Fportfolios%2FKuso9ZN1tStWsx9Cva6E%2Fprojects%2F1%2F1744821028292-SPOTIFY.png?alt=media&token=5d5fd683-a5da-4a28-8cb2-795d1935ec0b" alt="AI Recommendation System" onerror="this.style.display='none'">
+          
+          <div class="project-card">
+            <div class="project-img">
+              <img src="https://firebasestorage.googleapis.com/v0/b/makeportfolio-2bd67.firebasestorage.app/o/users%2FxJNLPOUgWQP8AL4X864Cl8Y18zn2%2Fportfolios%2Fe9D4FulsKsDy2xS4Rh8O%2Fprojects%2F1%2F1745203158147-USOPC.png?alt=media&token=440e248c-5516-4a1b-ad73-6979b068a8ea" alt="AI Recommendation System" onerror="this.src='https://placehold.co/600x400/e2e8f0/1e293b?text=Project+Image'">
             </div>
             <div class="project-content">
               <h3>AI Recommendation System</h3>
               <p>Developed a sophisticated recommendation engine using collaborative filtering and content-based algorithms to provide personalized suggestions to users, resulting in a 35% increase in user engagement.</p>
-              <div class="project-tags">
-                
-              </div>
-              <div class="project-links">
-                <a href="#" class="project-link" aria-label="View Project Details">
-                  <i class="fas fa-external-link-alt"></i>
-                </a>
-              </div>
+              
+            <div class="project-button-container one-button">
+              <a href="https://github.com/PablosTsel/DammageAssesment" target="_blank" class="project-button github-button full-width">
+                <i class="fab fa-github"></i> GitHub
+              </a>
+              
+            </div>
+          
             </div>
           </div>
-        
-          <div class="project-card" data-category="all">
-            <div class="project-image">
-              <img src="https://firebasestorage.googleapis.com/v0/b/makeportfolio-2bd67.firebasestorage.app/o/users%2FxJNLPOUgWQP8AL4X864Cl8Y18zn2%2Fportfolios%2FKuso9ZN1tStWsx9Cva6E%2Fprojects%2F2%2F1744821028293-nbadashboard.png?alt=media&token=83a61c8c-1ad1-4a4f-a7f2-d6772f7620d1" alt="Natural Language Processing Tool" onerror="this.style.display='none'">
+          
+          <div class="project-card">
+            <div class="project-img">
+              <img src="https://firebasestorage.googleapis.com/v0/b/makeportfolio-2bd67.firebasestorage.app/o/users%2FxJNLPOUgWQP8AL4X864Cl8Y18zn2%2Fportfolios%2Fe9D4FulsKsDy2xS4Rh8O%2Fprojects%2F2%2F1745203158148-nbadashboard.png?alt=media&token=6e9bd1a7-4451-4aa2-bc85-12b1005e283e" alt="Natural Language Processing Tool" onerror="this.src='https://placehold.co/600x400/e2e8f0/1e293b?text=Project+Image'">
             </div>
             <div class="project-content">
               <h3>Natural Language Processing Tool</h3>
               <p>Created an NLP tool that analyzes customer feedback across multiple channels, automatically categorizing issues and identifying sentiment to help businesses understand customer needs better.</p>
-              <div class="project-tags">
-                
-              </div>
-              <div class="project-links">
-                <a href="#" class="project-link" aria-label="View Project Details">
-                  <i class="fas fa-external-link-alt"></i>
-                </a>
-              </div>
+              
             </div>
           </div>
-        
-          <div class="project-card" data-category="all">
-            <div class="project-image">
-              <img src="https://firebasestorage.googleapis.com/v0/b/makeportfolio-2bd67.firebasestorage.app/o/users%2FxJNLPOUgWQP8AL4X864Cl8Y18zn2%2Fportfolios%2FKuso9ZN1tStWsx9Cva6E%2Fprojects%2F3%2F1744821028293-FOOTBALL.png?alt=media&token=4b27ea5a-1f78-4c02-85d9-a633c93dc676" alt="Computer Vision Project" onerror="this.style.display='none'">
+          
+          <div class="project-card">
+            <div class="project-img">
+              <img src="https://firebasestorage.googleapis.com/v0/b/makeportfolio-2bd67.firebasestorage.app/o/users%2FxJNLPOUgWQP8AL4X864Cl8Y18zn2%2Fportfolios%2Fe9D4FulsKsDy2xS4Rh8O%2Fprojects%2F3%2F1745203158148-FOOTBALL.png?alt=media&token=221e603e-e3d1-4b8b-85da-ff47c23a87af" alt="Computer Vision Project" onerror="this.src='https://placehold.co/600x400/e2e8f0/1e293b?text=Project+Image'">
             </div>
             <div class="project-content">
               <h3>Computer Vision Project</h3>
               <p>Built a computer vision system for object detection and classification in real-time video streams, achieving 94% accuracy in identifying specific items in complex environments.</p>
-              <div class="project-tags">
-                
-              </div>
-              <div class="project-links">
-                <a href="#" class="project-link" aria-label="View Project Details">
-                  <i class="fas fa-external-link-alt"></i>
-                </a>
-              </div>
+              
             </div>
           </div>
-        
+          
             </div>
         </div>
     </section>
@@ -1290,7 +1465,7 @@ footer {
             <div class="contact-content">
                 <p class="contact-text">You can reach out to me at <a href="mailto:johndoe@gmail.com" class="email-link">johndoe@gmail.com</a></p>
                 
-                <p class="contact-text">Or call me at <a href="tel:+34 607980731" class="email-link">+34 607980731</a></p>
+                <p class="contact-text">Or call me at <a href="tel:+34 606 97 06 31" class="email-link">+34 606 97 06 31</a></p>
             </div>
         </div>
     </section>
