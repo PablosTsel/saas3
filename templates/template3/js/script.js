@@ -22,6 +22,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // Setup typing animation
+  setupTypingAnimation();
+
   // Mobile navigation toggle
   const navToggle = document.querySelector(".nav-toggle");
   const navLinks = document.querySelector(".nav-links");
@@ -173,4 +176,58 @@ document.addEventListener("DOMContentLoaded", () => {
   if (currentYearElement) {
     currentYearElement.textContent = new Date().getFullYear();
   }
-}); 
+});
+
+// Typing Animation
+function setupTypingAnimation() {
+  const typedTextSpan = document.querySelector('.typed-text');
+  const cursorSpan = document.querySelector('.cursor');
+  
+  // If the title element doesn't exist, exit
+  if (!typedTextSpan || !cursorSpan) return;
+  
+  // Get the title from the window variable, title tag, or fallback
+  const roleTitle = window.portfolioTitle || 
+                   document.querySelector('title').textContent.split('|')[1]?.trim() || 
+                   '{{title}}';
+  
+  const textArray = [roleTitle];
+  const typingDelay = 100;
+  const erasingDelay = 100;
+  const newTextDelay = 2000;
+  let textArrayIndex = 0;
+  let charIndex = 0;
+  
+  function type() {
+    if (charIndex < textArray[textArrayIndex].length) {
+      if (!cursorSpan.classList.contains('typing')) {
+        cursorSpan.classList.add('typing');
+      }
+      typedTextSpan.textContent += textArray[textArrayIndex].charAt(charIndex);
+      charIndex++;
+      setTimeout(type, typingDelay);
+    } else {
+      cursorSpan.classList.remove('typing');
+      setTimeout(erase, newTextDelay);
+    }
+  }
+  
+  function erase() {
+    if (charIndex > 0) {
+      if (!cursorSpan.classList.contains('typing')) {
+        cursorSpan.classList.add('typing');
+      }
+      typedTextSpan.textContent = textArray[textArrayIndex].substring(0, charIndex - 1);
+      charIndex--;
+      setTimeout(erase, erasingDelay);
+    } else {
+      cursorSpan.classList.remove('typing');
+      textArrayIndex++;
+      if (textArrayIndex >= textArray.length) textArrayIndex = 0;
+      setTimeout(type, typingDelay + 1100);
+    }
+  }
+  
+  // Start the typing animation
+  if (textArray.length) setTimeout(type, newTextDelay + 250);
+} 

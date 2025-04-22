@@ -433,6 +433,27 @@ input:checked + label:before {
 .intro {
   font-size: 1.1rem;
   margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+/* Cursor for typing animation */
+.cursor {
+  display: inline-block;
+  width: 3px;
+  height: 1.5rem;
+  background-color: var(--primary-color);
+  margin-left: 2px;
+  animation: blink 1s infinite;
+  vertical-align: middle;
+}
+
+.cursor.typing {
+  animation: none;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
 }
 
 .cta-buttons {
@@ -1049,7 +1070,7 @@ footer {
             <div class="hero-content">
                 <div class="hero-text">
                     <h1>Hello, I'm <span>John Doe</span></h1>
-                    <h2>AI Engineer</h2>
+                    <h2></h2>
                     <p class="intro">I'm a skilled AI Engineer with a passion for developing innovative solutions.</p>
                     <div class="cta-buttons">
                         
@@ -1361,6 +1382,7 @@ document.addEventListener('DOMContentLoaded', function() {
     setupSectionAnimations();
     updateCurrentYear();
     enhanceBubbleAnimations();
+    setupTypingAnimation();
     
     // Add scroll event listener for sticky header
     window.addEventListener('scroll', function() {
@@ -1536,6 +1558,73 @@ function handleSmoothScroll(e) {
     }
 }
 
+// Add typing animation to the hero section title
+function setupTypingAnimation() {
+    const typedTextElement = document.querySelector('.hero-text h2');
+    if (!typedTextElement) return;
+    
+    // Get the title from the window variable set during portfolio generation
+    const originalText = window.portfolioTitle || '';
+    if (!originalText) return;
+    
+    // Create array with original title and variations
+    const textArray = [
+        originalText,
+        `A Professional ${originalText}`,
+        `Your ${originalText} Expert`
+    ];
+    
+    // Add cursor span if it doesn't exist
+    let cursorSpan = document.querySelector('.cursor');
+    if (!cursorSpan) {
+        cursorSpan = document.createElement('span');
+        cursorSpan.className = 'cursor';
+        cursorSpan.innerHTML = '&nbsp;';
+        typedTextElement.parentNode.insertBefore(cursorSpan, typedTextElement.nextSibling);
+    }
+    
+    // Clear the h2 element for the animation
+    typedTextElement.textContent = '';
+    
+    let textArrayIndex = 0;
+    let charIndex = 0;
+    let typingDelay = 150; // Delay between each character typed
+    let erasingDelay = 100; // Delay between each character erased
+    let newTextDelay = 2000; // Delay before typing new text
+    
+    function type() {
+        if (charIndex < textArray[textArrayIndex].length) {
+            if (!cursorSpan.classList.contains('typing')) {
+                cursorSpan.classList.add('typing');
+            }
+            typedTextElement.textContent += textArray[textArrayIndex].charAt(charIndex);
+            charIndex++;
+            setTimeout(type, typingDelay);
+        } else {
+            cursorSpan.classList.remove('typing');
+            setTimeout(erase, newTextDelay);
+        }
+    }
+    
+    function erase() {
+        if (charIndex > 0) {
+            if (!cursorSpan.classList.contains('typing')) {
+                cursorSpan.classList.add('typing');
+            }
+            typedTextElement.textContent = textArray[textArrayIndex].substring(0, charIndex - 1);
+            charIndex--;
+            setTimeout(erase, erasingDelay);
+        } else {
+            cursorSpan.classList.remove('typing');
+            textArrayIndex = (textArrayIndex + 1) % textArray.length;
+            setTimeout(type, typingDelay);
+        }
+    }
+    
+    // Start the typing animation
+    setTimeout(type, newTextDelay);
+}
+
 // Enhance moving background with mouse movement
 document.addEventListener('mousemove', function(e) {
     const bubbles = document.querySelectorAll('.bubble');
@@ -1573,5 +1662,5 @@ function enhanceBubbleAnimations() {
     });
 } 
 </script>
-</body>
+<script>window.portfolioTitle = "AI Engineer";</script></body>
 </html> 

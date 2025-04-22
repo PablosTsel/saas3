@@ -415,16 +415,37 @@ section {
 }
 
 .hero-text h2 {
+    color: var(--primary-color);
     font-size: 2.4rem;
-    margin-bottom: 1.5rem;
-    color: var(--text-secondary);
-    font-weight: 500;
+    margin-bottom: 2rem;
+    font-weight: 600;
+}
+
+/* Typing Animation */
+.cursor {
+    display: inline-block;
+    width: 3px;
+    background-color: var(--primary-color);
+    margin-left: 0.1rem;
+    animation: blink 1s infinite;
+}
+
+.cursor.typing {
+    animation: none;
+}
+
+@keyframes blink {
+    0% { background-color: var(--primary-color); }
+    49% { background-color: var(--primary-color); }
+    50% { background-color: transparent; }
+    99% { background-color: transparent; }
+    100% { background-color: var(--primary-color); }
 }
 
 .hero-text p {
     font-size: 1.8rem;
+    color: var(--text-secondary);
     margin-bottom: 3rem;
-    color: var(--text-tertiary);
 }
 
 .hero-cta {

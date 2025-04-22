@@ -73,6 +73,73 @@ interface PortfolioData {
   templateId: string;
 }
 
+const TEMPLATES = [
+  {
+    id: "template1",
+    name: "Clean Modern",
+    description: "A clean, modern design with subtle animations and a professional look.",
+    previewImage: "/templates/template1/JohnDoe2024.png",
+    previewVideo: "/videos/Temp1.webm",
+    hasVideo: true
+  },
+  {
+    id: "template2",
+    name: "Creative Portfolio",
+    description: "A creative portfolio with a unique layout, perfect for showcasing visual work.",
+    previewImage: "/templates/template2/thumbnail_dash.svg",
+    previewVideo: "",
+    hasVideo: false
+  },
+  {
+    id: "template3",
+    name: "Developer Focused",
+    description: "A developer-focused template with a code-inspired design.",
+    previewImage: "/templates/template3/thumbnail_dash.svg",
+    previewVideo: "",
+    hasVideo: false
+  },
+  {
+    id: "template4",
+    name: "Bubble Animation",
+    description: "A sleek design with floating bubble animations in the background.",
+    previewImage: "/templates/template4/thumbnail_dash.svg",
+    previewVideo: "",
+    hasVideo: false
+  },
+  {
+    id: "template5",
+    name: "Corporate Professional",
+    description: "A professional template with a corporate feel, perfect for business roles.",
+    previewImage: "/templates/template5/thumbnail_dash.svg",
+    previewVideo: "",
+    hasVideo: false
+  },
+  {
+    id: "template6",
+    name: "Minimalist",
+    description: "A clean minimalist design that puts your content front and center.",
+    previewImage: "/templates/template6/thumbnail_dash.svg",
+    previewVideo: "",
+    hasVideo: false
+  },
+  {
+    id: "template7",
+    name: "Gradient Waves",
+    description: "A modern design with animated gradient waves in the background.",
+    previewImage: "/templates/template7/thumbnail_dash.svg",
+    previewVideo: "",
+    hasVideo: false
+  },
+  {
+    id: "template8",
+    name: "Artistic Minimal",
+    description: "An ultra-minimalistic and artistic design with subtle animations and typography focus.",
+    previewImage: "/templates/template8/thumbnail_dash.svg",
+    previewVideo: "",
+    hasVideo: false
+  }
+];
+
 export default function DashboardPage() {
   const { user, logout } = useAuth()
   const router = useRouter()
@@ -1908,178 +1975,49 @@ export default function DashboardPage() {
                   <p className="text-sm text-gray-600">Select a design template for your portfolio website.</p>
                   
                   <div className="grid grid-cols-2 gap-4 mt-2">
-                    <div 
-                      className={`border rounded-lg overflow-hidden cursor-pointer transition-all ${
-                        selectedTemplate === "template1" 
-                          ? "border-indigo-500 ring-2 ring-indigo-200" 
-                          : "border-gray-200 hover:border-indigo-300"
-                      }`}
-                      onClick={() => handleTemplateSelect("template1")}
-                      onMouseEnter={() => setHoveredTemplate("template1")}
-                      onMouseLeave={() => setHoveredTemplate(null)}
-                    >
-                      <div className="aspect-[16/9] bg-white flex items-center justify-center relative overflow-hidden">
-                        <div className="absolute inset-0 w-full h-full">
-                          <img 
-                            src="/templates/template1/JohnDoe2024.png"
-                            alt="Template 1 Preview" 
-                            className={`w-full h-full object-cover transition-opacity duration-300 ${hoveredTemplate === "template1" ? 'opacity-0' : 'opacity-100'}`}
-                          />
-                          <video 
-                            ref={(el) => {
-                              templateVideoRefs.current.template1 = el;
-                            }}
-                            src="/videos/Temp1.webm"
-                            muted
-                            loop
-                            playsInline
-                            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${hoveredTemplate === "template1" ? 'opacity-100' : 'opacity-0'}`}
-                          />
+                    {TEMPLATES.map(template => (
+                      <div 
+                        key={template.id}
+                        className={`border rounded-lg overflow-hidden cursor-pointer transition-all ${
+                          selectedTemplate === template.id 
+                            ? "border-indigo-500 ring-2 ring-indigo-200" 
+                            : "border-gray-200 hover:border-indigo-300"
+                        }`}
+                        onClick={() => handleTemplateSelect(template.id)}
+                        onMouseEnter={() => setHoveredTemplate(template.id)}
+                        onMouseLeave={() => setHoveredTemplate(null)}
+                      >
+                        <div className="aspect-[16/9] bg-white flex items-center justify-center relative overflow-hidden">
+                          <div className="absolute inset-0 w-full h-full">
+                            <img 
+                              src={template.previewImage}
+                              alt={`${template.name} Preview`} 
+                              className={`w-full h-full object-cover transition-opacity duration-300 ${
+                                template.hasVideo && hoveredTemplate === template.id ? 'opacity-0' : 'opacity-100'
+                              }`}
+                            />
+                            {template.hasVideo && (
+                              <video 
+                                ref={(el) => {
+                                  templateVideoRefs.current[template.id] = el;
+                                }}
+                                src={template.previewVideo}
+                                muted
+                                loop
+                                playsInline
+                                className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${
+                                  hoveredTemplate === template.id ? 'opacity-100' : 'opacity-0'
+                                }`}
+                              />
+                            )}
+                          </div>
+                        </div>
+                        <div className="p-3 bg-white text-center">
+                          <div className="font-medium text-gray-800">{template.name}</div>
+                          <div className="text-xs text-gray-500">{template.description}</div>
                         </div>
                       </div>
-                      <div className="p-3 bg-white text-center">
-                        <div className="font-medium text-gray-800">Template 1</div>
-                        <div className="text-xs text-gray-500">Modern Minimal</div>
-                      </div>
-                    </div>
-                    
-                    <div 
-                      className={`border rounded-lg overflow-hidden cursor-pointer transition-all ${
-                        selectedTemplate === "template2" 
-                          ? "border-indigo-500 ring-2 ring-indigo-200" 
-                          : "border-gray-200 hover:border-indigo-300"
-                      }`}
-                      onClick={() => handleTemplateSelect("template2")}
-                    >
-                      <div className="aspect-[16/9] bg-white flex items-center justify-center relative overflow-hidden">
-                        <div className="absolute inset-0 w-full h-full">
-                          <img 
-                            src="/templates/template2/thumbnail_dash.svg" 
-                            alt="Template 2 Preview" 
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                      </div>
-                      <div className="p-3 bg-white text-center">
-                        <div className="font-medium text-gray-800">Template 2</div>
-                        <div className="text-xs text-gray-500">Professional Dark with Device Displays</div>
-                      </div>
-                    </div>
-
-                    <div 
-                      className={`border rounded-lg overflow-hidden cursor-pointer transition-all ${
-                        selectedTemplate === "template3" 
-                          ? "border-indigo-500 ring-2 ring-indigo-200" 
-                          : "border-gray-200 hover:border-indigo-300"
-                      }`}
-                      onClick={() => handleTemplateSelect("template3")}
-                    >
-                      <div className="aspect-[16/9] bg-white flex items-center justify-center relative overflow-hidden">
-                        <div className="absolute inset-0 w-full h-full">
-                          <img 
-                            src="/templates/template3/thumbnail_dash.svg" 
-                            alt="Template 3 Preview" 
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                      </div>
-                      <div className="p-3 bg-white text-center">
-                        <div className="font-medium text-gray-800">Template 3</div>
-                        <div className="text-xs text-gray-500">Creative Bold</div>
-                      </div>
-                    </div>
-
-                    <div 
-                      className={`border rounded-lg overflow-hidden cursor-pointer transition-all ${
-                        selectedTemplate === "template4" 
-                          ? "border-indigo-500 ring-2 ring-indigo-200" 
-                          : "border-gray-200 hover:border-indigo-300"
-                      }`}
-                      onClick={() => handleTemplateSelect("template4")}
-                    >
-                      <div className="aspect-[16/9] bg-white flex items-center justify-center relative overflow-hidden">
-                        <div className="absolute inset-0 w-full h-full">
-                          <img 
-                            src="/templates/template4/thumbnail_dash.svg" 
-                            alt="Template 4 Preview" 
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                      </div>
-                      <div className="p-3 bg-white text-center">
-                        <div className="font-medium text-gray-800">Template 4</div>
-                        <div className="text-xs text-gray-500">Minimal Portfolio</div>
-                      </div>
-                    </div>
-
-                    <div 
-                      className={`border rounded-lg overflow-hidden cursor-pointer transition-all ${
-                        selectedTemplate === "template5" 
-                          ? "border-indigo-500 ring-2 ring-indigo-200" 
-                          : "border-gray-200 hover:border-indigo-300"
-                      }`}
-                      onClick={() => handleTemplateSelect("template5")}
-                    >
-                      <div className="aspect-[16/9] bg-white flex items-center justify-center relative overflow-hidden">
-                        <div className="absolute inset-0 w-full h-full">
-                          <img 
-                            src="/templates/template5/thumbnail_dash.svg" 
-                            alt="Template 5 Preview" 
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                      </div>
-                      <div className="p-3 bg-white text-center">
-                        <div className="font-medium text-gray-800">Template 5</div>
-                        <div className="text-xs text-gray-500">Visual Portfolio</div>
-                      </div>
-                    </div>
-
-                    <div 
-                      className={`border rounded-lg overflow-hidden cursor-pointer transition-all ${
-                        selectedTemplate === "template6" 
-                          ? "border-indigo-500 ring-2 ring-indigo-200" 
-                          : "border-gray-200 hover:border-indigo-300"
-                      }`}
-                      onClick={() => handleTemplateSelect("template6")}
-                    >
-                      <div className="aspect-[16/9] bg-white flex items-center justify-center relative overflow-hidden">
-                        <div className="absolute inset-0 w-full h-full">
-                          <img 
-                            src="/templates/template6/thumbnail_dash.svg" 
-                            alt="Template 6 Preview" 
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                      </div>
-                      <div className="p-3 bg-white text-center">
-                        <div className="font-medium text-gray-800">Template 6</div>
-                        <div className="text-xs text-gray-500">Glass Morphism</div>
-                      </div>
-                    </div>
-
-                    <div 
-                      className={`border rounded-lg overflow-hidden cursor-pointer transition-all ${
-                        selectedTemplate === "template7" 
-                          ? "border-indigo-500 ring-2 ring-indigo-200" 
-                          : "border-gray-200 hover:border-indigo-300"
-                      }`}
-                      onClick={() => handleTemplateSelect("template7")}
-                    >
-                      <div className="aspect-[16/9] bg-white flex items-center justify-center relative overflow-hidden">
-                        <div className="absolute inset-0 w-full h-full">
-                          <img 
-                            src="/templates/template7/thumbnail_dash.svg" 
-                            alt="Template 7 Preview" 
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                      </div>
-                      <div className="p-3 bg-white text-center">
-                        <div className="font-medium text-gray-800">Template 7</div>
-                        <div className="text-xs text-gray-500">Gradient Wave</div>
-                      </div>
-                    </div>
+                    ))}
                   </div>
                   
                   <div className="mt-4 p-4 bg-indigo-50 rounded-lg border border-indigo-100">

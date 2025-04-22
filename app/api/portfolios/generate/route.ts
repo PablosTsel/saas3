@@ -442,6 +442,11 @@ export async function POST(request: NextRequest) {
         
         // Insert custom CSS
         htmlContent = htmlContent.replace('</head>', `${template3Css}</head>`);
+
+        // Add a script to set the portfolio title variable
+        const titleScript = `<script>window.portfolioTitle = "${portfolioData.title}";</script>`;
+        // Add this script right before the closing body tag
+        htmlContent = htmlContent.replace('</body>', `${titleScript}</body>`);
       } else if (templateId === 'template1') {
         // Special handling for Template1 with GitHub and report buttons
         projectsHtml = portfolioData.projects.map((project: Project) => {
@@ -585,6 +590,11 @@ export async function POST(request: NextRequest) {
         
         // Append the custom CSS to the HTML content
         htmlContent = htmlContent.replace('</head>', `${buttonCss}</head>`);
+
+        // Add a script to set the portfolio title variable
+        const titleScript = `<script>window.portfolioTitle = "${portfolioData.title}";</script>`;
+        // Add this script right before the closing body tag
+        htmlContent = htmlContent.replace('</body>', `${titleScript}</body>`);
       } else if (templateId === 'template5') {
         // Add skills HTML for Template 5
         skillsHtml = portfolioData.skills.map((skill: Skill) => `
@@ -1048,6 +1058,11 @@ export async function POST(request: NextRequest) {
         
         // Insert after the primary CSS but before the closing head tag
         htmlContent = htmlContent.replace('</head>', `${template2Css}</head>`);
+
+        // Add a script to set the portfolio title variable
+        const titleScript = `<script>window.portfolioTitle = "${portfolioData.title}";</script>`;
+        // Add this script right before the closing body tag
+        htmlContent = htmlContent.replace('</body>', `${titleScript}</body>`);
       } else if (templateId === 'template6') {
         // Template 6 styling for buttons
         projectsHtml = portfolioData.projects.map((project: Project) => {
@@ -1075,10 +1090,6 @@ export async function POST(request: NextRequest) {
             <div class="project-content">
               <h3>${project.name || ''}</h3>
               <p>${project.description || ''}</p>
-              <div class="project-tags">
-                ${project.technologies && project.technologies.length > 0 ? 
-                  project.technologies.map((tech: string) => `<span class="project-tag">${tech}</span>`).join('') : ''}
-          </div>
               ${buttonHtml}
               </div>
             </div>
@@ -1147,58 +1158,140 @@ export async function POST(request: NextRequest) {
         // Append the custom CSS to the HTML content
         htmlContent = htmlContent.replace('</head>', `${template6Css}</head>`);
       } else if (templateId === 'template7') {
-        // Template 7 - Portfolio with gradient wave animation
-        // Replace the initials for avatar if needed
-        const initials = portfolioData.fullName
-          ? (portfolioData.fullName.split(' ').map(name => name[0]).join(''))
-          : portfolioData.name.substring(0, 2).toUpperCase();
-          
-        htmlContent = htmlContent.replace(/{{initials}}/g, initials);
-        
-        // Handle current year
-        const currentYear = new Date().getFullYear().toString();
-        htmlContent = htmlContent.replace(/{{currentYear}}/g, currentYear);
-        
-        // Generate projects HTML for Template 7
         projectsHtml = portfolioData.projects.map((project: Project) => {
           // Check if we have GitHub URL or report URL
           const hasGithub = project.githubUrl && project.githubUrl.trim() !== '';
           const hasReport = project.reportUrl && project.reportUrl.trim() !== '';
           
+          // Generate button HTML for template7
+          const buttonHtml = (hasGithub || hasReport) ? `
+            <div class="project-links">
+              ${hasGithub ? `<a href="${project.githubUrl}" class="project-link github" target="_blank">
+                <i class="fab fa-github"></i> GitHub
+              </a>` : ''}
+              ${hasReport ? `<a href="${project.reportUrl}" class="project-link report" target="_blank">
+                <i class="fas fa-file-alt"></i> Report
+              </a>` : ''}
+                </div>
+          ` : '';
+          
           return `
           <div class="project-card">
             <div class="project-image">
-              <img src="${project.imageUrl}" alt="${project.name}" onerror="this.src='https://placehold.co/600x400/e2e8f0/1e293b?text=Project+Image'">
+              <img src="${project.imageUrl || ''}" alt="${project.name || 'Project'}" onerror="this.src='https://placehold.co/600x400/e2e8f0/1e293b?text=Project+Image'">
             </div>
             <div class="project-content">
-              <h3 class="project-title">${project.name}</h3>
-              <p class="project-description">${project.description}</p>
-              <div class="project-links">
-                ${hasGithub ? `
-                <a href="${project.githubUrl}" class="btn btn-outline" target="_blank">
-                  <i class="fab fa-github"></i> GitHub
-                </a>
-                ` : ''}
-                ${hasReport ? `
-                <a href="${project.reportUrl}" class="btn btn-outline" target="_blank">
-                  <i class="fas fa-file-alt"></i> Report
-                </a>
-              ` : ''}
+              <h3 class="project-title">${project.name || ''}</h3>
+              <p class="project-description">${project.description || ''}</p>
+              ${buttonHtml}
             </div>
           </div>
+        `;
+        }).join('');
+        
+        // Replace all relevant placeholders in the HTML content
+        htmlContent = htmlContent
+          .replace(/\{\{initials\}\}/g, initials)
+          .replace(/\{\{fullName\}\}/g, portfolioData.fullName || '')
+          .replace(/\{\{title\}\}/g, portfolioData.title || '')
+          .replace(/\{\{smallIntro\}\}/g, portfolioData.smallIntro || '')
+          .replace(/\{\{about\}\}/g, portfolioData.about || '')
+          .replace(/\{\{email\}\}/g, portfolioData.email || '')
+          .replace(/\{\{phone\}\}/g, portfolioData.phone || '')
+          .replace(/\{\{currentYear\}\}/g, new Date().getFullYear().toString());
+        
+        if (portfolioData.profilePictureUrl) {
+          htmlContent = htmlContent.replace(/\{\{profilePictureUrl\}\}/g, portfolioData.profilePictureUrl);
+        }
+        
+        // Replace CV-related placeholders
+        if (portfolioData.hasCv && portfolioData.cvUrl) {
+          htmlContent = htmlContent
+            .replace(/\{\{hasCv\}\}/g, 'true')
+            .replace(/\{\{cvUrl\}\}/g, portfolioData.cvUrl);
+      } else {
+          // Remove the CV button section
+          htmlContent = htmlContent
+            .replace(/\{\{hasCv\}\}/g, 'false');
+        }
+        
+        // Replace skills and projects placeholders
+        htmlContent = htmlContent
+          .replace(/\{\{skills\}\}/g, JSON.stringify(portfolioData.skills))
+          .replace(/\{\{projects\}\}/g, JSON.stringify(portfolioData.projects));
+      } else if (templateId === 'template8') {
+        projectsHtml = portfolioData.projects.map((project: Project) => {
+          // Check if we have GitHub URL or report URL
+          const hasGithub = project.githubUrl && project.githubUrl.trim() !== '';
+          const hasReport = project.reportUrl && project.reportUrl.trim() !== '';
+          
+          // Generate button HTML for template8
+          const buttonHtml = (hasGithub || hasReport) ? `
+            <div class="project-links">
+              ${hasGithub ? `<a href="${project.githubUrl}" class="project-link" target="_blank">
+                <i class="fab fa-github"></i>
+                <span>GitHub</span>
+              </a>` : ''}
+              ${hasReport ? `<a href="${project.reportUrl}" class="project-link" target="_blank">
+                <i class="fas fa-file-alt"></i>
+                <span>Report</span>
+              </a>` : ''}
             </div>
+          ` : '';
+          
+          return `
+          <div class="project-card">
+            <div class="project-image">
+              <img src="${project.imageUrl || ''}" alt="${project.name || 'Project'}" onerror="this.src='https://placehold.co/600x400?text=Project+Image'">
+          </div>
+            <div class="project-content">
+              <h3>${project.name || ''}</h3>
+              <p>${project.description || ''}</p>
+              ${buttonHtml}
+              </div>
+            </div>
+        `;
+        }).join('');
+        
+        // Generate skills HTML
+        const skillsHtml = portfolioData.skills.map((skill: Skill) => {
+          return `
+          <div class="skill-card">
+            <div class="skill-name">${skill.name || ''}</div>
+          </div>
           `;
         }).join('');
         
-        // Generate skills HTML for Template 7
-        skillsHtml = portfolioData.skills.map((skill: Skill) => `
-          <div class="skill-card">
-            <div class="skill-icon">
-              <i class="fas fa-code"></i>
-            </div>
-            <h3 class="skill-name">${skill.name || ''}</h3>
-          </div>
-        `).join('');
+        // Replace all relevant placeholders in the HTML content
+        htmlContent = htmlContent
+          .replace(/\{\{initials\}\}/g, initials)
+          .replace(/\{\{fullName\}\}/g, portfolioData.fullName || '')
+          .replace(/\{\{title\}\}/g, portfolioData.title || '')
+          .replace(/\{\{smallIntro\}\}/g, portfolioData.smallIntro || '')
+          .replace(/\{\{about\}\}/g, portfolioData.about || '')
+          .replace(/\{\{email\}\}/g, portfolioData.email || '')
+          .replace(/\{\{phone\}\}/g, portfolioData.phone || '')
+          .replace(/\{\{projects\}\}/g, projectsHtml)
+          .replace(/\{\{skills\}\}/g, skillsHtml)
+          .replace(/\{\{current-year\}\}/g, new Date().getFullYear().toString());
+        
+        // Add a hidden data attribute with the title for JavaScript to use
+        htmlContent = htmlContent.replace('</head>', `<script>window.portfolioTitle = "${portfolioData.title || ''}";</script></head>`);
+        
+        if (portfolioData.profilePictureUrl) {
+          htmlContent = htmlContent.replace(/\{\{profilePictureUrl\}\}/g, portfolioData.profilePictureUrl);
+        }
+        
+        // Replace CV-related placeholders
+        if (portfolioData.hasCv && portfolioData.cvUrl) {
+          htmlContent = htmlContent
+            .replace(/\{\{hasCv\}\}/g, 'true')
+            .replace(/\{\{cvUrl\}\}/g, portfolioData.cvUrl);
+      } else {
+          // Remove the CV button section
+          const cvRegex = /\{\{#if hasCv\}\}([\s\S]*?)\{\{\/if\}\}/g;
+          htmlContent = htmlContent.replace(cvRegex, '');
+        }
       } else {
         // Default projects HTML for any other templates not specifically handled above
         projectsHtml = portfolioData.projects.map((project: Project) => {
@@ -1215,7 +1308,7 @@ export async function POST(request: NextRequest) {
               ${hasReport ? `<a href="${project.reportUrl}" class="project-link" target="_blank" aria-label="View Project Report">
                 <i class="fas fa-file-alt"></i> Report
               </a>` : ''}
-                </div>
+            </div>
           ` : `
             <div class="project-links">
               <a href="#" class="project-link" aria-label="View Project Details">

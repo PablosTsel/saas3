@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{fullName}} | {{title}}</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta name="description" content="{{fullName}}'s professional portfolio showcasing projects and skills in {{title}}">
+</head>
+<body>
+    <div class="bg-animation">
+        <div class="grain"></div>
+        <div class="gradient"></div>
+    </div>
+    
+    <nav class="navbar">
+        <div class="logo">{{initials}}</div>
+        <ul class="nav-links">
+            <li><a href="#home" class="active">Home</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#skills">Skills</a></li>
+            <li><a href="#projects">Projects</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+        <div class="theme-toggle">
+            <i class="fas fa-sun"></i>
+            <div class="toggle-track">
+                <input type="checkbox" id="theme-toggle" checked>
+                <label for="theme-toggle"></label>
+            </div>
+            <i class="fas fa-moon"></i>
+        </div>
+        <div class="menu-toggle">
+            <span></span>
+            <span></span>
+        </div>
+    </nav>
+    
+    <main>
+        <section id="home" class="hero">
+            <div class="container">
+                <div class="hero-content">
+                    <div class="hero-text">
+                        <h1 class="animated-text">{{fullName}}</h1>
+                        <h2><span class="typed-text"></span><span class="cursor">&nbsp;</span></h2>
+                        <p>{{smallIntro}}</p>
+                        <div class="hero-links">
+                            {{#if hasCv}}
+                            <a href="{{cvUrl}}" class="outline-btn" target="_blank">
+                                <span>Resume</span>
+                                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="1.5" fill="none"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                            </a>
+                            {{/if}}
+                            <a href="#contact" class="solid-btn">
+                                <span>Contact</span>
+                                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="1.5" fill="none"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"></path></svg>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="hero-image">
+                        <div class="profile-frame">
+                            {{#if profilePictureUrl}}
+                            <img src="{{profilePictureUrl}}" alt="{{fullName}}" onerror="this.src='https://placehold.co/400x400?text={{initials}}'">
+                            {{else}}
+                            <div class="initials-avatar">{{initials}}</div>
+                            {{/if}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="about" class="about">
+            <div class="container">
+                <h2 class="section-title"><span>01</span>About</h2>
+                <div class="about-content">
+                    <div class="about-text">
+                        <p>{{about}}</p>
+                    </div>
+                    <div class="about-details">
+                        <div class="detail-item">
+                            <div class="detail-label">Email</div>
+                            <div class="detail-value"><a href="mailto:{{email}}">{{email}}</a></div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Phone</div>
+                            <div class="detail-value"><a href="tel:{{phone}}">{{phone}}</a></div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Role</div>
+                            <div class="detail-value">{{title}}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="skills" class="skills">
+            <div class="container">
+                <h2 class="section-title"><span>02</span>Skills</h2>
+                <div class="skills-grid">
+                    {{#each skills}}
+                    <div class="skill-card">
+                        <div class="skill-name">{{name}}</div>
+                    </div>
+                    {{/each}}
+                </div>
+            </div>
+        </section>
+        
+        <section id="projects" class="projects">
+            <div class="container">
+                <h2 class="section-title"><span>03</span>Projects</h2>
+                <div class="projects-grid">
+                    {{#each projects}}
+                    <div class="project-card">
+                        <div class="project-image">
+                            <img src="{{imageUrl}}" alt="{{name}}" onerror="this.src='https://placehold.co/600x400?text=Project+Image'">
+                        </div>
+                        <div class="project-content">
+                            <h3>{{name}}</h3>
+                            <p>{{description}}</p>
+                            <div class="project-links">
+                                {{#if githubUrl}}
+                                <a href="{{githubUrl}}" class="project-link" target="_blank">
+                                    <i class="fab fa-github"></i>
+                                    <span>GitHub</span>
+                                </a>
+                                {{/if}}
+                                {{#if reportUrl}}
+                                <a href="{{reportUrl}}" class="project-link" target="_blank">
+                                    <i class="fas fa-file-alt"></i>
+                                    <span>Report</span>
+                                </a>
+                                {{/if}}
+                            </div>
+                        </div>
+                    </div>
+                    {{/each}}
+                </div>
+            </div>
+        </section>
+        
+        <section id="contact" class="contact">
+            <div class="container">
+                <h2 class="section-title"><span>04</span>Contact</h2>
+                <div class="contact-content">
+                    <div class="contact-text">
+                        <p>Have a project in mind or want to discuss opportunities? Feel free to reach out!</p>
+                    </div>
+                    <div class="contact-info">
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div class="contact-details">
+                                <h3>Email</h3>
+                                <a href="mailto:{{email}}">{{email}}</a>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <i class="fas fa-phone"></i>
+                            </div>
+                            <div class="contact-details">
+                                <h3>Phone</h3>
+                                <a href="tel:{{phone}}">{{phone}}</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <p>&copy; <span class="current-year">2023</span> {{fullName}}. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+    
+    <script src="js/script.js"></script>
+</body>
+</html> 
