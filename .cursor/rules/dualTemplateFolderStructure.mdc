@@ -1,8 +1,4 @@
----
-description: # Dual Template Folder Structure
-globs: 
----
- # Dual Template Folder Structure
+# Dual Template Folder Structure
 
 ## Problem
 The codebase maintains template files in two separate locations: a development folder and a public distribution folder. Changes made to one location are not automatically synchronized to the other, leading to inconsistencies and broken features.
@@ -33,4 +29,4 @@ A developer updates the navigation component in `/src/templates/template4/` to i
 7. Create visual indicators in the development environment showing sync status
 8. Implement template tests that verify consistent rendering between environments
 9. Add linting rules that detect potential synchronization issues
-10. Establish a standard process for template updates that ensures consistency
+10. Establish a standard process for template updates that ensures consistency 

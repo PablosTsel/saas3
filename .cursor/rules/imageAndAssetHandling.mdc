@@ -1,8 +1,4 @@
----
-description: # Image and Asset Handling
-globs: 
----
- # Image and Asset Handling
+# Image and Asset Handling
 
 ## Problem
 Inconsistent approaches to image and asset management across templates lead to broken images, incorrect sizing, and performance issues.
@@ -28,4 +24,4 @@ Template2 uses CSS background images with fixed dimensions for project thumbnail
 6. Create a template-agnostic asset reference system
 7. Implement fallback images for when assets aren't available
 8. Add validation to check image integrity when templates are modified
-9. Create a consistent approach to lazy loading and performance optimization
+9. Create a consistent approach to lazy loading and performance optimization 

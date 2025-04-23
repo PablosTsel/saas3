@@ -1,8 +1,4 @@
----
-description: # File Structure and Templating Logic
-globs: 
----
- # File Structure and Templating Logic
+# File Structure and Templating Logic
 
 ## Problem
 Inconsistent file organization and templating logic across different templates creates confusion, maintenance challenges, and can lead to broken functionality when implementing new features.
@@ -33,4 +29,4 @@ Template2 implements conditional rendering using a series of nested if-else stat
 7. Create migration scripts to align existing templates with the standard
 8. Maintain a reference implementation for each template pattern
 9. Implement linting to ensure adherence to file structure standards
-10. Create visual diagrams of file relationships for complex templates
+10. Create visual diagrams of file relationships for complex templates 
