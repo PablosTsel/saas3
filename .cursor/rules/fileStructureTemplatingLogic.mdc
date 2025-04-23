@@ -1,0 +1,36 @@
+---
+description: # File Structure and Templating Logic
+globs: 
+---
+ # File Structure and Templating Logic
+
+## Problem
+Inconsistent file organization and templating logic across different templates creates confusion, maintenance challenges, and can lead to broken functionality when implementing new features.
+
+## Details
+Templates currently exhibit significant variation in:
+- File organization and directory structures
+- Approach to component modularization
+- Implementation of templating logic
+- Handling of template variables and dynamic content
+- Inclusion patterns for CSS and JavaScript files
+- Path resolution logic for assets and dependencies
+- Organization of template-specific features
+- Management of shared vs. template-specific code
+
+This inconsistency makes it difficult to apply changes uniformly across templates and increases the cognitive load for developers.
+
+## Example
+Template2 implements conditional rendering using a series of nested if-else statements in the main template file, while Template5 uses a component-based approach with separate template files for each conditional variation. When adding a new feature that requires conditional logic, developers must implement it twice using different patterns, increasing the chance of errors.
+
+## Solution
+1. Establish a standardized file structure pattern for all templates
+2. Document clear guidelines for templating logic implementation
+3. Create a template directory map showing equivalent locations across templates
+4. Implement consistent include/import patterns across templates
+5. Standardize path resolution for dependencies and assets
+6. Develop a templating library that works uniformly across templates
+7. Create migration scripts to align existing templates with the standard
+8. Maintain a reference implementation for each template pattern
+9. Implement linting to ensure adherence to file structure standards
+10. Create visual diagrams of file relationships for complex templates

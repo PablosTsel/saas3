@@ -1,0 +1,35 @@
+---
+description: # Template Rendering and Replacement Issues
+globs: 
+---
+ # Template Rendering and Replacement Issues
+
+## Problem
+Template placeholders like `{{#each skills}}` and `{{/each}}` weren't being properly replaced in the generated HTML, causing raw template syntax to be displayed instead of actual content.
+
+## Details
+When template replacement logic for one section is modified, it can inadvertently affect other sections that use similar template patterns. This can lead to orphaned template tags or raw template syntax appearing in the final output.
+
+## Example
+After fixing projects, an orphaned `{{/each}}` tag appeared at the bottom left of Template 5's projects section. Skills section showed `{{#each skills}}` instead of the actual skills in multiple templates.
+
+## Root Cause
+Changes to the template replacement logic for one section (e.g., projects) inadvertently affected other sections (e.g., skills) due to:
+1. Missing template-specific HTML generation for different templates
+2. Reliance on generic replacement patterns that didn't handle all template variations
+3. Lack of cleanup for orphaned template tags
+
+## Solution
+1. Implement a template-first approach where each template gets its own specific HTML generation
+2. Add explicit HTML generation code for both projects AND skills sections for each template
+3. Add cleanup code to catch and remove any remaining template tags:
+```javascript
+// Cleanup any remaining Handlebars tags that weren't properly replaced
+htmlContent = htmlContent.replace(/{{\/each}}/g, '');
+htmlContent = htmlContent.replace(/{{#each.*?}}/g, '');
+```
+4. When modifying template generation code, consider ALL sections that use similar template patterns
+5. Always test all sections of ALL templates after making changes to shared template logic
+6. Add template-specific logic for each template rather than using catch-all approaches
+7. Include a final cleanup step to remove any template tags that might have been missed
+8. When fixing issues in one template, check if the same issue exists in other templates

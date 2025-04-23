@@ -1,0 +1,23 @@
+---
+description: # CSS Selector Alignment Issues
+globs: 
+---
+ # CSS Selector Alignment Issues
+
+## Problem
+Selectors for underline decorations used absolute positioning that didn't work consistently across elements.
+
+## Details
+CSS selectors that use absolute positioning for decorative elements (like underlines, borders, or other accents) need to be carefully constructed to ensure they align properly in all contexts. Absolute positioning without proper centering techniques can cause misalignment.
+
+## Example
+The `.section-title::after` pseudo-element used `left: 0` which caused underlines to align left instead of center when the section title was centered.
+
+## Solution
+- Use percentage-based positioning for decorative elements
+- Test alignment across different text lengths and container widths
+- Consider using flexbox or grid for more predictable alignment
+- Apply transforms like `translateX(-50%)` when centering is needed
+- Check for inherited CSS that might affect positioning
+- For centered elements, use a combination of `left: 50%; transform: translateX(-50%);` to ensure proper centering
+- Test decoration positioning in both mobile and desktop views

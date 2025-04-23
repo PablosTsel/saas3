@@ -185,4 +185,80 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }
   });
-}); 
+  
+  // Setup skills animation with duplicated skills for smooth infinite scroll
+  setupSkillsAnimation();
+});
+
+// Function to duplicate skills for infinite scrolling animation
+function setupSkillsAnimation() {
+  const skillsContainer = document.querySelector('.skills-container');
+  if (!skillsContainer) return;
+  
+  const skillTags = skillsContainer.querySelectorAll('.skill-tag');
+  if (skillTags.length === 0) return;
+  
+  // Create container for original skills
+  const originalSkillsWrapper = document.createElement('div');
+  originalSkillsWrapper.className = 'skills-set original';
+  originalSkillsWrapper.style.display = 'inline-flex';
+  
+  // Create container for duplicated skills
+  const duplicateSkillsWrapper = document.createElement('div');
+  duplicateSkillsWrapper.className = 'skills-set duplicate';
+  duplicateSkillsWrapper.style.display = 'inline-flex';
+  
+  // Move original skill tags to the wrapper
+  while (skillsContainer.firstChild) {
+    originalSkillsWrapper.appendChild(skillsContainer.firstChild);
+  }
+  
+  // Clone all skill tags for the duplicate set
+  skillTags.forEach(tag => {
+    const clone = tag.cloneNode(true);
+    
+    // Add a slight rotation to make it more visually interesting
+    const randomRotation = (Math.random() * 4 - 2); // Random value between -2 and 2 degrees
+    clone.style.transform = `rotate(${randomRotation}deg)`;
+    
+    duplicateSkillsWrapper.appendChild(clone);
+  });
+  
+  // Add both wrappers to the skills container
+  skillsContainer.appendChild(originalSkillsWrapper);
+  skillsContainer.appendChild(duplicateSkillsWrapper);
+  
+  // Add subtle randomized effects to all skill tags
+  document.querySelectorAll('.skill-tag').forEach((tag, index) => {
+    // Add subtle rotation to each tag
+    const randomRotation = (Math.random() * 4 - 2);
+    tag.style.transform = `rotate(${randomRotation}deg)`;
+    
+    // Add slight delay to hover effects based on position
+    tag.style.transitionDelay = `${index * 0.03}s`;
+    
+    // Vary box shadow slightly
+    const shadowOpacity = 0.05 + (Math.random() * 0.1);
+    tag.style.boxShadow = `0 4px 8px rgba(0, 0, 0, ${shadowOpacity})`;
+  });
+  
+  // Update the CSS animation to move only the inner skills-set
+  skillsContainer.style.animation = 'none';
+  
+  // Create the scrolling animation for the two skill sets
+  const scrollingAnimation = `
+    @keyframes scrollSkillsInner {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+  `;
+  
+  // Add the animation to the page
+  const styleElement = document.createElement('style');
+  styleElement.textContent = scrollingAnimation;
+  document.head.appendChild(styleElement);
+  
+  // Apply the animation to both wrappers
+  originalSkillsWrapper.style.animation = 'scrollSkillsInner 20s linear infinite';
+  duplicateSkillsWrapper.style.animation = 'scrollSkillsInner 20s linear infinite';
+} 

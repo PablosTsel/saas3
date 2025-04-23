@@ -1,4 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
+  // Ensure page starts at the top on load
+  window.scrollTo(0, 0);
+  
   // Theme toggle functionality
   const themeToggleBtn = document.getElementById("theme-toggle");
   const prefersDarkScheme = window.matchMedia("(prefers-color-scheme: dark)");
@@ -44,20 +47,46 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Smooth scrolling for anchor links
-  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function(e) {
+  // Smooth scrolling for navigation links
+  document.querySelectorAll('a[href^="#"]').forEach(link => {
+    link.addEventListener("click", function(e) {
       e.preventDefault();
       
-      const targetId = this.getAttribute('href');
-      if (targetId === '#') return;
+      const target = document.querySelector(this.getAttribute("href"));
+      if (!target) return;
       
-      const targetElement = document.querySelector(targetId);
-      if (targetElement) {
-        window.scrollTo({
-          top: targetElement.offsetTop - 70, // Adjust for fixed navbar
-          behavior: 'smooth'
-        });
+      window.scrollTo({
+        top: target.offsetTop - 80,
+        behavior: "smooth"
+      });
+      
+      // Handle mobile menu closing
+      const navLinks = document.querySelector(".nav-links");
+      navLinks.classList.remove("show");
+    });
+  });
+
+  // Activate navigation links on scroll
+  window.addEventListener("scroll", () => {
+    const sections = document.querySelectorAll("section");
+    const navLinks = document.querySelectorAll(".nav-links a");
+    
+    let current = "";
+    
+    sections.forEach(section => {
+      const sectionTop = section.offsetTop - 100;
+      const sectionHeight = section.offsetHeight;
+      const sectionId = section.getAttribute("id");
+      
+      if (window.pageYOffset >= sectionTop && window.pageYOffset < sectionTop + sectionHeight) {
+        current = sectionId;
+      }
+    });
+    
+    navLinks.forEach(link => {
+      link.classList.remove("active");
+      if (link.getAttribute("href") === `#${current}`) {
+        link.classList.add("active");
       }
     });
   });
@@ -74,7 +103,7 @@ document.addEventListener("DOMContentLoaded", () => {
           },
         },
         color: {
-          value: "#4169e1",
+          value: "#4a6cf7",
         },
         shape: {
           type: "circle",
@@ -109,8 +138,8 @@ document.addEventListener("DOMContentLoaded", () => {
         line_linked: {
           enable: true,
           distance: 150,
-          color: "#4169e1",
-          opacity: 0.2,
+          color: "#4a6cf7",
+          opacity: 0.4,
           width: 1,
         },
         move: {
@@ -171,6 +200,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // Setup skills animation with duplicated skills for smooth infinite scroll
+  setupSkillsAnimation();
+
   // Update copyright year
   const currentYearElement = document.querySelector(".current-year");
   if (currentYearElement) {
@@ -230,4 +262,77 @@ function setupTypingAnimation() {
   
   // Start the typing animation
   if (textArray.length) setTimeout(type, newTextDelay + 250);
+}
+
+// Function to duplicate skills for infinite scrolling animation
+function setupSkillsAnimation() {
+  const skillsContainer = document.querySelector('.skills-container');
+  if (!skillsContainer) return;
+  
+  const skillTags = skillsContainer.querySelectorAll('.skill-tag');
+  if (skillTags.length === 0) return;
+  
+  // Create container for original skills
+  const originalSkillsWrapper = document.createElement('div');
+  originalSkillsWrapper.className = 'skills-set original';
+  originalSkillsWrapper.style.display = 'inline-flex';
+  
+  // Create container for duplicated skills
+  const duplicateSkillsWrapper = document.createElement('div');
+  duplicateSkillsWrapper.className = 'skills-set duplicate';
+  duplicateSkillsWrapper.style.display = 'inline-flex';
+  
+  // Move original skill tags to the wrapper
+  while (skillsContainer.firstChild) {
+    originalSkillsWrapper.appendChild(skillsContainer.firstChild);
+  }
+  
+  // Clone all skill tags for the duplicate set
+  skillTags.forEach(tag => {
+    const clone = tag.cloneNode(true);
+    
+    // Add a slight rotation to make it more visually interesting
+    const randomRotation = (Math.random() * 4 - 2); // Random value between -2 and 2 degrees
+    clone.style.transform = `rotate(${randomRotation}deg)`;
+    
+    duplicateSkillsWrapper.appendChild(clone);
+  });
+  
+  // Add both wrappers to the skills container
+  skillsContainer.appendChild(originalSkillsWrapper);
+  skillsContainer.appendChild(duplicateSkillsWrapper);
+  
+  // Add subtle randomized effects to all skill tags
+  document.querySelectorAll('.skill-tag').forEach((tag, index) => {
+    // Add subtle rotation to each tag
+    const randomRotation = (Math.random() * 4 - 2);
+    tag.style.transform = `rotate(${randomRotation}deg)`;
+    
+    // Add slight delay to hover effects based on position
+    tag.style.transitionDelay = `${index * 0.03}s`;
+    
+    // Vary box shadow slightly
+    const shadowOpacity = 0.05 + (Math.random() * 0.1);
+    tag.style.boxShadow = `0 4px 8px rgba(0, 0, 0, ${shadowOpacity})`;
+  });
+  
+  // Update the CSS animation to move only the inner skills-set
+  skillsContainer.style.animation = 'none';
+  
+  // Create the scrolling animation for the two skill sets
+  const scrollingAnimation = `
+    @keyframes scrollSkillsInner {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+  `;
+  
+  // Add the animation to the page
+  const styleElement = document.createElement('style');
+  styleElement.textContent = scrollingAnimation;
+  document.head.appendChild(styleElement);
+  
+  // Apply the animation to both wrappers
+  originalSkillsWrapper.style.animation = 'scrollSkillsInner 20s linear infinite';
+  duplicateSkillsWrapper.style.animation = 'scrollSkillsInner 20s linear infinite';
 } 

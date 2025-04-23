@@ -14,24 +14,23 @@
     <header>
         <div class="container">
             <nav id="navbar">
-                <div class="logo">{{initials}}</div>
-                <ul class="nav-links">
-                    <li><a href="#home" class="active">Home</a></li>
-                    <li><a href="#about">About</a></li>
-                    <li><a href="#skills">Skills</a></li>
-                    <li><a href="#projects">Projects</a></li>
-                    <li><a href="#contact">Contact</a></li>
-                    <li>
-                        <div class="theme-toggle">
-                            <i class="fas fa-sun"></i>
-                            <div class="toggle-switch">
-                                <input type="checkbox" id="theme-toggle" checked>
-                                <label for="theme-toggle"></label>
-                            </div>
-                            <i class="fas fa-moon"></i>
-                        </div>
-                    </li>
-                </ul>
+                <div class="nav-center">
+                    <ul class="nav-links">
+                        <li><a href="#home" class="active">Home</a></li>
+                        <li><a href="#about">About</a></li>
+                        <li><a href="#skills">Skills</a></li>
+                        <li><a href="#projects">Projects</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="theme-toggle">
+                    <i class="fas fa-sun"></i>
+                    <div class="toggle-switch">
+                        <input type="checkbox" id="theme-toggle" checked>
+                        <label for="theme-toggle"></label>
+                    </div>
+                    <i class="fas fa-moon"></i>
+                </div>
                 <div class="burger">
                     <div class="line1"></div>
                     <div class="line2"></div>
@@ -108,12 +107,18 @@
         <div class="container">
             <h2 class="section-title">Skills</h2>
             <div class="skills-grid">
-                {{#each skills}}
-                <div class="skill-tag">
-                    <span class="skill-icon"><i class="fas fa-code"></i></span>
-                    <span class="skill-name">{{name}}</span>
+                <div class="skills-container">
+                    {{#each skills}}
+                    <div class="skill-tag">
+                        <span class="skill-name">{{name}}</span>
+                    </div>
+                    {{/each}}
+                    {{#each skills}}
+                    <div class="skill-tag">
+                        <span class="skill-name">{{name}}</span>
+                    </div>
+                    {{/each}}
                 </div>
-                {{/each}}
             </div>
         </div>
     </section>
@@ -121,7 +126,14 @@
     <!-- Projects Section -->
     <section id="projects" class="projects">
         <div class="container">
-            <h2 class="section-title">My Projects</h2>
+            <h2 class="section-title">
+                My Projects
+                {{#if githubProfile}}
+                <a href="{{githubProfile}}" class="github-link" target="_blank" title="Visit my GitHub profile">
+                    <i class="fab fa-github"></i>
+                </a>
+                {{/if}}
+            </h2>
             <div class="projects-grid">
                 {{#each projects}}
                 <div class="project-card">
@@ -150,18 +162,6 @@
         </div>
     </section>
 
-    <!-- Footer -->
-    <footer>
-        <div class="container">
-            <div class="footer-content">
-                <div class="social-links">
-                    <a href="#"><i class="fab fa-github"></i></a>
-                    <a href="#"><i class="fab fa-linkedin"></i></a>
-                    <a href="#"><i class="fab fa-twitter"></i></a>
-                </div>
-            </div>
-        </div>
-    </footer>
 
     <!-- Script -->
     <script src="js/script.js"></script>

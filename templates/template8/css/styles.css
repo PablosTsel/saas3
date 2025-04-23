@@ -268,7 +268,21 @@ section {
   margin-bottom: calc(var(--spacing) * 8);
   display: flex;
   align-items: center;
+  justify-content: center;
+  text-align: center;
   gap: calc(var(--spacing) * 2);
+}
+
+.github-link {
+  margin-left: calc(var(--spacing) * 2);
+  font-size: 1.5rem;
+  color: var(--accent);
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.github-link:hover {
+  transform: translateY(-3px);
+  color: var(--accent-light);
 }
 
 .section-title span {

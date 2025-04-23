@@ -904,4 +904,14 @@ body {
 
 main, section {
   flex: 0 0 auto;
+}
+
+.nav-center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.theme-control {
+  margin-left: 1rem;
 } 

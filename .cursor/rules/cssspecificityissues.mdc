@@ -1,0 +1,11 @@
+---
+description: **Problem:** CSS specificity rules can cause styles to be unexpectedly overridden.  **Best Practices:** - Use template-specific CSS classes (e.g., `.template2 .project-card`) - Be cautious with !important flags which can make debugging difficult - Maintain a consistent specificity pattern throughout your CSS - Be careful with global styles that might affect all templates
+globs: 
+---
+**Problem:** CSS specificity rules can cause styles to be unexpectedly overridden.
+
+**Best Practices:**
+- Use template-specific CSS classes (e.g., `.template2 .project-card`)
+- Be cautious with !important flags which can make debugging difficult
+- Maintain a consistent specificity pattern throughout your CSS
+- Be careful with global styles that might affect all templates

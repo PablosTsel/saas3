@@ -1,0 +1,22 @@
+---
+description: # HTML Comment Markers Around Template Tags
+globs: 
+---
+ # HTML Comment Markers Around Template Tags
+
+## Problem
+HTML comment markers (`<!-- -->`) incorrectly surrounded Handlebars/template closing tags, causing rendering issues.
+
+## Details
+When HTML comment markers are used around template syntax tags, the rendering engine can mistake the comment markers as part of the template syntax, or the template engine might interpret the HTML comments incorrectly. This can lead to escaped HTML appearing in the final output.
+
+## Example
+Code like `<!--{{/if}}-->` resulted in the closing comment tag (`-->`) being rendered as `--&gt;` in the final HTML.
+
+## Solution
+- Never enclose template tags inside HTML comments
+- Use template-specific commenting features if provided
+- Keep template logic clean and separate from HTML comments
+- If you need to comment out template logic, comment out the entire block including opening and closing tags
+- When reviewing code, ensure no template tags are wrapped in HTML comments
+- If you need to document template logic, use regular comments above or below the template tags, not around them

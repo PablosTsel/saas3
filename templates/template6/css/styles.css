@@ -100,6 +100,12 @@ body {
   border-radius: 4px;
 }
 
+.nav-center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
 .nav-links {
   display: flex;
   align-items: center;
@@ -117,6 +123,10 @@ body {
 .nav-links a:hover,
 .nav-links a.active {
   color: var(--highlight-color);
+}
+
+.theme-control {
+  margin-left: 1rem;
 }
 
 .contact-btn {
@@ -175,7 +185,20 @@ body {
   font-size: 2rem;
   margin-bottom: 2rem;
   position: relative;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.github-link {
+  font-size: 1.5rem;
+  color: var(--highlight-color);
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.github-link:hover {
+  transform: translateY(-3px);
+  color: var(--secondary-color);
 }
 
 .section-title::after {

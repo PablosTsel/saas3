@@ -1,0 +1,12 @@
+---
+description: **Problem:** Template changes may break responsive behavior on smaller screens.  **Best Practices:** - Test all changes at multiple screen sizes - Remember to update media queries when changing core component sizing - Maintain proportion relationships when resizing elements (like we did with the laptop displays) - Don't forget to update padding, margins, and spacing along with width/height
+globs: 
+---
+
+**Problem:** Template changes may break responsive behavior on smaller screens.
+
+**Best Practices:**
+- Test all changes at multiple screen sizes
+- Remember to update media queries when changing core component sizing
+- Maintain proportion relationships when resizing elements (like we did with the laptop displays)
+- Don't forget to update padding, margins, and spacing along with width/height

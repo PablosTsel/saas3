@@ -1,0 +1,16 @@
+---
+description: skill prefix fix </>
+globs: 
+---
+ Problem:
+Template 3 was displaying all skills with a "</>" prefix before each skill name (e.g., "</>Python", "</>Excel", etc.). This made the skills section look inconsistent with the intended design.
+
+How it was fixed:
+After examining the code in route.ts, we found that template 3 didn't have specific formatting for skills. It was using the default skill formatting with FontAwesome icons that rendered as "</>" prefixes. We added template-specific code for template 3 that generates skills HTML without the icon prefix.
+
+The fix was implemented by adding specific code for template 3's skills formatting:
+skillsHtml = portfolioData.skills.map((skill: Skill) => `
+  <div class="skill-tag">${skill.name || ''}</div>
+`).join('');
+
+This ensures skills in template 3 now display correctly without any unnecessary prefixes. 

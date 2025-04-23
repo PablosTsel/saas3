@@ -1,0 +1,23 @@
+---
+description: # Unused Template Sections
+globs: 
+---
+# Unused Template Sections
+
+## Problem
+Templates contained sections that weren't needed or didn't fit the intended design.
+
+## Details
+Unused sections in templates can lead to unnecessary code bloat, confusing template logic, and possible rendering issues if the sections reference variables or components that don't exist. They can also make maintenance more difficult.
+
+## Example
+An "interests" section was included in a template but wasn't necessary for the portfolio display and referenced data that wasn't being passed to the template.
+
+## Solution
+- Regularly review templates for unnecessary or redundant sections
+- Remove unused sections completely rather than hiding them with CSS
+- Ensure removal of sections doesn't break template structure or responsive behavior
+- Check for dependencies before removing sections (styles, scripts, or data references)
+- Update documentation when removing sections to prevent confusion
+- Test template rendering after removing sections to ensure no unexpected layout issues occur
+- Consider commenting out sections temporarily before permanently removing them if unsure about their purpose

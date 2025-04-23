@@ -1,0 +1,13 @@
+---
+description: **Problem:** Different templates may have overlapping code sections with conditional logic that can cause unexpected overrides.  **Example:** In our case, template2's laptop-style project cards were being overridden by a generic "else" clause at the end of the file which applied a different style.  **Solution:**  - Always check for existing template-specific code before adding new template implementations - Use explicit conditionals like `if (templateId === 'template2')` instead of catch-all `else` blocks - Add exclusion conditions: `else if (templateId !== 'template2')` when using fall-back code
+globs: 
+---
+
+**Problem:** Different templates may have overlapping code sections with conditional logic that can cause unexpected overrides.
+
+**Example:** In our case, template2's laptop-style project cards were being overridden by a generic "else" clause at the end of the file which applied a different style.
+
+**Solution:** 
+- Always check for existing template-specific code before adding new template implementations
+- Use explicit conditionals like `if (templateId === 'template2')` instead of catch-all `else` blocks
+- Add exclusion conditions: `else if (templateId !== 'template2')` when using fall-back code

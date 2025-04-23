@@ -47,6 +47,8 @@ body {
   min-height: 100vh;
   transition: background-color 0.3s, color 0.3s;
   overflow-x: hidden;
+  scroll-behavior: smooth;
+  scroll-padding-top: 4rem;
 }
 
 a {
@@ -87,6 +89,12 @@ a {
   text-decoration: none;
 }
 
+.nav-center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
 .nav-links {
   display: flex;
   align-items: center;
@@ -104,6 +112,10 @@ a {
 .nav-links a:hover,
 .nav-links a.active {
   color: var(--highlight-color);
+}
+
+.theme-control {
+  margin-left: 1rem;
 }
 
 .contact-btn {
@@ -168,11 +180,20 @@ a {
   align-items: center;
 }
 
+#home.container {
+  padding-top: 5rem; /* Add padding to account for the fixed navbar */
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+}
+
 .hero-content {
   display: flex;
   align-items: center;
   gap: 4rem;
   flex-wrap: wrap;
+  width: 100%; /* Ensure the content takes full width */
+  padding-top: 2rem; /* Additional padding for better spacing */
 }
 
 .hero-text {
@@ -188,26 +209,27 @@ a {
 }
 
 .hero-image img {
-  max-width: 100%;
-  height: auto;
-  max-height: 400px;
+  width: 300px;
+  height: 300px;
   border-radius: 50%;
   object-fit: cover;
-  box-shadow: var(--shadow);
+  border: 6px solid var(--highlight-color);
+  box-shadow: 0 0 25px var(--shadow-color);
 }
 
 .hero-avatar {
-  width: 350px;
-  height: 350px;
+  width: 300px;
+  height: 300px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   background-color: var(--highlight-color);
   color: white;
-  font-size: 6rem;
+  font-size: 5rem;
   font-weight: bold;
-  box-shadow: var(--shadow);
+  box-shadow: 0 0 25px var(--shadow-color);
+  border: 6px solid var(--highlight-color);
 }
 
 h1 {
@@ -310,8 +332,21 @@ section {
 .section-header h2 {
   font-size: 2.5rem;
   position: relative;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 1rem;
   padding-bottom: 1rem;
+}
+
+.github-link {
+  font-size: 2.2rem;
+  color: var(--highlight-color);
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.github-link:hover {
+  transform: translateY(-3px);
+  color: var(--secondary-color);
 }
 
 .section-header h2::after {
@@ -412,31 +447,114 @@ section {
 }
 
 /* Skills Section */
+.skills-section {
+  background-color: var(--bg-color);
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.section-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 5rem 2rem;
+  text-align: center;
+  width: 100%;
+}
+
+.section-title {
+  font-size: 2rem;
+  margin-bottom: 2rem;
+  position: relative;
+  display: inline-block;
+  text-align: center;
+}
+
 .skills-container {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 1rem;
+  margin-top: 2rem;
+  position: relative;
+  overflow: hidden;
+  padding: 1rem 0;
+  white-space: nowrap;
+  width: 100%;
+  max-width: 90%;
+  margin-left: auto;
+  margin-right: auto;
   justify-content: center;
-  max-width: 1000px;
-  margin: 0 auto;
+  text-align: center;
 }
 
-.skill-item {
+.skills-set {
+  display: inline-flex;
+  flex-wrap: nowrap;
+  gap: 1rem;
+  position: relative;
+}
+
+.skills-container:hover {
+  animation-play-state: paused;
+}
+
+@keyframes scrollSkills {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(calc(-50% - 0.5rem));
+  }
+}
+
+.skills-container::before,
+.skills-container::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 80px;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.skills-container::before {
+  left: 0;
+  background: linear-gradient(to right, var(--bg-color) 0%, transparent 100%);
+}
+
+.skills-container::after {
+  right: 0;
+  background: linear-gradient(to left, var(--bg-color) 0%, transparent 100%);
+}
+
+.skill-tag {
+  display: inline-flex;
+  padding: 0.75rem 1.25rem;
   background-color: var(--card-bg);
-  border: 1px solid var(--border-color);
-  border-radius: 4px;
-  padding: 0.8rem 1.5rem;
-  font-size: 1rem;
-  font-weight: 500;
-  display: inline-block;
+  border-radius: 5px;
   color: var(--text-color);
-  transition: all 0.3s;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px var(--shadow-color);
+  flex-shrink: 0;
+  margin: 0 0.5rem;
 }
 
-.skill-item:hover {
+.skills-container .skill-tag {
+  animation: none;
+}
+
+.skill-tag:hover {
   transform: translateY(-5px);
-  box-shadow: 0 5px 15px var(--shadow-color);
-  border-color: var(--highlight-color);
+  box-shadow: 0 6px 12px var(--shadow-color);
+  background-color: var(--highlight-color);
+  color: white;
 }
 
 /* Experience Section */
@@ -874,4 +992,37 @@ section {
   .projects-grid {
     grid-template-columns: repeat(2, 1fr);
   }
+}
+
+.profile-image-container {
+  flex-shrink: 0;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 1rem;
+}
+
+.profile-image {
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 6px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 0 25px var(--shadow-color);
+}
+
+.initials-avatar {
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--highlight-color);
+  color: white;
+  font-size: 4rem;
+  font-weight: bold;
+  box-shadow: 0 0 25px var(--shadow-color);
+  border: 6px solid rgba(255, 255, 255, 0.2);
 } 

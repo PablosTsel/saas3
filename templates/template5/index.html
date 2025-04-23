@@ -179,7 +179,13 @@
     <section id="projects" class="projects">
         <div class="container">
             <div class="section-header">
-                <h2>My Projects</h2>
+                <h2>My Projects
+                    {{#if githubProfile}}
+                    <a href="{{githubProfile}}" class="github-link" target="_blank" title="Visit my GitHub profile">
+                        <i class="fab fa-github"></i>
+                    </a>
+                    {{/if}}
+                </h2>
                 <div class="section-line"></div>
             </div>
             
@@ -261,24 +267,6 @@
         </div>
     </section>
     
-    <footer>
-        <div class="container">
-            <div class="footer-content">
-                <p>&copy; <span id="year">2023</span> {{fullName}}. All rights reserved.</p>
-                <div class="social-links large">
-                    <a href="#" class="social-link" target="_blank" rel="noopener noreferrer">
-                        <i class="fab fa-github"></i>
-                    </a>
-                    <a href="#" class="social-link" target="_blank" rel="noopener noreferrer">
-                        <i class="fab fa-linkedin"></i>
-                    </a>
-                    <a href="#" class="social-link" target="_blank" rel="noopener noreferrer">
-                        <i class="fab fa-twitter"></i>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </footer>
     
     <script src="js/main.js"></script>
 </body>

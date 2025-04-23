@@ -11,51 +11,54 @@
     <div id="particles-js"></div>
     
     <nav class="navbar">
-        <div class="logo">
-            <a href="#">{{initials}}</a>
+        <div class="nav-center">
+            <ul class="nav-links">
+                <li><a href="#home" class="active">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#skills">Skills</a></li>
+                <li><a href="#projects">Projects</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
         </div>
-        <div class="nav-links">
-            <a href="#home" class="active">Home</a>
-            <a href="#about">About Me</a>
-            <a href="#skills">Skills</a>
-            <a href="#projects">Projects</a>
-            {{#if hasCv}}
-            <a href="{{cvUrl}}" target="_blank">CV</a>
-            {{/if}}
-            <a href="#contact" class="contact-btn">Contact</a>
+        <div class="theme-control">
             <button id="theme-toggle" aria-label="Toggle dark mode">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="sun"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="moon"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
             </button>
         </div>
+        <div class="nav-toggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
     </nav>
 
     <main id="home" class="container">
-        <div class="profile-section">
-            <div class="profile-image-container">
-                {{#if profilePictureUrl}}
-                <img src="{{profilePictureUrl}}" alt="{{fullName}}" class="profile-image">
-                {{else}}
-                <div class="initials-avatar">{{initials}}</div>
-                {{/if}}
-            </div>
-            <div class="profile-info">
+        <div class="hero-content">
+            <div class="hero-text">
                 <h1>{{fullName}}</h1>
-                <h2>{{title}} <span class="highlight">{{title}}</span></h2>
-                <p class="bio">
+                <h2>{{title}}</h2>
+                <p>
                     {{smallIntro}}
                 </p>
-                <div class="profile-buttons">
-                    <a href="#contact" class="btn btn-contact">
+                <div class="hero-buttons">
+                    <a href="#contact" class="btn primary-btn">
                         Contact
                     </a>
                     {{#if hasCv}}
-                    <a href="{{cvUrl}}" target="_blank" class="btn btn-secondary">
+                    <a href="{{cvUrl}}" target="_blank" class="btn secondary-btn">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
                         Download CV
                     </a>
                     {{/if}}
                 </div>
+            </div>
+            <div class="hero-image">
+                {{#if profilePictureUrl}}
+                <img src="{{profilePictureUrl}}" alt="{{fullName}}" onerror="this.src='https://placehold.co/400x400/4169e1/ffffff?text={{initials}}'">
+                {{else}}
+                <div class="hero-avatar">{{initials}}</div>
+                {{/if}}
             </div>
         </div>
     </main>
@@ -199,12 +202,7 @@ export default aboutMe;</code></pre>
         </div>
     </section>
 
-    <!-- Footer -->
-    <footer>
-        <div class="container">
-            <p>&copy; <span class="currentYear">2023</span> {{fullName}}. All rights reserved.</p>
-        </div>
-    </footer>
+
 
     <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
     <script src="js/script.js"></script>

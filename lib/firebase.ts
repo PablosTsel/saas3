@@ -355,6 +355,7 @@ export const createPortfolio = async (
       fullName: portfolioData.fullName || portfolioData.name,
       email: portfolioData.email || "",
       phone: portfolioData.phone || "",
+      githubProfile: portfolioData.githubProfile || "", // GitHub profile link
       profilePictureUrl: "", // Will update after upload if successful
       skills: portfolioData.skills || [],
       experience: portfolioData.experience || [],

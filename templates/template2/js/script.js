@@ -20,6 +20,12 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Ensure icons are properly centered
     ensureIconsCentered();
+    
+    // Remove any code icons from the page
+    removeCodeIcons();
+    
+    // Enhance the skills styling
+    enhanceSkillsBoxes();
 });
 
 // Initialize theme based on saved preference or system preference
@@ -368,4 +374,101 @@ function setupTypingAnimation() {
     
     // Start the typing animation
     if (textArray.length) setTimeout(type, newTextDelay + 250);
+}
+
+// Remove any code icons that might be dynamically added
+function removeCodeIcons() {
+    // Target all potential code icons in section titles and headers
+    const potentialCodeIcons = document.querySelectorAll('.section-title i, .section-header i, h2 i, .fa-code, [class*="fa-code"]');
+    
+    // Remove all found elements
+    potentialCodeIcons.forEach(icon => {
+        if (icon.classList.contains('fa-code') || 
+            icon.classList.contains('fa-code-branch') ||
+            icon.className.includes('fa-code')) {
+            icon.remove();
+        }
+    });
+    
+    // Also check for any elements that might have been added as ::before or ::after
+    const styleElement = document.createElement('style');
+    styleElement.textContent = `
+        .section-title::before, .section-title::after,
+        .section-header::before, .section-header::after,
+        h2::before, h2::after {
+            display: none !important;
+            content: none !important;
+        }
+    `;
+    document.head.appendChild(styleElement);
+    
+    // Set up a mutation observer to catch any dynamically added icons
+    const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            if (mutation.type === 'childList') {
+                mutation.addedNodes.forEach(function(node) {
+                    if (node.nodeType === 1) { // Element node
+                        const codeIcons = node.querySelectorAll('.fa-code, [class*="fa-code"]');
+                        codeIcons.forEach(icon => icon.remove());
+                        
+                        // Also check if the node itself is a code icon
+                        if (node.classList && 
+                            (node.classList.contains('fa-code') || 
+                             node.classList.contains('fa-code-branch') ||
+                             node.className.includes('fa-code'))) {
+                            node.remove();
+                        }
+                    }
+                });
+            }
+        });
+    });
+    
+    // Start observing the document body for added nodes
+    observer.observe(document.body, { childList: true, subtree: true });
+}
+
+// Enhance the skills boxes with additional styling and effects
+function enhanceSkillsBoxes() {
+    const skillTags = document.querySelectorAll('.skill-tag');
+    
+    if (skillTags.length === 0) return;
+    
+    // Add random subtle variations to make skills more distinct
+    skillTags.forEach((tag, index) => {
+        // Add subtle rotation to some tags
+        const randomRotation = (Math.random() * 4 - 2);
+        tag.style.transform = `rotate(${randomRotation}deg)`;
+        
+        // Slightly vary the background gradient angle
+        const gradientAngle = 135 + (Math.random() * 30 - 15);
+        tag.style.background = `linear-gradient(${gradientAngle}deg, var(--primary-color) 0%, var(--accent-color) 100%)`;
+        
+        // Add a small delay to the hover animation based on index
+        tag.style.transitionDelay = `${index * 0.03}s`;
+        
+        // Vary the border opacity slightly
+        const borderOpacity = 0.1 + (Math.random() * 0.2);
+        tag.style.borderColor = `rgba(255, 255, 255, ${borderOpacity})`;
+    });
+    
+    // Get the skills container and ensure proper duplicated content for infinite scroll
+    const skillsContainer = document.querySelector('.skills-container');
+    if (skillsContainer) {
+        // If needed, duplicate skill tags to ensure smooth scrolling
+        const containerWidth = skillsContainer.scrollWidth;
+        const viewportWidth = document.querySelector('.skills-grid').clientWidth;
+        
+        if (containerWidth < viewportWidth * 2) {
+            // Need more items for a smooth scroll
+            const tags = Array.from(skillTags);
+            tags.forEach(tag => {
+                const clone = tag.cloneNode(true);
+                // Apply slightly different rotation to clones
+                const randomRotation = (Math.random() * 4 - 2);
+                clone.style.transform = `rotate(${randomRotation}deg)`;
+                skillsContainer.appendChild(clone);
+            });
+        }
+    }
 } 

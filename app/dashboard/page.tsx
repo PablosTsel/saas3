@@ -62,6 +62,7 @@ interface PortfolioData {
   fullName: string;
   email: string;
   phone: string;
+  githubProfile?: string; // Add GitHub profile field
   profilePicture: File | null;
   cv: File | null;
   hasCv: boolean;
@@ -154,6 +155,7 @@ export default function DashboardPage() {
     fullName: "John Doe",
     email: "johndoe@gmail.com",
     phone: "+34 607980731",
+    githubProfile: "", // Initialize GitHub profile field
     profilePicture: null,
     cv: null,
     hasCv: true,
@@ -318,6 +320,7 @@ export default function DashboardPage() {
       fullName: "John Doe",
       email: "johndoe@gmail.com",
       phone: "+34 607980731",
+      githubProfile: "", // Initialize GitHub profile field
       profilePicture: null,
       cv: null,
       hasCv: true,
@@ -719,7 +722,7 @@ export default function DashboardPage() {
   // Update the handleFileUpload function to better handle different file types
   const handleFileUpload = async (file: File, field: 'cv' | 'projectImage' | 'profilePicture' | 'projectReport', projectIndex?: number) => {
     // Compress images to reduce size
-    let processedFile = file;
+      let processedFile = file;
     
     if (field !== 'cv' && field !== 'projectReport' && file.type.startsWith('image/')) {
       try {
@@ -734,27 +737,27 @@ export default function DashboardPage() {
       }
     }
     
-    if (field === 'cv') {
+      if (field === 'cv') {
       // Validate PDF size (max 10MB)
       if (file.size > 10 * 1024 * 1024) {
         toast.error('CV file is too large. Maximum size is 10MB.');
         return;
       }
       
-      setPortfolioData({
-        ...portfolioData,
-        cv: processedFile
-      });
-    } else if (field === 'projectImage' && typeof projectIndex === 'number') {
-      const newProjects = [...portfolioData.projects];
-      newProjects[projectIndex] = { 
-        ...newProjects[projectIndex], 
-        image: processedFile 
-      };
-      setPortfolioData({
-        ...portfolioData,
-        projects: newProjects
-      });
+        setPortfolioData({
+          ...portfolioData,
+          cv: processedFile
+        });
+      } else if (field === 'projectImage' && typeof projectIndex === 'number') {
+        const newProjects = [...portfolioData.projects];
+        newProjects[projectIndex] = { 
+          ...newProjects[projectIndex], 
+          image: processedFile 
+        };
+        setPortfolioData({
+          ...portfolioData,
+          projects: newProjects
+        });
     } else if (field === 'projectReport' && typeof projectIndex === 'number') {
       // Validate report size (max 10MB)
       if (file.size > 10 * 1024 * 1024) {
@@ -771,13 +774,13 @@ export default function DashboardPage() {
         ...portfolioData,
         projects: newProjects
       });
-    } else if (field === 'profilePicture') {
-      setPortfolioData({
-        ...portfolioData,
-        profilePicture: processedFile
-      });
+      } else if (field === 'profilePicture') {
+        setPortfolioData({
+          ...portfolioData,
+          profilePicture: processedFile
+        });
+      }
     }
-  }
 
   const handleSubmitPortfolio = async () => {
     if (!user) {
@@ -856,6 +859,7 @@ export default function DashboardPage() {
         fullName: "John Doe",
         email: "johndoe@gmail.com",
         phone: "+34 607980731",
+        githubProfile: "", // Initialize GitHub profile field
         profilePicture: null,
         cv: null,
         hasCv: true,
@@ -931,6 +935,7 @@ export default function DashboardPage() {
             fullName: "John Doe",
             email: "johndoe@gmail.com",
             phone: "+34 607980731",
+            githubProfile: "", // Initialize GitHub profile field
             profilePicture: null,
             cv: null,
             hasCv: true,
@@ -1679,6 +1684,22 @@ export default function DashboardPage() {
                         />
                         <p className="text-xs text-gray-500">Your contact phone number.</p>
                       </div>
+                      
+                      {/* GitHub Profile Field - optional */}
+                      <div className="space-y-2">
+                        <Label htmlFor="githubProfile">
+                          GitHub Profile URL <span className="text-gray-400">(optional)</span>
+                        </Label>
+                        <Input 
+                          id="githubProfile"
+                          name="githubProfile"
+                          value={portfolioData.githubProfile || ""}
+                          onChange={handleInputChange}
+                          placeholder="https://github.com/yourusername" 
+                          className="border-indigo-100 focus:border-indigo-300 focus:ring-indigo-200"
+                        />
+                        <p className="text-xs text-gray-500">Your GitHub profile URL. Will be linked from your projects section.</p>
+                      </div>
                     </div>
                   </div>
                   
@@ -1976,20 +1997,20 @@ export default function DashboardPage() {
                   
                   <div className="grid grid-cols-2 gap-4 mt-2">
                     {TEMPLATES.map(template => (
-                      <div 
+                    <div 
                         key={template.id}
-                        className={`border rounded-lg overflow-hidden cursor-pointer transition-all ${
+                      className={`border rounded-lg overflow-hidden cursor-pointer transition-all ${
                           selectedTemplate === template.id 
-                            ? "border-indigo-500 ring-2 ring-indigo-200" 
-                            : "border-gray-200 hover:border-indigo-300"
-                        }`}
+                          ? "border-indigo-500 ring-2 ring-indigo-200" 
+                          : "border-gray-200 hover:border-indigo-300"
+                      }`}
                         onClick={() => handleTemplateSelect(template.id)}
                         onMouseEnter={() => setHoveredTemplate(template.id)}
-                        onMouseLeave={() => setHoveredTemplate(null)}
-                      >
-                        <div className="aspect-[16/9] bg-white flex items-center justify-center relative overflow-hidden">
-                          <div className="absolute inset-0 w-full h-full">
-                            <img 
+                      onMouseLeave={() => setHoveredTemplate(null)}
+                    >
+                      <div className="aspect-[16/9] bg-white flex items-center justify-center relative overflow-hidden">
+                        <div className="absolute inset-0 w-full h-full">
+                          <img 
                               src={template.previewImage}
                               alt={`${template.name} Preview`} 
                               className={`w-full h-full object-cover transition-opacity duration-300 ${
@@ -1997,26 +2018,26 @@ export default function DashboardPage() {
                               }`}
                             />
                             {template.hasVideo && (
-                              <video 
-                                ref={(el) => {
+                          <video 
+                            ref={(el) => {
                                   templateVideoRefs.current[template.id] = el;
-                                }}
+                            }}
                                 src={template.previewVideo}
-                                muted
-                                loop
-                                playsInline
+                            muted
+                            loop
+                            playsInline
                                 className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${
                                   hoveredTemplate === template.id ? 'opacity-100' : 'opacity-0'
                                 }`}
                               />
                             )}
-                          </div>
-                        </div>
-                        <div className="p-3 bg-white text-center">
-                          <div className="font-medium text-gray-800">{template.name}</div>
-                          <div className="text-xs text-gray-500">{template.description}</div>
                         </div>
                       </div>
+                      <div className="p-3 bg-white text-center">
+                          <div className="font-medium text-gray-800">{template.name}</div>
+                          <div className="text-xs text-gray-500">{template.description}</div>
+                      </div>
+                    </div>
                     ))}
                   </div>
                   

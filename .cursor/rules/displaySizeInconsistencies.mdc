@@ -1,0 +1,21 @@
+---
+description: # Display Size Inconsistencies
+globs: 
+---
+ # Display Size Inconsistencies
+
+## Problem
+Computer display sizes in templates (especially template2) were too small at 40% width, causing visual issues.
+
+## Details
+Display elements that represent computer screens, mobile devices, or other visual containers need to maintain appropriate proportions. Incorrect sizing can lead to visual problems and misalignment with related elements.
+
+## Example
+Project cards with computer displays appeared too small at 40% width and descriptions did not align properly with the display width.
+
+## Solution
+- Maintain proportional sizing (50% was the right compromise between too large and too small)
+- Ensure that related elements (like description boxes) maintain consistent widths with their parent elements
+- Test display sizes across various screen resolutions to ensure they look good at all sizes
+- When adjusting sizes, consider the impact on both the display element and its surrounding content
+- Use relative units (%, em, rem) rather than fixed pixel values when appropriate to allow for responsive sizing

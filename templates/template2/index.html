@@ -14,10 +14,6 @@
     <section id="home" class="hero-header">
         <div class="container">
             <nav id="navbar">
-                <div class="logo-container">
-                    <div class="logo">{{initials}}</div>
-                    <span class="logo-text">{{fullName}}</span>
-                </div>
                 <ul class="nav-links">
                     <li><a href="#home" class="active">Home</a></li>
                     <li><a href="#about">About</a></li>
@@ -132,15 +128,19 @@
                 <div class="section-line"></div>
             </div>
             <div class="skills-content">
-                <div class="skills-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 3rem; max-width: 90rem; margin: 0 auto;">
-                    {{#each skills}}
-                    <div class="skill-card" style="height: 7rem; width: 100%;">
-                        <div class="skill-icon">
-                            <i class="fas fa-code"></i>
+                <div class="skills-grid">
+                    <div class="skills-container">
+                        {{#each skills}}
+                        <div class="skill-tag">
+                            <span class="skill-name">{{name}}</span>
                         </div>
-                        <h3 class="skill-name">{{name}}</h3>
+                        {{/each}}
+                        {{#each skills}}
+                        <div class="skill-tag">
+                            <span class="skill-name">{{name}}</span>
+                        </div>
+                        {{/each}}
                     </div>
-                    {{/each}}
                 </div>
             </div>
         </div>
@@ -150,7 +150,13 @@
     <section id="projects" class="projects">
         <div class="container">
             <div class="section-header">
-                <h2 class="section-title">My Projects</h2>
+                <h2 class="section-title">My Projects
+                    {{#if githubProfile}}
+                    <a href="{{githubProfile}}" class="github-link" target="_blank" title="Visit my GitHub profile">
+                        <i class="fab fa-github"></i>
+                    </a>
+                    {{/if}}
+                </h2>
                 <div class="section-line"></div>
             </div>
             <div class="projects-content">
@@ -222,22 +228,7 @@
         </div>
     </section>
 
-    <!-- Footer -->
-    <footer>
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-info">
-                    <div class="footer-logo">{{initials}}</div>
-                    <p>&copy; <span class="currentYear">2023</span> {{fullName}}. All rights reserved.</p>
-                </div>
-                <div class="social-links">
-                    <a href="#" class="social-link"><i class="fab fa-github"></i></a>
-                    <a href="#" class="social-link"><i class="fab fa-linkedin"></i></a>
-                    <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
-                </div>
-            </div>
-        </div>
-    </footer>
+
 
     <!-- Script -->
     <script src="js/script.js"></script>

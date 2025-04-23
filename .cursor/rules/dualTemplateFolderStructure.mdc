@@ -1,0 +1,36 @@
+---
+description: # Dual Template Folder Structure
+globs: 
+---
+ # Dual Template Folder Structure
+
+## Problem
+The codebase maintains template files in two separate locations: a development folder and a public distribution folder. Changes made to one location are not automatically synchronized to the other, leading to inconsistencies and broken features.
+
+## Details
+Templates exist in:
+1. `/src/templates/` - Development templates with server-side logic
+2. `/public/templates/` - Public-facing static templates for client-side rendering
+
+This dual structure creates several issues:
+- Changes in one location don't automatically propagate to the other
+- Different rendering contexts between development and production
+- Asset path resolution differs between the two environments
+- Features may work in development but break in production
+- Difficult to maintain version consistency across both locations
+- Developers often forget to update both locations
+
+## Example
+A developer updates the navigation component in `/src/templates/template4/` to include a new menu item, but forgets to make the same change in `/public/templates/template4/`. The menu appears correctly in the admin preview but is missing in the published portfolio.
+
+## Solution
+1. Implement an automated build process that generates public templates from source templates
+2. Create a clear documentation about the dual structure and synchronization requirements
+3. Add pre-commit hooks to validate template consistency across both locations
+4. Develop a template diffing tool to highlight inconsistencies
+5. Add warning comments at the top of template files about the dual structure
+6. Consider refactoring to a single-source-of-truth approach for templates
+7. Create visual indicators in the development environment showing sync status
+8. Implement template tests that verify consistent rendering between environments
+9. Add linting rules that detect potential synchronization issues
+10. Establish a standard process for template updates that ensures consistency

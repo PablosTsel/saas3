@@ -50,6 +50,7 @@ interface Portfolio {
   education: Education[];
   projects: Project[];
   userId: string;
+  githubProfile?: string;
   [key: string]: any; // For any other properties
 }
 
@@ -259,7 +260,15 @@ export async function POST(request: NextRequest) {
                               .replace(/{{smallIntro}}/g, smallIntro)
                               .replace(/{{email}}/g, portfolioData.email || '')
                               .replace(/{{phone}}/g, portfolioData.phone || '')
+                              .replace(/{{githubProfile}}/g, portfolioData.githubProfile || '')
                               .replace(/{{currentYear}}/g, new Date().getFullYear().toString());
+
+      // Handle GitHub profile conditional display
+      if (portfolioData.githubProfile) {
+        htmlContent = htmlContent.replace(/{{#if githubProfile}}([\s\S]*?){{\/if}}/g, '$1');
+      } else {
+        htmlContent = htmlContent.replace(/{{#if githubProfile}}[\s\S]*?{{\/if}}/g, '');
+      }
 
       // Handle profile picture URL
       if (portfolioData.profilePictureUrl) {
@@ -349,9 +358,32 @@ export async function POST(request: NextRequest) {
           `;
         }).join('');
         
+        // Generate skills HTML specifically for template3 - without </> prefix
+        skillsHtml = portfolioData.skills.map((skill: Skill) => {
+          // Make sure to remove </> prefix if it exists in the skill name
+          const skillName = (skill.name || '').replace(/^<\/>/, '').toUpperCase();
+          return `
+          <div class="skill-tag">${skillName}</div>
+          `;
+        }).join('');
+        
         // Add custom CSS for Template3 buttons
         const template3Css = `
         <style>
+          /* Fix for hero section positioning */
+          #home.container {
+            padding-top: 5rem;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
+          
+          .hero-content {
+            width: 100%;
+            padding: 3rem 0;
+          }
+          
           /* Project card structure */
           .project-card {
             display: flex;
@@ -581,12 +613,15 @@ export async function POST(request: NextRequest) {
         `;
         
         // Generate skills HTML for Template 1
-        skillsHtml = portfolioData.skills.map((skill: Skill) => `
+        skillsHtml = portfolioData.skills.map((skill: Skill) => {
+          // Remove </> prefix if it exists in the skill name
+          const skillName = (skill.name || '').replace(/^<\/>/, '');
+          return `
           <div class="skill-tag">
-            <span class="skill-icon"><i class="fas fa-code"></i></span>
-            <span class="skill-name">${skill.name || ''}</span>
+            <span class="skill-name">${skillName}</span>
           </div>
-        `).join('');
+          `;
+        }).join('');
         
         // Append the custom CSS to the HTML content
         htmlContent = htmlContent.replace('</head>', `${buttonCss}</head>`);
@@ -597,17 +632,344 @@ export async function POST(request: NextRequest) {
         htmlContent = htmlContent.replace('</body>', `${titleScript}</body>`);
       } else if (templateId === 'template5') {
         // Add skills HTML for Template 5
-        skillsHtml = portfolioData.skills.map((skill: Skill) => `
-          <div class="skill-item">
-            <div class="skill-icon">
-              <i class="fas fa-code"></i>
+        skillsHtml = portfolioData.skills.map((skill: Skill) => {
+          // Remove </> prefix if it exists in the skill name
+          const skillName = (skill.name || '').replace(/^<\/>/, '');
+          
+          return `
+          <div class="skill-card">
+            <div class="skill-name">${skillName}</div>
             </div>
-            <h4>${skill.name || ''}</h4>
-            <div class="skill-bar">
-                <div class="skill-level"></div>
+          `;
+        }).join('');
+        
+        // Reorganize the about section layout in template 5, completely removing profile picture
+        const aboutSectionHtml = `
+        <!-- About Section -->
+        <section id="about" class="about">
+            <div class="container">
+                <div class="section-header">
+                    <h2>About Me</h2>
+                    <div class="section-line"></div>
+            </div>
+                
+                <div class="about-container">
+                    <!-- About text and details - full width without any profile image -->
+                    <div class="about-content">
+                        <div class="about-text">
+                            <h3>${portfolioData.fullName || portfolioData.name}</h3>
+                            <p class="profile-title">${portfolioData.title || ''}</p>
+                            <p>${portfolioData.about || ''}</p>
+                        </div>
+                        
+                        <div class="about-details-container">
+                            <div class="about-details">
+                                ${portfolioData.email ? 
+                                `<div class="detail">
+                                    <i class="fas fa-envelope"></i>
+                                    <span>${portfolioData.email}</span>
+                                </div>` : ''}
+                                
+                                ${portfolioData.phone ? 
+                                `<div class="detail">
+                                    <i class="fas fa-phone"></i>
+                                    <span>${portfolioData.phone}</span>
+                                </div>` : ''}
+                            </div>
+                            
+                            ${portfolioData.hasCv && portfolioData.cvUrl ? 
+                            `<div class="about-cta">
+                                <a href="${portfolioData.cvUrl}" class="btn primary" target="_blank" rel="noopener noreferrer">
+                                    <i class="fas fa-download"></i> Download Resume
+                                </a>
+                            </div>` : ''}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        `;
+        
+        // Add custom CSS for the redesigned about section without profile picture
+        const template5AboutCss = `
+        <style>
+          /* Reorganized About Section - No profile picture */
+          .about-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+          }
+          
+          .about-content {
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 2.5rem;
+          }
+          
+          .about-text {
+            text-align: center;
+          }
+          
+          .about-text h3 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            position: relative;
+            display: inline-block;
+          }
+          
+          .profile-title {
+            color: var(--accent-color);
+            font-size: 1.3rem;
+            font-weight: 500;
+            margin-bottom: 2rem;
+            text-align: center;
+          }
+          
+          .about-text h3::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 3px;
+            background-color: var(--accent-color);
+            border-radius: 3px;
+          }
+          
+          .about-text p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+          }
+          
+          .about-details-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+          }
+          
+          .about-details {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 2rem;
+            max-width: 800px;
+          }
+          
+          .detail {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background-color: var(--card-bg, rgba(255, 255, 255, 0.05));
+            padding: 1rem 1.5rem;
+            border-radius: var(--border-radius, 8px);
+            transition: transform 0.3s ease;
+            min-width: 200px;
+            box-shadow: var(--shadow, 0 4px 10px rgba(0, 0, 0, 0.1));
+          }
+          
+          .detail:hover {
+            transform: translateY(-5px);
+          }
+          
+          .detail i {
+            font-size: 1.2rem;
+            color: var(--accent-color);
+            width: 20px;
+            text-align: center;
+          }
+          
+          .about-cta {
+            margin-top: 1rem;
+          }
+          
+          /* Responsive adjustments */
+          @media (max-width: 768px) {
+            .about-details {
+              flex-direction: column;
+              gap: 1rem;
+            }
+            
+            .detail {
+              width: 100%;
+            }
+          }
+        </style>
+        `;
+        
+        // Replace the about section in the HTML
+        htmlContent = htmlContent.replace(
+          /<section id="about"[\s\S]*?<\/section>/,
+          aboutSectionHtml
+        );
+        
+        // Add the custom about section CSS
+        htmlContent = htmlContent.replace('</head>', `${template5AboutCss}</head>`);
+        
+        // Replace the skills section with our scrolling animation
+        const template5SkillsSection = `
+        <section id="skills" class="skills">
+          <div class="container">
+            <div class="section-header">
+              <h2>My Skills</h2>
+              <div class="section-line"></div>
             </div>
           </div>
-        `).join('');
+          
+          <!-- Full width skills marquee -->
+          <div class="skills-marquee-wrapper">
+            <div class="skills-marquee">
+              <div class="skills-track">
+                ${skillsHtml}
+                <!-- Duplicate for seamless loop -->
+                ${skillsHtml}
+              </div>
+            </div>
+          </div>
+        </section>
+        `;
+        
+        // Add custom CSS for Template 5 skills marquee
+        const template5SkillsCss = `
+        <style>
+          /* Full width skills marquee */
+          .skills-marquee-wrapper {
+            width: 70%;
+            margin: 3rem auto;
+            position: relative;
+            padding: 2rem 0;
+            background-color: var(--card-bg, rgba(255, 255, 255, 0.05));
+            border-radius: var(--border-radius, 10px);
+            overflow: hidden;
+            box-shadow: var(--shadow, 0 4px 10px rgba(0, 0, 0, 0.1));
+          }
+          
+          .skills-marquee {
+            width: 100%;
+            overflow: hidden;
+          }
+          
+          .skills-track {
+            display: flex;
+            width: max-content;
+            animation: scrollSkills 30s linear infinite;
+            gap: 2rem;
+            padding: 0 2rem;
+          }
+          
+          .skills-track:hover {
+            animation-play-state: paused;
+          }
+          
+          @keyframes scrollSkills {
+            0% {
+              transform: translateX(0);
+            }
+            100% {
+              transform: translateX(-50%);
+            }
+          }
+          
+          .skill-card {
+            background-color: var(--accent-color, #f56565);
+            color: white;
+            border-radius: var(--border-radius, 8px);
+            padding: 1.2rem 2rem;
+            margin: 0;
+            min-width: 180px;
+            height: 70px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+          }
+          
+          .skill-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+          }
+          
+          .skill-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin: 0;
+            white-space: nowrap;
+          }
+          
+          /* Responsive adjustments */
+          @media (max-width: 1200px) {
+            .skills-marquee-wrapper {
+              width: 85%;
+            }
+          }
+          
+          @media (max-width: 768px) {
+            .skills-marquee-wrapper {
+              width: 90%;
+            }
+            
+            .skill-card {
+              padding: 1rem 1.5rem;
+              min-width: 150px;
+              height: 60px;
+            }
+            
+            .skill-name {
+              font-size: 1rem;
+            }
+            
+            .skills-track {
+              animation-duration: 25s;
+              padding: 0 1rem;
+            }
+          }
+          
+          /* Hide the original skills grid */
+          .skills-grid {
+            display: none !important;
+          }
+        </style>
+        `;
+        
+        // Add skills-specific JavaScript
+        const template5SkillsScript = `
+        <script>
+          document.addEventListener('DOMContentLoaded', function() {
+            // Get the initial number of skill items to adjust animation speed
+            const skillItems = document.querySelectorAll('.skill-card');
+            const track = document.querySelector('.skills-track');
+            
+            if (track && skillItems.length > 0) {
+              // Adjust animation speed based on number of skills
+              let duration = Math.max(25, Math.min(45, 20 + skillItems.length * 2));
+              track.style.animationDuration = duration + 's';
+              
+              // Fix for Safari - force recalculation of animation
+              track.style.animationName = 'none';
+              setTimeout(() => {
+                track.style.animationName = 'scrollSkills';
+              }, 10);
+            }
+          });
+        </script>
+        `;
+        
+        // Replace the skills section in the HTML
+        htmlContent = htmlContent.replace(
+          /<section id="skills"[\s\S]*?<\/section>/,
+          template5SkillsSection
+        );
+        
+        // Add the skills CSS and JS
+        htmlContent = htmlContent.replace('</head>', `${template5SkillsCss}</head>`);
+        htmlContent = htmlContent.replace('</body>', `${template5SkillsScript}</body>`);
         
         // Generate projects HTML for Template 5
         projectsHtml = portfolioData.projects.map((project: Project) => {
@@ -638,6 +1000,85 @@ export async function POST(request: NextRequest) {
           </div>
           `;
         }).join('');
+        
+        // Customize the contact section for template5 - side by side and centered
+        const contactSectionHtml = `
+        <section id="contact" class="contact">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Get In Touch</h2>
+                    <div class="section-line"></div>
+                </div>
+                
+                <div class="contact-content">
+                    <div class="contact-info">
+                        ${portfolioData.email ? 
+                        `<div class="contact-item">
+                            <div class="contact-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div class="contact-details">
+                                <h3>Email</h3>
+                                <p><a href="mailto:${portfolioData.email}">${portfolioData.email}</a></p>
+                            </div>
+                        </div>` : ''}
+                        
+                        ${portfolioData.phone ? 
+                        `<div class="contact-item">
+                            <div class="contact-icon">
+                                <i class="fas fa-phone"></i>
+                            </div>
+                            <div class="contact-details">
+                                <h3>Phone</h3>
+                                <p><a href="tel:${portfolioData.phone}">${portfolioData.phone}</a></p>
+                            </div>
+                        </div>` : ''}
+                    </div>
+                </div>
+            </div>
+            <style>
+                #contact .contact-info {
+                    display: flex;
+                    justify-content: center;
+                    flex-wrap: wrap;
+                    gap: 2rem;
+                }
+                
+                #contact .contact-item {
+                    display: flex;
+                    align-items: center;
+                    padding: 1.5rem;
+                    background-color: var(--bg-secondary);
+                    border-radius: 8px;
+                    transition: transform 0.3s ease, box-shadow 0.3s ease;
+                    min-width: 250px;
+                }
+                
+                #contact .contact-item:hover {
+                    transform: translateY(-5px);
+                    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+                }
+                
+                @media (max-width: 768px) {
+                    #contact .contact-info {
+                        flex-direction: column;
+                        align-items: center;
+                    }
+                    
+                    #contact .contact-item {
+                        width: 100%;
+                        max-width: 300px;
+                    }
+                }
+            </style>
+        </section>
+        `;
+        
+        // Replace the existing contact section
+        htmlContent = htmlContent.replace(
+          /<section id="contact" class="contact">[\s\S]*?<\/section>/,
+          contactSectionHtml
+        );
       } else if (templateId === 'template4') {
         // Template 4 - Minimal portfolio with moving background
         // Replace the initials for avatar if needed
@@ -743,16 +1184,188 @@ export async function POST(request: NextRequest) {
         htmlContent = htmlContent.replace('</head>', `${template4Css}</head>`);
         
         // Generate skills HTML for Template 4
-        skillsHtml = portfolioData.skills.map((skill: Skill) => `
+        skillsHtml = portfolioData.skills.map((skill: Skill) => {
+          // Remove </> prefix if it exists in the skill name
+          const skillName = (skill.name || '').replace(/^<\/>/, '');
+          
+          return `
           <div class="skill-card">
-            <div class="skill-icon">
-              <i class="fas fa-code"></i>
+            <div class="skill-name">${skillName}</div>
             </div>
-            <h3 class="skill-name">${skill.name || ''}</h3>
+        `;
+        }).join('');
+        
+        // Replace the whole skills section with our custom solution
+        // This breaks out of the container constraints
+        const fullWidthSkillsSection = `
+        <section id="skills" class="skills">
+          <div class="container">
+            <div class="section-header">
+              <span class="section-subtitle">What I Know</span>
+              <h2 class="section-title">My Skills</h2>
+              <div class="title-line"></div>
           </div>
-        `).join('');
+          </div>
+          
+          <!-- Full width skills marquee that breaks out of container -->
+          <div class="skills-marquee-wrapper">
+            <div class="skills-marquee">
+              <div class="skills-track">
+                ${skillsHtml}
+                <!-- Duplicate for seamless loop -->
+                ${skillsHtml}
+              </div>
+            </div>
+          </div>
+        </section>
+        `;
+        
+        // Replace the skills section in the HTML
+        htmlContent = htmlContent.replace(
+          /<section id="skills"[\s\S]*?<\/section>/,
+          fullWidthSkillsSection
+        );
+        
+        // Add custom CSS for Template 4 skills
+        const template4SkillsCss = `
+        <style>
+          /* Full width skills marquee */
+          .skills-marquee-wrapper {
+            width: 70%;
+            margin: 2rem auto;
+            position: relative;
+            padding: 2rem 0;
+            background-color: rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            overflow: hidden;
+          }
+          
+          .skills-marquee {
+            width: 100%;
+            overflow: hidden;
+          }
+          
+          .skills-track {
+            display: flex;
+            width: max-content;
+            animation: scrollSkills 30s linear infinite;
+            gap: 2rem;
+            padding: 0 2rem;
+          }
+          
+          .skills-track:hover {
+            animation-play-state: paused;
+          }
+          
+          @keyframes scrollSkills {
+            0% {
+              transform: translateX(0);
+            }
+            100% {
+              transform: translateX(-50%);
+            }
+          }
+          
+          .skill-card {
+            background-color: var(--card-bg, #1e1e1e);
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 1.2rem 2rem;
+            margin: 0;
+            min-width: 180px;
+            height: 80px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid var(--border-color, #333);
+          }
+          
+          .skill-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+          }
+          
+          .skill-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-color, #fff);
+            margin: 0;
+            white-space: nowrap;
+          }
+          
+          /* Responsive adjustments */
+          @media (max-width: 1200px) {
+            .skills-marquee-wrapper {
+              width: 85%;
+            }
+          }
+          
+          @media (max-width: 768px) {
+            .skills-marquee-wrapper {
+              width: 90%;
+            }
+            
+            .skill-card {
+              padding: 1.2rem 2rem;
+              min-width: 8rem;
+            }
+            
+            .skill-name {
+              font-size: 1.4rem;
+              letter-spacing: 0.5px;
+            }
+            
+            .skills-container {
+              gap: 1.5rem !important;
+              animation-duration: 8s;
+            }
+          }
+          
+          /* Hide the original skills container */
+          .skills-grid {
+            display: none !important;
+          }
+          
+          /* Make sure section animation doesn't break our marquee */
+          section.skills.active .skills-marquee-wrapper {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        </style>
+        `;
+        
+        // Add skills-specific JavaScript
+        const skillsScript = `
+        <script>
+          document.addEventListener('DOMContentLoaded', function() {
+            // Get the initial number of skill items to adjust animation speed
+            const skillItems = document.querySelectorAll('.skill-card');
+            const track = document.querySelector('.skills-track');
+            
+            if (track && skillItems.length > 0) {
+              // Adjust animation speed based on number of skills
+              let duration = Math.max(25, Math.min(45, 20 + skillItems.length * 2));
+              track.style.animationDuration = duration + 's';
+              
+              // Fix for Safari - force recalculation of animation
+              track.style.animationName = 'none';
+              setTimeout(() => {
+                track.style.animationName = 'scrollSkills';
+              }, 10);
+            }
+          });
+        </script>
+        `;
+        
+        // Add the skills CSS to the HTML content
+        htmlContent = htmlContent.replace('</head>', `${template4SkillsCss}</head>`);
+        
+        // Add the skills script
+        htmlContent = htmlContent.replace('</body>', `${skillsScript}</body>`);
+        
       } else if (templateId === 'template2') {
-        // Template 2 has laptop-style project cards
         projectsHtml = portfolioData.projects.map((project: Project) => {
           // Check if we have GitHub URL or report URL
           const hasGithub = project.githubUrl && project.githubUrl.trim() !== '';
@@ -804,18 +1417,19 @@ export async function POST(request: NextRequest) {
         }).join('');
         
         // Add skills HTML for Template 2
-        skillsHtml = portfolioData.skills.map((skill: Skill) => `
-          <div class="skill-card" style="height: 7rem; width: 100%;">
-            <div class="skill-icon">
-              <i class="fas fa-code"></i>
+        skillsHtml = portfolioData.skills.map((skill: Skill) => {
+          // Remove </> prefix if it exists in the skill name
+          const skillName = (skill.name || '').replace(/^<\/>/, '');
+          return `
+          <div class="skill-tag">
+            <span class="skill-name">${skillName}</span>
             </div>
-            <h3 class="skill-name">${skill.name || ''}</h3>
-          </div>
-        `).join('');
+          `;
+        }).join('');
         
         const template2Css = `
         <style>
-          /* Override standard card styles with laptop display styling */
+          /* Override default project styles with laptop display styling */
           .projects-content {
             display: grid !important;
             grid-template-columns: repeat(1, 1fr) !important;
@@ -1019,7 +1633,6 @@ export async function POST(request: NextRequest) {
             font-weight: 500 !important;
             text-decoration: none !important;
             transition: all 0.3s ease !important;
-            flex: 1 !important;
           }
           
           .project-button i {
@@ -1053,8 +1666,132 @@ export async function POST(request: NextRequest) {
               flex-direction: column !important;
             }
           }
-        </style>
-        `;
+          
+          /* Enhanced Skills Styling for Template 2 */
+          .skills-container {
+            display: flex;
+            gap: 2rem !important;
+            animation: scrollSkills 12s linear infinite;
+            white-space: nowrap;
+            padding: 1.5rem 0;
+          }
+          
+          .skill-tag {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.4rem 2.5rem;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+            border-radius: 10px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+            margin: 0.8rem 0.3rem;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            min-width: 10rem;
+            position: relative;
+            overflow: hidden;
+          }
+          
+          .skill-tag::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom right, rgba(255, 255, 255, 0.1), transparent);
+            pointer-events: none;
+          }
+          
+          .skill-tag:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.15) inset;
+            border-color: rgba(255, 255, 255, 0.4);
+            z-index: 10;
+          }
+          
+          .skill-name {
+            font-size: 1.8rem;
+            color: var(--text-white);
+            font-weight: 700;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            z-index: 1;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+          }
+          
+          @keyframes scrollSkills {
+            0% {
+              transform: translateX(0);
+            }
+            100% {
+              transform: translateX(-50%);
+            }
+          }
+          
+          .skills-container:hover {
+            animation-play-state: paused;
+          }
+          
+          /* Skills grid refinements */
+          .skills-grid {
+            position: relative;
+            width: 90%;
+            max-width: 1200px;
+            margin: 3rem auto;
+            overflow: hidden;
+            padding: 2rem 0;
+          }
+          
+          .skills-grid::before,
+          .skills-grid::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            height: 100%;
+            width: 150px;
+            z-index: 2;
+            pointer-events: none;
+          }
+          
+          .skills-grid::before {
+            left: 0;
+            background: linear-gradient(to right, var(--bg-primary), transparent);
+          }
+          
+          .skills-grid::after {
+            right: 0;
+            background: linear-gradient(to left, var(--bg-primary), transparent);
+          }
+          
+          /* Make sure skills section has proper padding */
+          .skills {
+            padding: 8rem 0;
+            overflow: hidden;
+            position: relative;
+          }
+          
+          /* Responsive adjustments */
+          @media (max-width: 768px) {
+            .skill-tag {
+              padding: 1.2rem 2rem;
+              min-width: 8rem;
+            }
+            
+            .skill-name {
+              font-size: 1.4rem;
+              letter-spacing: 0.5px;
+            }
+            
+            .skills-container {
+              gap: 1.5rem !important;
+              animation-duration: 8s;
+            }
+          }
+        </style>`;
         
         // Insert after the primary CSS but before the closing head tag
         htmlContent = htmlContent.replace('</head>', `${template2Css}</head>`);
@@ -1063,8 +1800,47 @@ export async function POST(request: NextRequest) {
         const titleScript = `<script>window.portfolioTitle = "${portfolioData.title}";</script>`;
         // Add this script right before the closing body tag
         htmlContent = htmlContent.replace('</body>', `${titleScript}</body>`);
+
+        // Add a script to enhance skills styling for template2
+        const skillsEnhancementScript = `
+        <script>
+          document.addEventListener('DOMContentLoaded', function() {
+            // Get all skill tags
+            const skillTags = document.querySelectorAll('.skill-tag');
+            
+            if (skillTags.length === 0) return;
+            
+            // Add consistent styling to skill tags (no rotation, same color)
+            skillTags.forEach((tag, index) => {
+              // Add a small delay to the hover animation based on index
+              tag.style.transitionDelay = \`\${index * 0.03}s\`;
+              
+              // Consistent border opacity
+              tag.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+            });
+            
+            // Adjust animation speed based on the number of skills
+            const skillsContainer = document.querySelector('.skills-container');
+            if (skillsContainer) {
+              const skillCount = skillTags.length;
+              // Faster animation for fewer skills, slower for more skills
+              const duration = Math.max(8, Math.min(15, 5 + skillCount * 0.5));
+              skillsContainer.style.animationDuration = \`\${duration}s\`;
+              
+              // Fix for Safari - force recalculation of animation
+              setTimeout(() => {
+                skillsContainer.style.animationName = 'none';
+                setTimeout(() => {
+                  skillsContainer.style.animationName = 'scrollSkills';
+                }, 10);
+              }, 100);
+            }
+          });
+        </script>`;
+        
+        // Add this script right before the closing body tag, after the title script
+        htmlContent = htmlContent.replace('</body>', `${skillsEnhancementScript}</body>`);
       } else if (templateId === 'template6') {
-        // Template 6 styling for buttons
         projectsHtml = portfolioData.projects.map((project: Project) => {
           // Check if we have GitHub URL or report URL
           const hasGithub = project.githubUrl && project.githubUrl.trim() !== '';
@@ -1092,6 +1868,17 @@ export async function POST(request: NextRequest) {
               <p>${project.description || ''}</p>
               ${buttonHtml}
               </div>
+            </div>
+        `;
+        }).join('');
+        
+        // Generate skills HTML for Template 6 - remove the </> prefix from skill names
+        skillsHtml = portfolioData.skills.map((skill: Skill) => {
+          // Remove </> prefix if it exists in the skill name
+          const skillName = (skill.name || '').replace(/^<\/>/, '');
+          return `
+          <div class="skill-tag">
+            <span class="skill-name">${skillName}</span>
             </div>
         `;
         }).join('');
@@ -1189,6 +1976,343 @@ export async function POST(request: NextRequest) {
         `;
         }).join('');
         
+        // Generate skills HTML for Template 7 with clean boxes and no </> prefix
+        skillsHtml = portfolioData.skills.map((skill: Skill) => {
+          // Remove </> prefix if it exists in the skill name
+          const skillName = (skill.name || '').replace(/^<\/>/, '');
+          return `
+          <div class="skill-card">
+            <div class="skill-name">${skillName}</div>
+          </div>
+          `;
+        }).join('');
+        
+        // Create a full-width scrolling skills section for template7
+        const template7SkillsSection = `
+        <section id="skills" class="skills-section">
+          <div class="section-heading">
+            <h2>My Skills</h2>
+            <div class="heading-underline"></div>
+          </div>
+          
+          <!-- Full width skills marquee -->
+          <div class="skills-marquee-wrapper">
+            <div class="skills-marquee">
+              <div class="skills-track">
+                ${skillsHtml}
+                <!-- Duplicate for seamless loop -->
+                ${skillsHtml}
+              </div>
+            </div>
+          </div>
+        </section>
+        `;
+        
+        // Add custom CSS for Template 7 skills marquee
+        const template7SkillsCss = `
+        <style>
+          /* Skills section with centered heading and 70% width marquee */
+          .skills-section {
+            text-align: center;
+          }
+          
+          .section-heading {
+            margin-bottom: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+          }
+          
+          .section-heading h2 {
+            margin-bottom: 0.5rem;
+          }
+          
+          .heading-underline {
+            width: 80px;
+            height: 4px;
+            background-color: #4338ca;
+            border-radius: 2px;
+            margin: 0 auto;
+          }
+          
+          /* 70% width skills marquee styling for template7 */
+          .skills-marquee-wrapper {
+            width: 70%;
+            margin: 3rem auto;
+            position: relative;
+            padding: 2rem 0;
+            background-color: rgba(30, 41, 59, 0.4);
+            overflow: hidden;
+            border-radius: 12px;
+          }
+          
+          .skills-marquee {
+            width: 100%;
+            overflow: hidden;
+          }
+          
+          .skills-track {
+            display: flex;
+            width: max-content;
+            animation: scrollSkills 35s linear infinite;
+            gap: 2.5rem;
+            padding: 1rem 3rem;
+          }
+          
+          .skills-track:hover {
+            animation-play-state: paused;
+          }
+          
+          @keyframes scrollSkills {
+            0% {
+              transform: translateX(0);
+            }
+            100% {
+              transform: translateX(-50%);
+            }
+          }
+          
+          .skill-card {
+            background-color: #4338ca;
+            color: white;
+            border-radius: 12px;
+            padding: 1.2rem 2.5rem;
+            min-width: 180px;
+            height: 70px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+          }
+          
+          .skill-card:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            background-color: #4f46e5;
+          }
+          
+          .skill-name {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 0;
+            white-space: nowrap;
+          }
+          
+          /* Responsive adjustments */
+          @media (max-width: 1200px) {
+            .skills-marquee-wrapper {
+              width: 85%;
+            }
+            
+            .skill-card {
+              min-width: 160px;
+              padding: 1.1rem 2rem;
+            }
+          }
+          
+          @media (max-width: 768px) {
+            .skills-marquee-wrapper {
+              width: 90%;
+            }
+            
+            .skills-track {
+              gap: 1.5rem;
+              padding: 0.5rem 1.5rem;
+              animation-duration: 25s;
+            }
+            
+            .skill-card {
+              padding: 1rem 1.5rem;
+              min-width: 140px;
+              height: 60px;
+            }
+            
+            .skill-name {
+              font-size: 1rem;
+            }
+          }
+          
+          /* Hide the original skills section */
+          #skills:not(.skills-section) {
+            display: none !important;
+          }
+        </style>
+        `;
+        
+        // Add full-page background animation CSS
+        const template7BackgroundCss = `
+        <style>
+          /* Full-page background animation */
+          body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            pointer-events: none;
+          }
+          
+          #background-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.8;
+            pointer-events: none;
+          }
+          
+          /* Ensure sections have some background to improve text readability */
+          section {
+            position: relative;
+            z-index: 1;
+          }
+          
+          .container, .section-heading {
+            position: relative;
+            z-index: 2;
+          }
+          
+          /* Add subtle transparency to section backgrounds to let animation show through */
+          section:not(.skills-section):not(.header) {
+            background-color: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(8px);
+            border-radius: 8px;
+            margin: 30px auto;
+            width: 90%;
+            max-width: 1200px;
+          }
+          
+          .header {
+            background-color: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(5px);
+          }
+        </style>
+        `;
+        
+        // Create background animation JS
+        const template7BackgroundScript = `
+        <script>
+          document.addEventListener('DOMContentLoaded', function() {
+            // Insert canvas for background animation
+            const canvas = document.createElement('canvas');
+            canvas.id = 'background-canvas';
+            document.body.insertBefore(canvas, document.body.firstChild);
+            
+            // Initialize canvas and context
+            const ctx = canvas.getContext('2d');
+            let width = canvas.width = window.innerWidth;
+            let height = canvas.height = window.innerHeight;
+            
+            // Configuration for waves
+            const waves = [
+              { amplitude: 25, period: 500, phase: 0, color: '#4338ca', speed: 0.02 },
+              { amplitude: 30, period: 350, phase: 0, color: '#3730a3', speed: 0.015 },
+              { amplitude: 35, period: 450, phase: 0, color: '#6366f1', speed: 0.01 },
+              { amplitude: 40, period: 550, phase: 0, color: '#8b5cf6', speed: 0.005 }
+            ];
+            
+            // Handle window resize
+            window.addEventListener('resize', () => {
+              width = canvas.width = window.innerWidth;
+              height = canvas.height = window.innerHeight;
+            });
+            
+            // Animation function
+            function animate() {
+              // Clear canvas with a semi-transparent background
+              ctx.fillStyle = 'rgba(15, 23, 42, 0.1)';
+              ctx.fillRect(0, 0, width, height);
+              
+              // Draw waves
+              for (let w of waves) {
+                // Update phase
+                w.phase += w.speed;
+                
+                // Start drawing path
+                ctx.beginPath();
+                ctx.moveTo(0, height/2);
+                
+                // Create wave points
+                for (let x = 0; x <= width; x += 5) {
+                  let y = Math.sin(x / w.period + w.phase) * w.amplitude + height/2;
+                  ctx.lineTo(x, y);
+                }
+                
+                // Complete path to bottom corners
+                ctx.lineTo(width, height);
+                ctx.lineTo(0, height);
+                ctx.closePath();
+                
+                // Fill with gradient
+                const gradient = ctx.createLinearGradient(0, height/2, 0, height);
+                gradient.addColorStop(0, w.color + '80'); // Semi-transparent at top
+                gradient.addColorStop(1, w.color + '10'); // Almost transparent at bottom
+                ctx.fillStyle = gradient;
+                ctx.fill();
+              }
+              
+              // Add subtle particles
+              for (let i = 0; i < 3; i++) {
+                const x = Math.random() * width;
+                const y = Math.random() * height;
+                const size = Math.random() * 2 + 1;
+                
+                ctx.beginPath();
+                ctx.arc(x, y, size, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+                ctx.fill();
+              }
+              
+              requestAnimationFrame(animate);
+            }
+            
+            // Start animation
+            animate();
+          });
+        </script>
+        `;
+        
+        // Add skills-specific JavaScript for animation control
+        const template7SkillsScript = `
+        <script>
+          document.addEventListener('DOMContentLoaded', function() {
+            // Get the initial number of skill items to adjust animation speed
+            const skillItems = document.querySelectorAll('.skill-card');
+            const track = document.querySelector('.skills-track');
+            
+            if (track && skillItems.length > 0) {
+              // Adjust animation speed based on number of skills
+              let duration = Math.max(25, Math.min(45, 20 + skillItems.length * 2));
+              track.style.animationDuration = duration + 's';
+              
+              // Fix for Safari - force recalculation of animation
+              setTimeout(() => {
+                track.style.animationName = 'none';
+                setTimeout(() => {
+                  track.style.animationName = 'scrollSkills';
+                }, 10);
+              }, 100);
+            }
+          });
+        </script>
+        `;
+        
+        // Insert the skills section into the HTML content
+        htmlContent = htmlContent.replace(
+          /<section id="skills"[\s\S]*?<\/section>/,
+          template7SkillsSection
+        );
+        
+        // Add the CSS and JS for skills and background
+        htmlContent = htmlContent.replace('</head>', `${template7SkillsCss}${template7BackgroundCss}</head>`);
+        htmlContent = htmlContent.replace('</body>', `${template7SkillsScript}${template7BackgroundScript}</body>`);
+        
         // Replace all relevant placeholders in the HTML content
         htmlContent = htmlContent
           .replace(/\{\{initials\}\}/g, initials)
@@ -1199,6 +2323,23 @@ export async function POST(request: NextRequest) {
           .replace(/\{\{email\}\}/g, portfolioData.email || '')
           .replace(/\{\{phone\}\}/g, portfolioData.phone || '')
           .replace(/\{\{currentYear\}\}/g, new Date().getFullYear().toString());
+        
+        // Remove the "Connect With Me" div in the contact section - specific to template7
+        htmlContent = htmlContent.replace(
+          /<div class="social-media">[\s\S]*?<h3>Connect With Me<\/h3>[\s\S]*?<div class="social-icons">[\s\S]*?<\/div>[\s\S]*?<\/div>/,
+          ''
+        );
+        
+        // Previous attempts to remove "Connect With Me" section - these weren't specific enough
+        // htmlContent = htmlContent.replace(
+        //   /<section[^>]*class="[^"]*social-links[^"]*"[^>]*>[\s\S]*?<\/section>/i, 
+        //   ''
+        // );
+        
+        // htmlContent = htmlContent.replace(
+        //   /<section[^>]*>[\s\S]*?<h2[^>]*>[\s\S]*?Connect With Me[\s\S]*?<\/h2>[\s\S]*?<\/section>/i,
+        //   ''
+        // );
         
         if (portfolioData.profilePictureUrl) {
           htmlContent = htmlContent.replace(/\{\{profilePictureUrl\}\}/g, portfolioData.profilePictureUrl);
@@ -1211,14 +2352,11 @@ export async function POST(request: NextRequest) {
             .replace(/\{\{cvUrl\}\}/g, portfolioData.cvUrl);
       } else {
           // Remove the CV button section
-          htmlContent = htmlContent
-            .replace(/\{\{hasCv\}\}/g, 'false');
+          htmlContent = htmlContent.replace(
+            /\{\{#if hasCv\}\}([\s\S]*?)\{\{\/if\}\}/g,
+            ''
+          );
         }
-        
-        // Replace skills and projects placeholders
-        htmlContent = htmlContent
-          .replace(/\{\{skills\}\}/g, JSON.stringify(portfolioData.skills))
-          .replace(/\{\{projects\}\}/g, JSON.stringify(portfolioData.projects));
       } else if (templateId === 'template8') {
         projectsHtml = portfolioData.projects.map((project: Project) => {
           // Check if we have GitHub URL or report URL
@@ -1253,14 +2391,327 @@ export async function POST(request: NextRequest) {
         `;
         }).join('');
         
-        // Generate skills HTML
-        const skillsHtml = portfolioData.skills.map((skill: Skill) => {
+        // Generate skills HTML for Template 8
+        skillsHtml = portfolioData.skills.map((skill: Skill) => {
+          // Remove </> prefix if it exists in the skill name
+          const skillName = (skill.name || '').replace(/^<\/>/, '');
           return `
           <div class="skill-card">
-            <div class="skill-name">${skill.name || ''}</div>
+            <div class="skill-name">${skillName}</div>
           </div>
           `;
         }).join('');
+        
+        // Create a custom skills section with horizontal scrolling animation
+        const template8SkillsSection = `
+        <section id="skills" class="skills">
+          <div class="container">
+            <h2 class="section-title"><span>02</span>Skills</h2>
+            
+            <!-- Skills marquee wrapper -->
+            <div class="skills-marquee-wrapper">
+              <div class="skills-marquee">
+                <div class="skills-track">
+                  ${skillsHtml}
+                  <!-- Duplicate for seamless loop -->
+                  ${skillsHtml}
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        `;
+        
+        // Add custom CSS for Template 8 skills marquee
+        const template8SkillsCss = `
+        <style>
+          /* Skills marquee styling for template8 */
+          .skills-marquee-wrapper {
+            width: 85%;
+            margin: 2rem auto 4rem;
+            position: relative;
+            padding: 1.5rem 0;
+            background-color: var(--card-bg, rgba(30, 41, 59, 0.5));
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+          }
+          
+          .skills-marquee {
+            width: 100%;
+            overflow: hidden;
+          }
+          
+          .skills-track {
+            display: flex;
+            width: max-content;
+            animation: scrollSkills 35s linear infinite;
+            gap: 2rem;
+            padding: 0.5rem 2rem;
+          }
+          
+          .skills-track:hover {
+            animation-play-state: paused;
+          }
+          
+          @keyframes scrollSkills {
+            0% {
+              transform: translateX(0);
+            }
+            100% {
+              transform: translateX(-50%);
+            }
+          }
+          
+          /* Enhanced skill card design */
+          .skill-card {
+            background-color: var(--accent-color, #4f46e5);
+            color: var(--light-text, #ffffff);
+            border-radius: 12px;
+            padding: 1rem 2rem;
+            min-width: 150px;
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+          }
+          
+          .skill-card:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+          }
+          
+          .skill-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+          }
+          
+          /* Responsive adjustments */
+          @media (max-width: 1200px) {
+            .skills-marquee-wrapper {
+              width: 90%;
+            }
+            
+            .skill-card {
+              padding: 0.9rem 1.5rem;
+              min-width: 130px;
+            }
+          }
+          
+          @media (max-width: 768px) {
+            .skills-marquee-wrapper {
+              width: 95%;
+              margin: 2rem auto 3rem;
+            }
+            
+            .skills-track {
+              gap: 1.5rem;
+              animation-duration: 25s;
+            }
+            
+            .skill-card {
+              padding: 0.8rem 1.2rem;
+              min-width: 120px;
+              height: 50px;
+            }
+            
+            .skill-name {
+              font-size: 0.9rem;
+            }
+          }
+          
+          /* Hide original skills section if it exists */
+          #skills .skills-container {
+            display: none !important;
+          }
+          
+          /* Minimalistic background animation */
+          .background-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.7;
+          }
+          
+          /* Ensure proper stacking context for content */
+          body {
+            position: relative;
+            z-index: 1;
+          }
+          
+          section {
+            position: relative;
+            z-index: 2;
+          }
+        </style>
+        `;
+        
+        // Add JavaScript for skills animation and minimalistic background
+        const template8SkillsScript = `
+        <script>
+          document.addEventListener('DOMContentLoaded', function() {
+            // Get the skills track and all skill cards
+            const skillsTrack = document.querySelector('.skills-track');
+            const skillCards = document.querySelectorAll('.skill-card');
+            
+            if (skillsTrack && skillCards.length > 0) {
+              // Adjust animation speed based on number of skills
+              const duration = Math.max(20, Math.min(40, 15 + skillCards.length * 2));
+              skillsTrack.style.animationDuration = duration + 's';
+              
+              // Fix for Safari browser - force recalculation of animation
+              setTimeout(() => {
+                skillsTrack.style.animationName = 'none';
+                setTimeout(() => {
+                  skillsTrack.style.animationName = 'scrollSkills';
+                }, 10);
+              }, 100);
+              
+              // Apply random subtle variations to each skill card for visual interest
+              skillCards.forEach(card => {
+                // Slight hue variation
+                const hueShift = Math.floor(Math.random() * 20) - 10; // -10 to +10
+                card.style.filter = 'hue-rotate(' + hueShift + 'deg)';
+              });
+            }
+            
+            // Create minimalistic animated background
+            const canvas = document.createElement('canvas');
+            canvas.classList.add('background-animation');
+            document.body.insertBefore(canvas, document.body.firstChild);
+            
+            const ctx = canvas.getContext('2d');
+            let width = canvas.width = window.innerWidth;
+            let height = canvas.height = window.innerHeight;
+            
+            // Get theme colors from CSS variables or use defaults
+            const getComputedStyle = window.getComputedStyle(document.body);
+            const accentColor = getComputedStyle.getPropertyValue('--accent-color') || '#4f46e5';
+            const bgColor = getComputedStyle.getPropertyValue('--bg-color') || '#0f172a';
+            
+            // Configuration
+            const dots = [];
+            const dotCount = Math.min(Math.floor(width * height / 15000), 100); // Reasonable number of dots
+            const dotSize = 1.5;
+            const connectionDistance = 150;
+            const connectionOpacity = 0.15;
+            
+            // Create dots
+            for (let i = 0; i < dotCount; i++) {
+              dots.push({
+                x: Math.random() * width,
+                y: Math.random() * height,
+                vx: (Math.random() - 0.5) * 0.5, // Slow horizontal velocity
+                vy: (Math.random() - 0.5) * 0.5, // Slow vertical velocity
+              });
+            }
+            
+            // Animation function
+            function animate() {
+              // Clear canvas with semi-transparent background for trailing effect
+              ctx.fillStyle = bgColor;
+              ctx.globalAlpha = 0.2;
+              ctx.fillRect(0, 0, width, height);
+              ctx.globalAlpha = 1;
+              
+              // Draw and update dots
+              for (let i = 0; i < dots.length; i++) {
+                const dot = dots[i];
+                
+                // Move dot
+                dot.x += dot.vx;
+                dot.y += dot.vy;
+                
+                // Bounce off edges
+                if (dot.x < 0 || dot.x > width) dot.vx *= -1;
+                if (dot.y < 0 || dot.y > height) dot.vy *= -1;
+                
+                // Draw dot
+                ctx.beginPath();
+                ctx.arc(dot.x, dot.y, dotSize, 0, Math.PI * 2);
+                ctx.fillStyle = accentColor;
+                ctx.fill();
+                
+                // Draw connections to nearby dots
+                for (let j = i + 1; j < dots.length; j++) {
+                  const otherDot = dots[j];
+                  const dx = dot.x - otherDot.x;
+                  const dy = dot.y - otherDot.y;
+                  const distance = Math.sqrt(dx * dx + dy * dy);
+                  
+                  if (distance < connectionDistance) {
+                    ctx.beginPath();
+                    ctx.moveTo(dot.x, dot.y);
+                    ctx.lineTo(otherDot.x, otherDot.y);
+                    ctx.strokeStyle = accentColor;
+                    ctx.globalAlpha = connectionOpacity * (1 - distance / connectionDistance);
+                    ctx.stroke();
+                    ctx.globalAlpha = 1;
+                  }
+                }
+              }
+              
+              requestAnimationFrame(animate);
+            }
+            
+            // Handle window resize
+            window.addEventListener('resize', () => {
+              width = canvas.width = window.innerWidth;
+              height = canvas.height = window.innerHeight;
+            });
+            
+            // Start animation
+            animate();
+          });
+        </script>
+        `;
+        
+        // Add custom CSS for reduced section spacing in template 8
+        const template8SectionSpacingCSS = `
+        <style>
+          /* Reduce spacing between sections in template 8 */
+          section {
+            padding: calc(var(--spacing) * 5) 0; /* Reduced from 10x to 5x */
+            min-height: unset; /* Remove minimum height requirement */
+          }
+          
+          /* Add some minimal spacing between sections */
+          section + section {
+            padding-top: calc(var(--spacing) * 3);
+          }
+          
+          /* Maintain full height only for hero section */
+          section.hero {
+            min-height: 100vh;
+          }
+          
+          /* Adjust section title spacing to match new section spacing */
+          .section-title {
+            margin-bottom: calc(var(--spacing) * 5); /* Reduced from 8x to 5x */
+          }
+        </style>
+        `;
+        
+        // Replace the skills section in the HTML
+        htmlContent = htmlContent.replace(
+          /<section id="skills"[\s\S]*?<\/section>/,
+          template8SkillsSection
+        );
+        
+        // Add the custom CSS and JavaScript
+        htmlContent = htmlContent.replace('</head>', `${template8SkillsCss}${template8SectionSpacingCSS}</head>`);
+        htmlContent = htmlContent.replace('</body>', `${template8SkillsScript}</body>`);
         
         // Replace all relevant placeholders in the HTML content
         htmlContent = htmlContent
@@ -1362,12 +2813,16 @@ export async function POST(request: NextRequest) {
       
       // Generate skills HTML for templates that don't have specific handling
       if (!skillsHtml && portfolioData.skills && portfolioData.skills.length > 0) {
-        skillsHtml = portfolioData.skills.map((skill: Skill) => `
+        skillsHtml = portfolioData.skills.map((skill: Skill) => {
+          // Remove </> prefix if it exists in the skill name
+          const skillName = (skill.name || '').replace(/^<\/>/, '');
+          return `
           <div class="skill-tag">
             <span class="skill-icon"><i class="fas fa-code"></i></span>
-            <span class="skill-name">${skill.name || ''}</span>
+            <span class="skill-name">${skillName}</span>
           </div>
-        `).join('');
+          `;
+        }).join('');
       }
       
       // Replace skills template tags
@@ -1399,6 +2854,14 @@ export async function POST(request: NextRequest) {
             ''
           );
         }
+      }
+      
+      // Remove "Connect With Me" section from template4
+      if (templateId === 'template4') {
+        htmlContent = htmlContent.replace(
+          /<div class="social-media">[\s\S]*?<h3>Connect With Me<\/h3>[\s\S]*?<\/div>[\s\S]*?<\/div>/,
+          '</div>'
+        );
       }
       
       // Create output directory with improved error handling

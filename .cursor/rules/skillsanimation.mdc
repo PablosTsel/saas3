@@ -1,0 +1,290 @@
+---
+description: Skills animation
+globs: 
+---
+# Template 4 Skills Animation Documentation
+
+## Overview
+This document explains the implementation of the horizontally scrolling skills animation used in Template 4 of the portfolio generator. The animation creates a continuous, infinite scrolling effect where skills move from right to left in a marquee-style presentation.
+
+## HTML Structure
+
+```html
+<section id="skills" class="skills">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-subtitle">What I Know</span>
+      <h2 class="section-title">My Skills</h2>
+      <div class="title-line"></div>
+    </div>
+  </div>
+  
+  <!-- Skills marquee container that breaks out of standard container width -->
+  <div class="skills-marquee-wrapper">
+    <div class="skills-marquee">
+      <div class="skills-track">
+        <!-- First set of skills -->
+        <div class="skill-card">
+          <div class="skill-name">Skill 1</div>
+        </div>
+        <div class="skill-card">
+          <div class="skill-name">Skill 2</div>
+        </div>
+        <!-- etc... -->
+        
+        <!-- Duplicated set of skills for seamless looping -->
+        <div class="skill-card">
+          <div class="skill-name">Skill 1</div>
+        </div>
+        <div class="skill-card">
+          <div class="skill-name">Skill 2</div>
+        </div>
+        <!-- etc... -->
+      </div>
+    </div>
+  </div>
+</section>
+```
+
+## Key Components
+
+1. **Container Structure**:
+   - `section.skills`: The main section container
+   - `.skills-marquee-wrapper`: 70% width centered container that holds the animation
+   - `.skills-marquee`: The overflow container that masks content
+   - `.skills-track`: The actual moving element containing the skills
+
+2. **Content Duplication**:
+   - We duplicate the entire set of skills to create a seamless looping effect
+   - When the first set of skills scrolls off-screen, the duplicate set takes its place
+   - The animation then resets without any visible interruption (infinite loop)
+
+## CSS Implementation
+
+```css
+/* Main container - 70% width, centered */
+.skills-marquee-wrapper {
+  width: 70%;
+  margin: 2rem auto;
+  position: relative;
+  padding: 2rem 0;
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* Inner container */
+.skills-marquee {
+  width: 100%;
+  overflow: hidden;
+}
+
+/* Animated track with all skills */
+.skills-track {
+  display: flex;
+  width: max-content;
+  animation: scrollSkills 30s linear infinite;
+  gap: 2rem;
+  padding: 0 2rem;
+}
+
+/* Pause animation on hover */
+.skills-track:hover {
+  animation-play-state: paused;
+}
+
+/* Animation keyframes */
+@keyframes scrollSkills {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+/* Individual skill cards */
+.skill-card {
+  background-color: var(--card-bg, #1e1e1e);
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 1.2rem 2rem;
+  margin: 0;
+  min-width: 180px;
+  height: 80px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 1px solid var(--border-color, #333);
+}
+
+/* Hover effect for skill cards */
+.skill-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+```
+
+## Animation Technique Explained
+
+1. **The -50% Translation Trick**:
+   - The animation translates the track from 0 to -50% of its width
+   - Since we duplicate the content, -50% brings us exactly to the starting point of the duplicated content
+   - This creates the illusion of an infinite loop without any jumps or resets
+
+2. **max-content Width**:
+   - Using `width: max-content` ensures the track expands to fit all skill cards naturally
+   - This allows the animation to work regardless of the number of skills
+
+3. **Linear Timing Function**:
+   - Using `linear` makes the animation move at a constant speed
+   - This is essential for a smooth marquee effect
+
+4. **Infinite Animation**:
+   - The `infinite` keyword makes the animation repeat forever without stopping
+
+## JavaScript Enhancements
+
+```javascript
+document.addEventListener('DOMContentLoaded', function() {
+  // Get the initial number of skill items to adjust animation speed
+  const skillItems = document.querySelectorAll('.skill-card');
+  const track = document.querySelector('.skills-track');
+  
+  if (track && skillItems.length > 0) {
+    // Adjust animation speed based on number of skills
+    let duration = Math.max(25, Math.min(45, 20 + skillItems.length * 2));
+    track.style.animationDuration = duration + 's';
+    
+    // Fix for Safari - force recalculation of animation
+    track.style.animationName = 'none';
+    setTimeout(() => {
+      track.style.animationName = 'scrollSkills';
+    }, 10);
+  }
+});
+```
+
+## JavaScript Explained
+
+1. **Dynamic Animation Speed**:
+   - The duration formula: `Math.max(25, Math.min(45, 20 + skillItems.length * 2))`
+   - Base duration of 20 seconds
+   - Add 2 seconds per skill card
+   - But never slower than 45 seconds or faster than 25 seconds
+   - This ensures consistent visual experience regardless of skill count
+
+2. **Safari Fix**:
+   - Some browsers (especially Safari) need animation recalculation
+   - Temporarily removing and re-applying the animation name forces a recalculation
+   - The small timeout ensures the browser processes the change
+
+## Responsive Design Considerations
+
+```css
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+  .skills-marquee-wrapper {
+    width: 85%;
+  }
+}
+
+@media (max-width: 768px) {
+  .skills-marquee-wrapper {
+    width: 90%;
+  }
+  
+  .skill-card {
+    padding: 1rem 1.5rem;
+    min-width: 150px;
+    height: 70px;
+  }
+  
+  .skill-name {
+    font-size: 1rem;
+  }
+  
+  .skills-track {
+    animation-duration: 25s;
+    padding: 0 1rem;
+  }
+}
+```
+
+## Responsive Design Explained
+
+1. **Progressive Width Increase**:
+   - On desktop: 70% width (elegant, focused)
+   - Medium screens: 85% width
+   - Mobile devices: 90% width
+   - This ensures the animation remains visible and effective on small screens
+
+2. **Mobile-specific Adjustments**:
+   - Smaller cards (150px min-width vs 180px)
+   - Reduced height (70px vs 80px)
+   - Smaller font size
+   - Faster animation (25s fixed duration)
+   - Reduced padding
+
+## Integration with Section Animations
+
+```css
+/* Make sure section animation doesn't break our marquee */
+section.skills.active .skills-marquee-wrapper {
+  opacity: 1;
+  transform: translateY(0);
+}
+```
+
+## Theme Compatibility
+
+- Uses CSS variables for colors (`var(--card-bg)`, `var(--border-color)`, etc.)
+- This ensures the animation inherits the current theme (light/dark mode)
+- Falls back to sensible defaults if variables aren't defined
+
+## Handling Edge Cases
+
+1. **Removal of Original Skills Container**:
+   ```css
+   /* Hide the original skills container */
+   .skills-grid {
+     display: none !important;
+   }
+   ```
+   - Ensures the original template skills container is hidden
+
+2. **Replacing the Entire Section**:
+   - We replace the entire `<section id="skills">` element with our custom implementation
+   - This avoids conflicts with the original template styles
+
+## Performance Considerations
+
+1. **GPU Acceleration**:
+   - `transform: translateX()` uses GPU acceleration
+   - More efficient than animating `left` or `margin-left`
+
+2. **Content Duplication vs. Infinite Elements**:
+   - Duplicating content once is more efficient than creating an infinite-seeming carousel with many elements
+   - Only two copies of each skill card exist in the DOM
+
+3. **Animation Optimization**:
+   - Only animating the `transform` property
+   - Avoiding animating properties that cause layout recalculations
+
+## Browser Compatibility
+
+This implementation works across all modern browsers:
+- Chrome, Firefox, Safari, Edge
+- Mobile browsers on iOS and Android
+- Special fixes for Safari's animation quirks
+
+## Additional Customization Options
+
+The animation can be customized by adjusting several parameters:
+1. Animation speed via the `animation-duration` property
+2. Card size, spacing, and visual style
+3. Container width percentage
+4. Background color and border radius
+5. Hover effects on cards 

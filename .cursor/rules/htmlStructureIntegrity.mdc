@@ -1,0 +1,34 @@
+---
+description: # HTML Structure Integrity
+globs: 
+---
+ # HTML Structure Integrity
+
+## Problem
+HTML structural inconsistencies between templates can lead to rendering issues, broken layouts, and accessibility problems when content is transferred between templates.
+
+## Details
+Each template has a unique HTML structure that affects:
+- Semantic hierarchy (heading levels, section organization)
+- DOM nesting patterns
+- Container organization
+- Section boundaries and relationships
+- Metadata and SEO elements
+- Accessibility attributes and landmarks
+- Script injection points and custom element placement
+
+When content is moved between templates or templates are modified, these structural differences often lead to unexpected rendering issues.
+
+## Example
+Template3 uses a nested div structure for project cards with specific classes for hover effects (`<div class="project-card"><div class="card-inner">...</div></div>`), while Template1 uses a flat structure (`<div class="project-item">...</div>`). When migrating content between these templates, the hover effects and styling break because the DOM structure doesn't match the expected CSS selectors.
+
+## Solution
+1. Document the core HTML structure required by each template
+2. Create a standard structural mapping between templates to enable clean migrations
+3. Implement validation to ensure required structural elements are present when templates are modified
+4. Establish naming conventions for structural elements that are consistent across templates
+5. Maintain semantic equivalence between templates even if implementation differs
+6. Create template-specific structural adapters for content migration
+7. Implement automated testing for structural integrity
+8. Develop a structural checklist for template development and modification
+9. Add HTML comments to mark critical structural components that should not be altered

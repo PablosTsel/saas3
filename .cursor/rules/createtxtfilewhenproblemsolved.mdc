@@ -1,0 +1,5 @@
+---
+description: Create txt file when problem solved
+globs: CursorRules
+---
+When I tell you to solve a problem or a bug not a change and you solve it add a txt file to CursorRules folder in root directory where you explain the problem and the solution so you dont repeat the same issue again.

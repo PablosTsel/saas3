@@ -1,0 +1,31 @@
+---
+description: # Image and Asset Handling
+globs: 
+---
+ # Image and Asset Handling
+
+## Problem
+Inconsistent approaches to image and asset management across templates lead to broken images, incorrect sizing, and performance issues.
+
+## Details
+Our template system handles images and assets in different ways:
+- Some templates use relative paths while others use absolute paths
+- Image sizing and optimization varies between templates
+- Asset organization differs (some use `/img/`, others `/images/`, `/assets/`, etc.)
+- Placeholder image strategies are inconsistent
+- Some templates use background images in CSS while others use `<img>` tags
+- Responsive image handling varies widely between templates
+
+## Example
+Template2 uses CSS background images with fixed dimensions for project thumbnails, while Template5 uses `<img>` tags with percentage-based sizing. When content is migrated between templates, images often break due to these structural differences.
+
+## Solution
+1. Standardize the asset directory structure across all templates
+2. Implement a consistent image sizing and optimization strategy
+3. Create a uniform approach to responsive images
+4. Establish clear rules for when to use CSS background images vs. HTML `<img>` tags
+5. Document all asset paths and ensure they're consistently implemented
+6. Create a template-agnostic asset reference system
+7. Implement fallback images for when assets aren't available
+8. Add validation to check image integrity when templates are modified
+9. Create a consistent approach to lazy loading and performance optimization
