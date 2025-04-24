@@ -1183,11 +1183,28 @@ section {
                     
                 </div>
             </div>
-            <div class="hero-image">
-                
-                <img src="https://firebasestorage.googleapis.com/v0/b/makeportfolio-2bd67.firebasestorage.app/o/users%2FIEn3lXLfA5MwVO5K2icpC3WTnxV2%2Fportfolios%2F2ehNjUC3epL6H4EJjzSr%2Fprofile%2F1745501538997-ProfilePic.png?alt=media&token=f28fabd5-6835-4e89-8cc0-096f66f9755f" alt="John Doe" onerror="this.src='https://placehold.co/400x400/4169e1/ffffff?text=T'">
-                
-            </div>
+            
+        <div class="hero-image">
+          
+            <img 
+              src="https://firebasestorage.googleapis.com/v0/b/makeportfolio-2bd67.firebasestorage.app/o/users%2FIEn3lXLfA5MwVO5K2icpC3WTnxV2%2Fportfolios%2F2ehNjUC3epL6H4EJjzSr%2Fprofile%2F1745501538997-ProfilePic.png?alt=media&token=f28fabd5-6835-4e89-8cc0-096f66f9755f" 
+              alt="John Doe" 
+              onerror="
+                try {
+                  console.log('Profile image failed to load, using fallback');
+                  this.onerror=null; 
+                  this.src='https://placehold.co/400x400/4169e1/ffffff?text=JD';
+                } catch(e) {
+                  console.error('Failed to load fallback image, using text fallback', e);
+                  this.style.display='none';
+                  const fallbackDiv = document.createElement('div');
+                  fallbackDiv.className = 'hero-avatar';
+                  fallbackDiv.textContent = 'JD';
+                  this.parentNode.appendChild(fallbackDiv);
+                }
+              "
+            >
+        </div>
         </div>
     </main>
 

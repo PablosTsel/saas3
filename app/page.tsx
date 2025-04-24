@@ -55,10 +55,10 @@ export default function Home() {
 
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="py-12 md:py-16 lg:py-20 relative overflow-hidden">
+        <section className="py-4 md:py-6 lg:py-8 relative overflow-hidden">
           <div className="container px-4 md:px-6 max-w-5xl mx-auto">
-            <div className="flex flex-col items-center text-center space-y-6">
-              <div className="space-y-4 max-w-3xl">
+            <div className="flex flex-col items-center text-center space-y-4">
+              <div className="space-y-3 max-w-3xl">
                 <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-black dark:text-white">
                   Create a stunning portfolio in minutes
                 </h1>
@@ -76,7 +76,7 @@ export default function Home() {
                   <Link href="#templates">View templates</Link>
                 </Button>
               </div>
-              <div className="mt-12 relative w-full max-w-4xl mx-auto">
+              <div className="mt-8 relative w-full max-w-4xl mx-auto">
                 {/* Outer container with gradient border */}
                 <div className="p-[3px] rounded-xl bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-500 dark:from-indigo-400 dark:via-purple-400 dark:to-indigo-400 shadow-2xl">
                   {/* Inner container with video */}
@@ -111,10 +111,10 @@ export default function Home() {
         </section>
 
         {/* Features Section */}
-        <section id="features" className="py-24 bg-gray-50 dark:bg-gray-900">
+        <section id="features" className="py-16 bg-gray-50 dark:bg-gray-900">
           <div className="container px-4 md:px-6 max-w-5xl mx-auto">
             <ScrollReveal>
-              <div className="text-center space-y-4 mb-16">
+              <div className="text-center space-y-3 mb-12">
                 <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-black dark:text-white">
                   Powerful features to showcase your work
                 </h2>
@@ -196,10 +196,10 @@ export default function Home() {
         </section>
 
         {/* Templates Section */}
-        <section id="templates" className="py-24">
+        <section id="templates" className="py-16">
           <div className="container px-4 md:px-6 max-w-5xl mx-auto">
             <ScrollReveal>
-              <div className="text-center space-y-4 mb-16">
+              <div className="text-center space-y-3 mb-12">
                 <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-black dark:text-white">
                   Professional Templates
                 </h2>
@@ -259,10 +259,10 @@ export default function Home() {
         </section>
 
         {/* Pricing Section */}
-        <section id="pricing" className="py-24 bg-gray-50 dark:bg-gray-900">
+        <section id="pricing" className="py-16 bg-gray-50 dark:bg-gray-900">
           <div className="container px-4 md:px-6 max-w-5xl mx-auto">
             <ScrollReveal>
-              <div className="text-center space-y-4 mb-16">
+              <div className="text-center space-y-3 mb-12">
                 <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-black dark:text-white">
                   Simple, transparent pricing
                 </h2>
@@ -348,7 +348,7 @@ export default function Home() {
         </section>
 
         {/* CTA Section */}
-        <section className="py-24">
+        <section className="py-16">
           <div className="container px-4 md:px-6 max-w-5xl mx-auto">
             <ScrollReveal>
               <div className="flex flex-col items-center text-center space-y-6">
