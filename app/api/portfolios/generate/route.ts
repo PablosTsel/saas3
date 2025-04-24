@@ -272,7 +272,18 @@ export async function POST(request: NextRequest) {
 
       // Handle profile picture URL
       if (portfolioData.profilePictureUrl) {
-        htmlContent = htmlContent.replace(/{{profilePictureUrl}}/g, portfolioData.profilePictureUrl);
+        // Ensure the profile picture URL is absolute for cross-domain compatibility
+        let profilePicUrl = portfolioData.profilePictureUrl;
+        
+        // Check if the URL is already absolute (starts with http:// or https://)
+        if (!profilePicUrl.startsWith('http://') && !profilePicUrl.startsWith('https://')) {
+          console.log('Converting relative profile picture URL to absolute');
+          // If it's a relative URL, convert it to an absolute URL
+          // This ensures images work both in localhost and production environments
+          profilePicUrl = new URL(profilePicUrl, 'https://makeportfolio.vercel.app').toString();
+        }
+        
+        htmlContent = htmlContent.replace(/{{profilePictureUrl}}/g, profilePicUrl);
         // Handle conditional for profile picture
         htmlContent = htmlContent.replace(/{{#if profilePictureUrl}}([\s\S]*?){{else}}[\s\S]*?{{\/if}}/g, '$1');
       } else {
@@ -308,6 +319,53 @@ export async function POST(request: NextRequest) {
       
       // Handle template-specific logic
       if (templateId === 'template3') {
+        // Enhance profile image fallback mechanism
+        const initials = portfolioData.fullName && portfolioData.fullName.length > 0 
+          ? portfolioData.fullName.split(' ').map(n => n[0]).join('').toUpperCase()
+          : 'U';
+        
+        // Get the processed profile picture URL
+        let profileImgUrl = '';
+        if (portfolioData.profilePictureUrl) {
+          profileImgUrl = portfolioData.profilePictureUrl;
+          // Check if the URL is already absolute
+          if (!profileImgUrl.startsWith('http://') && !profileImgUrl.startsWith('https://')) {
+            profileImgUrl = new URL(profileImgUrl, 'https://makeportfolio.vercel.app').toString();
+          }
+        }
+            
+        // Enhanced image error handling
+        const enhancedProfileImageHtml = `
+        <div class="hero-image">
+          ${portfolioData.profilePictureUrl ? `
+            <img 
+              src="${profileImgUrl}" 
+              alt="${portfolioData.fullName || ''}" 
+              onerror="
+                try {
+                  console.log('Profile image failed to load, using fallback');
+                  this.onerror=null; 
+                  this.src='https://placehold.co/400x400/4169e1/ffffff?text=${initials}';
+                } catch(e) {
+                  console.error('Failed to load fallback image, using text fallback', e);
+                  this.style.display='none';
+                  const fallbackDiv = document.createElement('div');
+                  fallbackDiv.className = 'hero-avatar';
+                  fallbackDiv.textContent = '${initials}';
+                  this.parentNode.appendChild(fallbackDiv);
+                }
+              "
+            >` : `
+            <div class="hero-avatar">${initials}</div>
+          `}
+        </div>`;
+        
+        // Replace the original hero-image div with our enhanced version
+        htmlContent = htmlContent.replace(
+          /<div class="hero-image">[\s\S]*?<\/div>/,
+          enhancedProfileImageHtml
+        );
+        
         // Format code snippets properly for code highlighting in template3
         // Convert newlines in about text for the code snippet
         const formattedAbout = portfolioData.about.replace(/\n/g, '\n  ');
@@ -2400,7 +2458,16 @@ export async function POST(request: NextRequest) {
         // );
         
         if (portfolioData.profilePictureUrl) {
-          htmlContent = htmlContent.replace(/\{\{profilePictureUrl\}\}/g, portfolioData.profilePictureUrl);
+          // Ensure the profile picture URL is absolute for cross-domain compatibility
+          let profilePicUrl = portfolioData.profilePictureUrl;
+          
+          // Check if the URL is already absolute (starts with http:// or https://)
+          if (!profilePicUrl.startsWith('http://') && !profilePicUrl.startsWith('https://')) {
+            console.log('Converting relative profile picture URL to absolute for template7');
+            profilePicUrl = new URL(profilePicUrl, 'https://makeportfolio.vercel.app').toString();
+          }
+          
+          htmlContent = htmlContent.replace(/\{\{profilePictureUrl\}\}/g, profilePicUrl);
         }
         
         // Replace CV-related placeholders
@@ -2788,7 +2855,16 @@ export async function POST(request: NextRequest) {
         htmlContent = htmlContent.replace('</head>', `<script>window.portfolioTitle = "${portfolioData.title || ''}";</script></head>`);
         
         if (portfolioData.profilePictureUrl) {
-          htmlContent = htmlContent.replace(/\{\{profilePictureUrl\}\}/g, portfolioData.profilePictureUrl);
+          // Ensure the profile picture URL is absolute for cross-domain compatibility
+          let profilePicUrl = portfolioData.profilePictureUrl;
+          
+          // Check if the URL is already absolute (starts with http:// or https://)
+          if (!profilePicUrl.startsWith('http://') && !profilePicUrl.startsWith('https://')) {
+            console.log('Converting relative profile picture URL to absolute for template');
+            profilePicUrl = new URL(profilePicUrl, 'https://makeportfolio.vercel.app').toString();
+          }
+          
+          htmlContent = htmlContent.replace(/\{\{profilePictureUrl\}\}/g, profilePicUrl);
         }
         
         // Replace CV-related placeholders
