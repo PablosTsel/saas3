@@ -94,29 +94,29 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-gradient-to-br from-blue-50 to-indigo-50">
+    <div className="flex min-h-screen flex-col bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-900 dark:to-indigo-950">
       <div className="flex flex-1 flex-col justify-center px-6 py-12 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
           <div className="flex justify-center">
             <Link href="/" className="flex items-center gap-2 font-bold text-xl">
-              <Sparkles className="h-5 w-5 text-indigo-600" />
-              <span className="text-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-transparent bg-clip-text">PortfolioMaker</span>
+              <Sparkles className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+              <span className="text-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-transparent bg-clip-text dark:from-indigo-400 dark:to-purple-400">PortfolioMaker</span>
             </Link>
           </div>
-          <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-800">Sign in to your account</h2>
+          <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-800 dark:text-gray-100">Sign in to your account</h2>
         </div>
 
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
           {error && (
-            <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-md text-sm">
+            <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 rounded-md text-sm">
               {error}
             </div>
           )}
           
-          <div className="bg-white p-8 rounded-xl shadow-sm border border-indigo-100">
+          <div className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-sm dark:shadow-lg border border-indigo-100 dark:border-gray-700">
             <form className="space-y-6" onSubmit={handleSubmit}>
               <div>
-                <Label htmlFor="email" className="text-gray-700">Email address</Label>
+                <Label htmlFor="email" className="text-gray-700 dark:text-gray-300">Email address</Label>
                 <div className="mt-2">
                   <Input
                     id="email"
@@ -126,16 +126,16 @@ export default function LoginPage() {
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="border-indigo-100 focus:border-indigo-300 focus:ring-indigo-200"
+                    className="border-indigo-100 dark:border-gray-600 focus:border-indigo-300 dark:focus:border-indigo-500 focus:ring-indigo-200 dark:focus:ring-indigo-700 dark:bg-gray-700 dark:text-gray-100"
                   />
                 </div>
               </div>
 
               <div>
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="password" className="text-gray-700">Password</Label>
+                  <Label htmlFor="password" className="text-gray-700 dark:text-gray-300">Password</Label>
                   <div className="text-sm">
-                    <Link href="/auth/forgot-password" className="font-semibold text-indigo-600 hover:text-indigo-500">
+                    <Link href="/auth/forgot-password" className="font-semibold text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">
                       Forgot password?
                     </Link>
                   </div>
@@ -149,7 +149,7 @@ export default function LoginPage() {
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="border-indigo-100 focus:border-indigo-300 focus:ring-indigo-200"
+                    className="border-indigo-100 dark:border-gray-600 focus:border-indigo-300 dark:focus:border-indigo-500 focus:ring-indigo-200 dark:focus:ring-indigo-700 dark:bg-gray-700 dark:text-gray-100"
                   />
                 </div>
               </div>
@@ -159,15 +159,15 @@ export default function LoginPage() {
                   id="remember" 
                   checked={rememberMe}
                   onCheckedChange={(checked) => setRememberMe(checked === true)}
-                  className="data-[state=checked]:bg-indigo-600 data-[state=checked]:border-indigo-600"
+                  className="data-[state=checked]:bg-indigo-600 data-[state=checked]:border-indigo-600 dark:data-[state=checked]:bg-indigo-500 dark:data-[state=checked]:border-indigo-500"
                 />
-                <Label htmlFor="remember" className="text-gray-600 text-sm">Remember me</Label>
+                <Label htmlFor="remember" className="text-gray-600 dark:text-gray-400 text-sm">Remember me</Label>
               </div>
 
               <div>
                 <Button 
                   type="submit" 
-                  className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-md hover:shadow-lg transition-all" 
+                  className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 dark:from-indigo-500 dark:to-purple-500 dark:hover:from-indigo-600 dark:hover:to-purple-600 text-white shadow-md hover:shadow-lg transition-all" 
                   disabled={isLoading}
                 >
                   {isLoading ? "Signing in..." : "Sign in"}
@@ -178,17 +178,17 @@ export default function LoginPage() {
             <div className="mt-6">
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-indigo-100"></div>
+                  <div className="w-full border-t border-indigo-100 dark:border-gray-700"></div>
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="bg-white px-2 text-gray-500">Or continue with</span>
+                  <span className="bg-white dark:bg-gray-800 px-2 text-gray-500 dark:text-gray-400">Or continue with</span>
                 </div>
               </div>
 
-              <div className="mt-6 grid grid-cols-2 gap-3">
+              <div className="mt-6">
                 <Button 
                   variant="outline" 
-                  className="w-full border-indigo-100 hover:border-indigo-200 hover:bg-indigo-50 text-gray-700 flex items-center justify-center gap-2" 
+                  className="w-full border-indigo-100 dark:border-gray-600 hover:border-indigo-200 dark:hover:border-gray-500 hover:bg-indigo-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 flex items-center justify-center gap-2" 
                   disabled={isGoogleLoading || isLoading}
                   onClick={handleGoogleSignIn}
                 >
@@ -212,20 +212,13 @@ export default function LoginPage() {
                   </svg>
                   Google
                 </Button>
-                <Button 
-                  variant="outline" 
-                  className="w-full border-indigo-100 hover:border-indigo-200 hover:bg-indigo-50 text-gray-700" 
-                  disabled={isLoading || isGoogleLoading}
-                >
-                  GitHub
-                </Button>
               </div>
             </div>
           </div>
 
-          <p className="mt-10 text-center text-sm text-gray-600">
+          <p className="mt-10 text-center text-sm text-gray-600 dark:text-gray-400">
             Not a member?{" "}
-            <Link href="/auth/signup" className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">
+            <Link href="/auth/signup" className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">
               Sign up now
             </Link>
           </p>

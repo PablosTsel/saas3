@@ -39,6 +39,7 @@ import {
   deleteObject,
   UploadResult
 } from "firebase/storage";
+import { Portfolio } from "@/types";
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
@@ -344,6 +345,39 @@ export const createPortfolio = async (
     // Default placeholder image for failed uploads
     const DEFAULT_PLACEHOLDER = "https://firebasestorage.googleapis.com/v0/b/makeportfolio-2bd67.appspot.com/o/placeholders%2Fproject-placeholder.png?alt=media";
 
+    // Generate a slug for the portfolio
+    let baseSlug = generateSlug(portfolioData.fullName || portfolioData.name, portfolioData.templateId);
+    
+    // Check if the slug already exists, and if so, append a number
+    let slug = baseSlug;
+    let slugCount = 1;
+    let slugExists = true;
+    
+    // We'll try up to 10 times to find a unique slug
+    while (slugExists && slugCount <= 10) {
+      // Query for portfolios with this slug
+      const slugQuery = query(
+        collection(db, "portfolios"),
+        where("slug", "==", slug)
+      );
+      
+      const slugSnapshot = await getDocs(slugQuery);
+      
+      if (slugSnapshot.empty) {
+        // No matching slug found, we can use this one
+        slugExists = false;
+      } else {
+        // Slug exists, append a number and try again
+        slugCount++;
+        slug = `${baseSlug}-${slugCount}`;
+      }
+    }
+    
+    // If we couldn't find a unique slug after 10 tries, fall back to using the ID
+    if (slugExists) {
+      slug = portfolioId;
+    }
+
     // Portfolio data without files
     const portfolioDataForFirestore = {
       id: portfolioId,
@@ -371,6 +405,7 @@ export const createPortfolio = async (
         reportUrl: "" // Will update after upload if successful
       })),
       templateId: portfolioData.templateId,
+      slug: slug, // Store the slug in Firestore
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       // Payment related fields
@@ -912,6 +947,66 @@ export const checkCvProcessingStatus = async (portfolioId: string) => {
   } catch (error) {
     console.error("Error checking CV processing status:", error);
     return { processed: false, education: [], experience: [], skills: [], error: "Failed to check processing status" };
+  }
+};
+
+// Generate a URL-friendly slug from a name
+export const generateSlug = (fullName: string, templateId: string): string => {
+  // Handle empty name
+  if (!fullName || fullName.trim() === '') {
+    return '';
+  }
+
+  // Normalize name: lowercase, replace spaces with hyphens, remove special chars
+  let slug = fullName
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, '-')
+    .replace(/[^\w\-]+/g, '')
+    .replace(/\-\-+/g, '-') // Replace multiple hyphens with a single one
+    .replace(/^-+/, '')     // Remove leading hyphens
+    .replace(/-+$/, '');    // Remove trailing hyphens
+
+  // Add template number to the slug in a more professional way
+  const templateNumber = templateId.replace(/[^\d]/g, '') || '';
+  if (templateNumber) {
+    slug = `${slug}-${templateNumber}`;
+  }
+
+  return slug;
+};
+
+/**
+ * Gets a portfolio by its slug
+ */
+export const getPortfolioBySlug = async (slug: string): Promise<{ portfolio: Portfolio | null, error: string | null }> => {
+  try {
+    if (!slug) {
+      return { portfolio: null, error: 'No slug provided' };
+    }
+
+    // Query for portfolios with this slug
+    const q = query(collection(db, "portfolios"), where("slug", "==", slug));
+    const querySnapshot = await getDocs(q);
+
+    if (querySnapshot.empty) {
+      return { portfolio: null, error: 'Portfolio not found' };
+    }
+
+    // Get the first portfolio with this slug (should be unique)
+    const portfolioDoc = querySnapshot.docs[0];
+    const portfolioData = portfolioDoc.data() as Portfolio;
+    
+    return { 
+      portfolio: { ...portfolioData, id: portfolioDoc.id }, 
+      error: null 
+    };
+  } catch (error) {
+    console.error("Error getting portfolio by slug:", error);
+    return { 
+      portfolio: null, 
+      error: error instanceof Error ? error.message : 'An unknown error occurred' 
+    };
   }
 };
 

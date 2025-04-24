@@ -4,7 +4,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { BarChart3, Edit, Eye, Globe, Plus, Settings, Sparkles, User, Users, Bell, LogOut, ChevronRight, ChevronLeft, Upload, X, Check, File } from "lucide-react"
+import { BarChart3, Edit, Eye, Globe, Plus, Settings, Sparkles, User, Users, Bell, LogOut, ChevronRight, ChevronLeft, Upload, X, Check, File, Loader2 } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
   DropdownMenu,
@@ -25,6 +25,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Progress } from "@/components/ui/progress"
 import { createPortfolio, getUserPortfolios, deletePortfolio } from "@/lib/firebase"
 import PortfolioCard from "@/components/portfolio-card"
+import { ThemeToggle } from "@/components/theme-toggle"
 
 // Define types for our portfolio data
 interface Skill {
@@ -79,9 +80,9 @@ const TEMPLATES = [
     id: "template1",
     name: "Clean Modern",
     description: "A clean, modern design with subtle animations and a professional look.",
-    previewImage: "/templates/template1/JohnDoe2024.png",
-    previewVideo: "/videos/Temp1.webm",
-    hasVideo: true
+    previewImage: "/templates/template1/thumbnail_dash.svg",
+    previewVideo: "",
+    hasVideo: false
   },
   {
     id: "template2",
@@ -95,9 +96,9 @@ const TEMPLATES = [
     id: "template3",
     name: "Developer Focused",
     description: "A developer-focused template with a code-inspired design.",
-    previewImage: "/templates/template3/thumbnail_dash.svg",
-    previewVideo: "",
-    hasVideo: false
+    previewImage: "/videosandpictures/template3/template3.png?v=1",
+    previewVideo: "/videosandpictures/template3/template3.webm?v=1",
+    hasVideo: true
   },
   {
     id: "template4",
@@ -151,11 +152,11 @@ export default function DashboardPage() {
     name: "",
     title: "AI Engineer",
     smallIntro: "I'm a skilled AI Engineer with a passion for developing innovative solutions.",
-    about: "Hello! I'm John Doe, a dedicated AI Engineer with expertise in machine learning, deep learning, and natural language processing. I have experience building and deploying AI models that solve real-world problems and drive business value. My approach combines technical excellence with a strong focus on practical applications and ethical considerations.",
+    about: "Hello! I'm John Doe, a dedicated AI Engineer with expertise in machine learning, deep learning, and natural language processing. I am passionate about harnessing cutting-edge technologies to create impactful AI solutions. I have experience building and deploying AI models that solve real-world problems and drive business value. My approach combines technical excellence with a strong focus on practical applications and ethical considerations. Collaboration and continuous learning are at the heart of my professional philosophy.",
     fullName: "John Doe",
     email: "johndoe@gmail.com",
     phone: "+34 607980731",
-    githubProfile: "", // Initialize GitHub profile field
+    githubProfile: "https://github.com/PablosTsel", // Initialize GitHub profile field
     profilePicture: null,
     cv: null,
     hasCv: true,
@@ -179,19 +180,19 @@ export default function DashboardPage() {
       },
       { 
         name: "AI Recommendation System", 
-        description: "Developed a sophisticated recommendation engine using collaborative filtering and content-based algorithms to provide personalized suggestions to users, resulting in a 35% increase in user engagement.", 
+        description: "Developed a sophisticated recommendation engine using collaborative filtering and content-based algorithms to provide personalized suggestions to users, resulting in a 35% increase in user engagement. The system was designed with scalability in mind, allowing seamless integration with various platforms. Extensive A/B testing was conducted to fine-tune algorithm performance and maximize user satisfaction.", 
         image: null,
         technologies: ["Python", "Machine Learning", "Collaborative Filtering", "User Engagement"]
       },
       { 
         name: "Natural Language Processing Tool", 
-        description: "Created an NLP tool that analyzes customer feedback across multiple channels, automatically categorizing issues and identifying sentiment to help businesses understand customer needs better.", 
+        description: "Created an NLP tool that analyzes customer feedback across multiple channels, automatically categorizing issues and identifying sentiment to help businesses understand customer needs better. Leveraged state-of-the-art transformer models to ensure high accuracy in language understanding. The tool enabled proactive customer service strategies by uncovering recurring pain points and emerging trends.", 
         image: null,
         technologies: ["NLP", "Python", "Sentiment Analysis", "Text Classification"] 
       },
       { 
         name: "Computer Vision Project", 
-        description: "Built a computer vision system for object detection and classification in real-time video streams, achieving 94% accuracy in identifying specific items in complex environments.", 
+        description: "Built a computer vision system for object detection and classification in real-time video streams, achieving 94% accuracy in identifying specific items in complex environments. The solution utilized a YOLO-based architecture optimized for speed and performance on edge devices. It significantly improved operational efficiency.", 
         image: null,
         technologies: ["Computer Vision", "TensorFlow", "Object Detection", "Real-time Processing"]
       }
@@ -316,11 +317,11 @@ export default function DashboardPage() {
       name: "",
       title: "AI Engineer",
       smallIntro: "I'm a skilled AI Engineer with a passion for developing innovative solutions.",
-      about: "Hello! I'm John Doe, a dedicated AI Engineer with expertise in machine learning, deep learning, and natural language processing. I have experience building and deploying AI models that solve real-world problems and drive business value. My approach combines technical excellence with a strong focus on practical applications and ethical considerations.",
+      about: "Hello! I'm John Doe, a dedicated AI Engineer with expertise in machine learning, deep learning, and natural language processing. I am passionate about harnessing cutting-edge technologies to create impactful AI solutions. I have experience building and deploying AI models that solve real-world problems and drive business value. My approach combines technical excellence with a strong focus on practical applications and ethical considerations. Collaboration and continuous learning are at the heart of my professional philosophy.",
       fullName: "John Doe",
       email: "johndoe@gmail.com",
       phone: "+34 607980731",
-      githubProfile: "", // Initialize GitHub profile field
+      githubProfile: "https://github.com/PablosTsel", // Initialize GitHub profile field
       profilePicture: null,
       cv: null,
       hasCv: true,
@@ -344,19 +345,19 @@ export default function DashboardPage() {
         },
         { 
           name: "AI Recommendation System", 
-          description: "Developed a sophisticated recommendation engine using collaborative filtering and content-based algorithms to provide personalized suggestions to users, resulting in a 35% increase in user engagement.", 
+          description: "Developed a sophisticated recommendation engine using collaborative filtering and content-based algorithms to provide personalized suggestions to users, resulting in a 35% increase in user engagement. The system was designed with scalability in mind, allowing seamless integration with various platforms. Extensive A/B testing was conducted to fine-tune algorithm performance and maximize user satisfaction.", 
           image: null,
           technologies: ["Python", "Machine Learning", "Collaborative Filtering", "User Engagement"]
         },
         { 
           name: "Natural Language Processing Tool", 
-          description: "Created an NLP tool that analyzes customer feedback across multiple channels, automatically categorizing issues and identifying sentiment to help businesses understand customer needs better.", 
+          description: "Created an NLP tool that analyzes customer feedback across multiple channels, automatically categorizing issues and identifying sentiment to help businesses understand customer needs better. Leveraged state-of-the-art transformer models to ensure high accuracy in language understanding. The tool enabled proactive customer service strategies by uncovering recurring pain points and emerging trends.", 
           image: null,
           technologies: ["NLP", "Python", "Sentiment Analysis", "Text Classification"] 
         },
         { 
           name: "Computer Vision Project", 
-          description: "Built a computer vision system for object detection and classification in real-time video streams, achieving 94% accuracy in identifying specific items in complex environments.", 
+          description: "Built a computer vision system for object detection and classification in real-time video streams, achieving 94% accuracy in identifying specific items in complex environments. The solution utilized a YOLO-based architecture optimized for speed and performance on edge devices. It significantly improved operational efficiency.", 
           image: null,
           technologies: ["Computer Vision", "TensorFlow", "Object Detection", "Real-time Processing"]
         }
@@ -855,11 +856,11 @@ export default function DashboardPage() {
         name: "",
         title: "AI Engineer",
         smallIntro: "I'm a skilled AI Engineer with a passion for developing innovative solutions.",
-        about: "Hello! I'm John Doe, a dedicated AI Engineer with expertise in machine learning, deep learning, and natural language processing. I have experience building and deploying AI models that solve real-world problems and drive business value. My approach combines technical excellence with a strong focus on practical applications and ethical considerations.",
+        about: "Hello! I'm John Doe, a dedicated AI Engineer with expertise in machine learning, deep learning, and natural language processing. I am passionate about harnessing cutting-edge technologies to create impactful AI solutions. I have experience building and deploying AI models that solve real-world problems and drive business value. My approach combines technical excellence with a strong focus on practical applications and ethical considerations. Collaboration and continuous learning are at the heart of my professional philosophy.",
         fullName: "John Doe",
         email: "johndoe@gmail.com",
         phone: "+34 607980731",
-        githubProfile: "", // Initialize GitHub profile field
+        githubProfile: "https://github.com/PablosTsel", // Initialize GitHub profile field
         profilePicture: null,
         cv: null,
         hasCv: true,
@@ -883,19 +884,19 @@ export default function DashboardPage() {
           },
           { 
             name: "AI Recommendation System", 
-            description: "Developed a sophisticated recommendation engine using collaborative filtering and content-based algorithms to provide personalized suggestions to users, resulting in a 35% increase in user engagement.", 
+            description: "Developed a sophisticated recommendation engine using collaborative filtering and content-based algorithms to provide personalized suggestions to users, resulting in a 35% increase in user engagement. The system was designed with scalability in mind, allowing seamless integration with various platforms. Extensive A/B testing was conducted to fine-tune algorithm performance and maximize user satisfaction.", 
             image: null,
             technologies: ["Python", "Machine Learning", "Collaborative Filtering", "User Engagement"]
           },
           { 
             name: "Natural Language Processing Tool", 
-            description: "Created an NLP tool that analyzes customer feedback across multiple channels, automatically categorizing issues and identifying sentiment to help businesses understand customer needs better.", 
+            description: "Created an NLP tool that analyzes customer feedback across multiple channels, automatically categorizing issues and identifying sentiment to help businesses understand customer needs better. Leveraged state-of-the-art transformer models to ensure high accuracy in language understanding. The tool enabled proactive customer service strategies by uncovering recurring pain points and emerging trends.", 
             image: null,
             technologies: ["NLP", "Python", "Sentiment Analysis", "Text Classification"] 
           },
           { 
             name: "Computer Vision Project", 
-            description: "Built a computer vision system for object detection and classification in real-time video streams, achieving 94% accuracy in identifying specific items in complex environments.", 
+            description: "Built a computer vision system for object detection and classification in real-time video streams, achieving 94% accuracy in identifying specific items in complex environments. The solution utilized a YOLO-based architecture optimized for speed and performance on edge devices. It significantly improved operational efficiency.", 
             image: null,
             technologies: ["Computer Vision", "TensorFlow", "Object Detection", "Real-time Processing"]
           }
@@ -931,11 +932,11 @@ export default function DashboardPage() {
             name: "",
             title: "AI Engineer",
             smallIntro: "I'm a skilled AI Engineer with a passion for developing innovative solutions.",
-            about: "Hello! I'm John Doe, a dedicated AI Engineer with expertise in machine learning, deep learning, and natural language processing. I have experience building and deploying AI models that solve real-world problems and drive business value. My approach combines technical excellence with a strong focus on practical applications and ethical considerations.",
+            about: "Hello! I'm John Doe, a dedicated AI Engineer with expertise in machine learning, deep learning, and natural language processing. I am passionate about harnessing cutting-edge technologies to create impactful AI solutions. I have experience building and deploying AI models that solve real-world problems and drive business value. My approach combines technical excellence with a strong focus on practical applications and ethical considerations. Collaboration and continuous learning are at the heart of my professional philosophy.",
             fullName: "John Doe",
             email: "johndoe@gmail.com",
             phone: "+34 607980731",
-            githubProfile: "", // Initialize GitHub profile field
+            githubProfile: "https://github.com/PablosTsel", // Initialize GitHub profile field
             profilePicture: null,
             cv: null,
             hasCv: true,
@@ -959,19 +960,19 @@ export default function DashboardPage() {
               },
               { 
                 name: "AI Recommendation System", 
-                description: "Developed a sophisticated recommendation engine using collaborative filtering and content-based algorithms to provide personalized suggestions to users, resulting in a 35% increase in user engagement.", 
+                description: "Developed a sophisticated recommendation engine using collaborative filtering and content-based algorithms to provide personalized suggestions to users, resulting in a 35% increase in user engagement. The system was designed with scalability in mind, allowing seamless integration with various platforms. Extensive A/B testing was conducted to fine-tune algorithm performance and maximize user satisfaction.", 
                 image: null,
                 technologies: ["Python", "Machine Learning", "Collaborative Filtering", "User Engagement"]
               },
               { 
                 name: "Natural Language Processing Tool", 
-                description: "Created an NLP tool that analyzes customer feedback across multiple channels, automatically categorizing issues and identifying sentiment to help businesses understand customer needs better.", 
+                description: "Created an NLP tool that analyzes customer feedback across multiple channels, automatically categorizing issues and identifying sentiment to help businesses understand customer needs better. Leveraged state-of-the-art transformer models to ensure high accuracy in language understanding. The tool enabled proactive customer service strategies by uncovering recurring pain points and emerging trends.", 
                 image: null,
                 technologies: ["NLP", "Python", "Sentiment Analysis", "Text Classification"] 
               },
               { 
                 name: "Computer Vision Project", 
-                description: "Built a computer vision system for object detection and classification in real-time video streams, achieving 94% accuracy in identifying specific items in complex environments.", 
+                description: "Built a computer vision system for object detection and classification in real-time video streams, achieving 94% accuracy in identifying specific items in complex environments. The solution utilized a YOLO-based architecture optimized for speed and performance on edge devices. It significantly improved operational efficiency.", 
                 image: null,
                 technologies: ["Computer Vision", "TensorFlow", "Object Detection", "Real-time Processing"]
               }
@@ -1136,54 +1137,62 @@ export default function DashboardPage() {
   // Helper function to determine if a field has an error
   const hasError = (fieldName: string): boolean => {
     return validationErrors[fieldName] === true;
-  }
+  };
 
-  // CSS class for input fields with errors
-  const errorInputClass = "border-red-500 focus:border-red-500 focus:ring-red-200 bg-red-50";
-  const errorLabelClass = "text-red-500";
+  // Error classes for form validation
+  const errorInputClass = "border-red-500 focus:border-red-500 focus:ring-red-200 bg-red-50 dark:bg-red-900/20 dark:border-red-700 dark:focus:ring-red-900";
+  const errorLabelClass = "text-red-500 dark:text-red-400";
 
   return (
-    <div className="flex min-h-screen flex-col bg-gradient-to-br from-blue-50 to-indigo-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Header */}
-      <header className="bg-white shadow-sm sticky top-0 z-10 border-b border-indigo-100">
-        <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-indigo-600" />
-            <span className="font-bold text-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-transparent bg-clip-text">PortfolioMaker</span>
+      <header className="border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-800 sticky top-0 z-10 shadow-sm">
+        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+          <div className="flex items-center space-x-4">
+            <Link href="/" className="text-black dark:text-white font-medium text-lg flex items-center gap-2">
+              <Sparkles className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+              <span className="bg-gradient-to-r from-indigo-600 to-purple-600 text-transparent bg-clip-text font-bold">PortfolioMaker</span>
+            </Link>
           </div>
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" className="rounded-full hover:bg-indigo-50">
-              <Bell className="h-5 w-5 text-gray-600" />
-            </Button>
+          <div className="flex items-center space-x-4">
+            <ThemeToggle />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-9 w-9 rounded-full p-0 overflow-hidden ring-2 ring-indigo-100 hover:ring-indigo-200 transition-all">
-                  <Avatar className="h-9 w-9">
+                <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+                  <Avatar className="h-10 w-10 border-2 border-indigo-100 dark:border-gray-700">
                     <AvatarImage src={user?.photoURL || ""} alt={user?.displayName || "User"} />
-                    <AvatarFallback className="bg-gradient-to-br from-indigo-500 to-purple-500 text-white">{getUserInitials()}</AvatarFallback>
+                    <AvatarFallback className="bg-indigo-100 dark:bg-gray-700 text-indigo-600 dark:text-indigo-300">{getUserInitials()}</AvatarFallback>
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56 mt-1 rounded-xl overflow-hidden shadow-lg border border-indigo-100" align="end" forceMount>
-                <DropdownMenuLabel className="font-normal bg-gradient-to-r from-indigo-50 to-purple-50 border-b border-indigo-100">
-                  <div className="flex flex-col space-y-1 py-1">
-                    <p className="text-sm font-medium leading-none text-gray-800">{user?.displayName || "User"}</p>
-                    <p className="text-xs leading-none text-gray-500">{user?.email}</p>
+              <DropdownMenuContent className="w-56 mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700" align="end">
+                <DropdownMenuLabel className="font-normal">
+                  <div className="flex flex-col space-y-1">
+                    <p className="text-sm font-medium leading-none text-gray-800 dark:text-gray-200">{user?.displayName}</p>
+                    <p className="text-xs leading-none text-gray-500 dark:text-gray-400">{user?.email}</p>
                   </div>
                 </DropdownMenuLabel>
-                <DropdownMenuSeparator className="bg-indigo-50" />
-                <DropdownMenuItem className="py-2.5 cursor-pointer hover:bg-indigo-50">
-                  <User className="mr-2 h-4 w-4 text-indigo-500" />
-                  <span>Profile</span>
+                <DropdownMenuSeparator className="bg-gray-200 dark:bg-gray-700" />
+                <DropdownMenuItem className="cursor-pointer text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                  <User className="mr-2 h-4 w-4 text-gray-600 dark:text-gray-400" />
+                  <span>Account Settings</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem className="py-2.5 cursor-pointer hover:bg-indigo-50">
-                  <Settings className="mr-2 h-4 w-4 text-indigo-500" />
-                  <span>Settings</span>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleLogout} disabled={isLoggingOut} className="py-2.5 cursor-pointer hover:bg-red-50 text-red-600 hover:text-red-700">
+                <DropdownMenuItem 
+                  className="cursor-pointer text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30"
+                  onClick={handleLogout}
+                  disabled={isLoggingOut}
+                >
+                  {isLoggingOut ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      <span>Logging out...</span>
+                    </>
+                  ) : (
+                    <>
                   <LogOut className="mr-2 h-4 w-4" />
-                  <span>{isLoggingOut ? "Logging out..." : "Log out"}</span>
+                      <span>Log out</span>
+                    </>
+                  )}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -1191,63 +1200,58 @@ export default function DashboardPage() {
         </div>
       </header>
 
-      <div className="container mx-auto px-4 py-8 flex-grow">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-10 bg-white p-6 rounded-xl shadow-sm border border-indigo-100">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-800 mb-1">Dashboard</h1>
-            <p className="text-gray-600">Welcome, <span className="text-indigo-600 font-medium">{user?.displayName || "User"}</span>! Manage your portfolios and account settings.</p>
-          </div>
+      {/* Main Content */}
+      <div className="container mx-auto px-6">
+        <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 mt-6">
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-gray-100">
+            Your Portfolios
+          </h1>
+          
           <Button 
             onClick={handleCreatePortfolio}
-            className="mt-4 md:mt-0 bg-black hover:bg-gray-800 text-white shadow-md px-6 py-6 h-auto rounded-md transition-all hover:shadow-lg"
+            className="mt-4 md:mt-0 bg-black hover:bg-gray-800 dark:bg-indigo-600 dark:hover:bg-indigo-700 text-white shadow-md px-6 py-6 h-auto rounded-md transition-all hover:shadow-lg"
           >
             <Plus className="mr-2 h-4 w-4" /> Create New Portfolio
           </Button>
         </div>
 
         <Tabs defaultValue="portfolios" className="w-full">
-          <TabsList className="flex space-x-2 bg-white p-1 rounded-lg border border-indigo-100 mb-6 shadow-sm">
+          <TabsList className="flex space-x-2 bg-white dark:bg-gray-800 p-1 rounded-lg border border-indigo-100 dark:border-gray-700 mb-6 shadow-sm">
             <TabsTrigger 
               value="portfolios" 
-              className="flex-1 py-3 rounded-md data-[state=active]:bg-black data-[state=active]:text-white data-[state=inactive]:bg-white data-[state=inactive]:text-gray-600 data-[state=inactive]:hover:text-gray-800 transition-all"
+              className="flex-1 py-3 rounded-md data-[state=active]:bg-black data-[state=active]:text-white dark:data-[state=active]:bg-indigo-600 data-[state=inactive]:bg-white dark:data-[state=inactive]:bg-gray-800 data-[state=inactive]:text-gray-600 dark:data-[state=inactive]:text-gray-300 data-[state=inactive]:hover:text-gray-800 dark:data-[state=inactive]:hover:text-white transition-all"
             >
               Portfolios
             </TabsTrigger>
             <TabsTrigger 
-              value="analytics" 
-              className="flex-1 py-3 rounded-md data-[state=active]:bg-black data-[state=active]:text-white data-[state=inactive]:bg-white data-[state=inactive]:text-gray-600 data-[state=inactive]:hover:text-gray-800 transition-all"
-            >
-              Analytics
-            </TabsTrigger>
-            <TabsTrigger 
               value="settings" 
-              className="flex-1 py-3 rounded-md data-[state=active]:bg-black data-[state=active]:text-white data-[state=inactive]:bg-white data-[state=inactive]:text-gray-600 data-[state=inactive]:hover:text-gray-800 transition-all"
+              className="flex-1 py-3 rounded-md data-[state=active]:bg-black data-[state=active]:text-white dark:data-[state=active]:bg-indigo-600 data-[state=inactive]:bg-white dark:data-[state=inactive]:bg-gray-800 data-[state=inactive]:text-gray-600 dark:data-[state=inactive]:text-gray-300 data-[state=inactive]:hover:text-gray-800 dark:data-[state=inactive]:hover:text-white transition-all"
             >
               Settings
             </TabsTrigger>
           </TabsList>
           
           <TabsContent value="portfolios" className="mt-6">
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-5 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
               {isLoading ? (
                 // Better loading state
                 <div className="col-span-full flex flex-col items-center justify-center py-12">
-                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500 mb-4"></div>
-                  <p className="text-lg text-indigo-600 font-medium">Loading your portfolios...</p>
-                  <p className="text-sm text-gray-500 mt-2">This might take a few seconds</p>
+                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500 dark:border-indigo-400 mb-4"></div>
+                  <p className="text-lg text-indigo-600 dark:text-indigo-400 font-medium">Loading your portfolios...</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">This might take a few seconds</p>
                 </div>
               ) : portfolios.length === 0 ? (
                 // Empty state
-                <Card className="col-span-full overflow-hidden transition-all duration-300 hover:shadow-xl bg-white border border-indigo-100 rounded-xl group">
+                <Card className="col-span-full overflow-hidden transition-all duration-300 hover:shadow-xl bg-white dark:bg-gray-800 border border-indigo-100 dark:border-gray-700 rounded-xl group">
                   <CardContent className="flex flex-col items-center justify-center p-12">
-                    <div className="h-20 w-20 bg-indigo-50 rounded-full flex items-center justify-center mb-4">
+                    <div className="h-20 w-20 bg-indigo-50 dark:bg-indigo-900/20 rounded-full flex items-center justify-center mb-4">
                       <Plus className="h-10 w-10 text-indigo-400" />
                     </div>
-                    <h3 className="text-xl font-medium text-gray-800 mb-2">No portfolios yet</h3>
-                    <p className="text-gray-600 text-center mb-6">Create your first portfolio to showcase your skills and projects.</p>
+                    <h3 className="text-xl font-medium text-gray-800 dark:text-gray-200 mb-2">No portfolios yet</h3>
+                    <p className="text-gray-600 dark:text-gray-400 text-center mb-6">Create your first portfolio to showcase your skills and projects.</p>
                     <Button 
                       onClick={handleCreatePortfolio}
-                      className="bg-black hover:bg-gray-800 text-white shadow-md px-6 py-6 h-auto rounded-md transition-all hover:shadow-lg"
+                      className="bg-black hover:bg-gray-800 dark:bg-indigo-600 dark:hover:bg-indigo-700 text-white shadow-md px-6 py-6 h-auto rounded-md transition-all hover:shadow-lg"
                     >
                       <Plus className="mr-2 h-4 w-4" /> Create Your First Portfolio
                     </Button>
@@ -1262,6 +1266,7 @@ export default function DashboardPage() {
                     name={portfolio.name}
                     title={portfolio.title}
                     templateId={portfolio.templateId}
+                    slug={portfolio.slug}
                     onDelete={handleDeletePortfolio}
                   />
                 ))
@@ -1271,14 +1276,14 @@ export default function DashboardPage() {
               {!isLoading && (
                 <Card 
                   onClick={handleCreatePortfolio}
-                  className="overflow-hidden transition-all duration-300 hover:shadow-xl hover:border-indigo-300 border border-dashed border-indigo-200 rounded-xl bg-white/50 group cursor-pointer"
+                  className="overflow-hidden transition-all duration-300 hover:shadow-xl hover:border-indigo-300 dark:hover:border-indigo-700 border border-dashed border-indigo-200 dark:border-gray-700 rounded-xl bg-white/50 dark:bg-gray-800/50 group cursor-pointer"
                 >
-                  <CardHeader className="pb-2 border-b border-dashed border-indigo-100">
-                    <CardTitle className="text-gray-800">Create New Portfolio</CardTitle>
-                    <CardDescription className="text-indigo-500">Choose from our templates</CardDescription>
+                  <CardHeader className="pb-2 border-b border-dashed border-indigo-100 dark:border-gray-700">
+                    <CardTitle className="text-gray-800 dark:text-gray-200">Create New Portfolio</CardTitle>
+                    <CardDescription className="text-indigo-500 dark:text-indigo-400">Choose from our templates</CardDescription>
                   </CardHeader>
-                  <CardContent className="aspect-video flex items-center justify-center p-0 group-hover:bg-indigo-50/50 transition-colors">
-                    <div className="h-20 w-20 bg-white rounded-full shadow-sm flex items-center justify-center hover:bg-indigo-100 hover:scale-110 transition-all border border-dashed border-indigo-200 group-hover:border-indigo-300">
+                  <CardContent className="aspect-video flex items-center justify-center p-0 group-hover:bg-indigo-50/50 dark:group-hover:bg-indigo-900/20 transition-colors">
+                    <div className="h-20 w-20 bg-white dark:bg-gray-800 rounded-full shadow-sm flex items-center justify-center hover:bg-indigo-100 dark:hover:bg-indigo-900/30 hover:scale-110 transition-all border border-dashed border-indigo-200 dark:border-gray-700 group-hover:border-indigo-300 dark:group-hover:border-indigo-700">
                       <Plus className="h-12 w-12 text-indigo-400" />
                     </div>
                   </CardContent>
@@ -1287,85 +1292,48 @@ export default function DashboardPage() {
             </div>
           </TabsContent>
           
-          <TabsContent value="analytics" className="mt-6">
-            <Card className="bg-white border border-indigo-100 rounded-xl shadow-sm overflow-hidden">
-              <CardHeader className="border-b bg-gradient-to-r from-indigo-50 to-purple-50">
-                <CardTitle className="text-gray-800">Portfolio Analytics</CardTitle>
-                <CardDescription className="text-indigo-700">View statistics for your portfolios</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6 p-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="bg-white p-4 rounded-lg border border-indigo-100 shadow-sm flex items-center justify-between hover:shadow-md transition-shadow">
-                    <div className="flex items-center gap-3">
-                      <div className="bg-indigo-100 p-2 rounded-lg">
-                        <BarChart3 className="h-5 w-5 text-indigo-600" />
-                      </div>
-                      <span className="text-sm font-medium text-gray-700">Total Views</span>
-                    </div>
-                    <span className="text-xl font-bold text-indigo-600">124</span>
-                  </div>
-                  <div className="bg-white p-4 rounded-lg border border-indigo-100 shadow-sm flex items-center justify-between hover:shadow-md transition-shadow">
-                    <div className="flex items-center gap-3">
-                      <div className="bg-purple-100 p-2 rounded-lg">
-                        <Users className="h-5 w-5 text-purple-600" />
-                      </div>
-                      <span className="text-sm font-medium text-gray-700">Unique Visitors</span>
-                    </div>
-                    <span className="text-xl font-bold text-purple-600">87</span>
-                  </div>
-                </div>
-                <div className="h-[250px] w-full bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg flex items-center justify-center border border-indigo-100 shadow-inner">
-                  <div className="text-center">
-                    <BarChart3 className="h-12 w-12 text-indigo-300 mx-auto mb-3" />
-                    <p className="text-sm text-indigo-600 font-medium">Analytics chart will appear here</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-          
           <TabsContent value="settings" className="mt-6">
-            <Card className="bg-white border border-indigo-100 rounded-xl shadow-sm overflow-hidden">
-              <CardHeader className="border-b bg-gradient-to-r from-indigo-50 to-purple-50">
-                <CardTitle className="text-gray-800">Account Settings</CardTitle>
-                <CardDescription className="text-indigo-700">Manage your account preferences</CardDescription>
+            <Card className="bg-white dark:bg-gray-800 border border-indigo-100 dark:border-gray-700 rounded-xl shadow-sm overflow-hidden">
+              <CardHeader className="border-b dark:border-gray-700 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20">
+                <CardTitle className="text-gray-800 dark:text-gray-200">Account Settings</CardTitle>
+                <CardDescription className="text-indigo-700 dark:text-indigo-400">Manage your account preferences</CardDescription>
               </CardHeader>
               <CardContent className="space-y-8 p-6">
                 <div className="space-y-3">
-                  <h3 className="text-lg font-medium text-gray-800 flex items-center gap-2">
-                    <User className="h-5 w-5 text-indigo-500" />
+                  <h3 className="text-lg font-medium text-gray-800 dark:text-gray-200 flex items-center gap-2">
+                    <User className="h-5 w-5 text-indigo-500 dark:text-indigo-400" />
                     Personal Information
                   </h3>
-                  <div className="p-5 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg border border-indigo-100">
+                  <div className="p-5 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 rounded-lg border border-indigo-100 dark:border-gray-700">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                      <div className="bg-white p-4 rounded-lg shadow-sm">
-                        <p className="text-sm text-indigo-500 mb-1">Name</p>
-                        <p className="font-medium text-gray-800">{user?.displayName || "Not set"}</p>
+                      <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm">
+                        <p className="text-sm text-indigo-500 dark:text-indigo-400 mb-1">Name</p>
+                        <p className="font-medium text-gray-800 dark:text-gray-200">{user?.displayName || "Not set"}</p>
                       </div>
-                      <div className="bg-white p-4 rounded-lg shadow-sm">
-                        <p className="text-sm text-indigo-500 mb-1">Email</p>
-                        <p className="font-medium text-gray-800">{user?.email}</p>
+                      <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm">
+                        <p className="text-sm text-indigo-500 dark:text-indigo-400 mb-1">Email</p>
+                        <p className="font-medium text-gray-800 dark:text-gray-200">{user?.email}</p>
                       </div>
-                      <div className="bg-white p-4 rounded-lg shadow-sm">
-                        <p className="text-sm text-indigo-500 mb-1">Account Created</p>
-                        <p className="font-medium text-gray-800">{user?.metadata?.creationTime ? new Date(user.metadata.creationTime).toLocaleDateString() : "Unknown"}</p>
+                      <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm">
+                        <p className="text-sm text-indigo-500 dark:text-indigo-400 mb-1">Account Created</p>
+                        <p className="font-medium text-gray-800 dark:text-gray-200">{user?.metadata?.creationTime ? new Date(user.metadata.creationTime).toLocaleDateString() : "Unknown"}</p>
                       </div>
                     </div>
                   </div>
                 </div>
                 
                 <div className="space-y-3">
-                  <h3 className="text-lg font-medium text-gray-800 flex items-center gap-2">
-                    <Sparkles className="h-5 w-5 text-indigo-500" />
+                  <h3 className="text-lg font-medium text-gray-800 dark:text-gray-200 flex items-center gap-2">
+                    <Sparkles className="h-5 w-5 text-indigo-500 dark:text-indigo-400" />
                     Subscription
                   </h3>
-                  <div className="p-5 bg-white rounded-lg border border-indigo-100 shadow-sm">
+                  <div className="p-5 bg-white dark:bg-gray-800 rounded-lg border border-indigo-100 dark:border-gray-700 shadow-sm">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="font-medium text-gray-800">Free Plan</p>
-                        <p className="text-sm text-gray-500 mt-1">Basic features</p>
+                        <p className="font-medium text-gray-800 dark:text-gray-200">Free Plan</p>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Basic features</p>
                       </div>
-                      <Button className="bg-black hover:bg-gray-800 text-white px-6 py-2 h-auto rounded-md shadow-md hover:shadow-lg transition-all hover:scale-105">
+                      <Button className="bg-black hover:bg-gray-800 dark:bg-indigo-600 dark:hover:bg-indigo-700 text-white px-6 py-2 h-auto rounded-md shadow-md hover:shadow-lg transition-all hover:scale-105">
                         Upgrade
                       </Button>
                     </div>
@@ -1373,26 +1341,26 @@ export default function DashboardPage() {
                 </div>
                 
                 <div className="space-y-3">
-                  <h3 className="text-lg font-medium text-gray-800 flex items-center gap-2">
-                    <Settings className="h-5 w-5 text-indigo-500" />
+                  <h3 className="text-lg font-medium text-gray-800 dark:text-gray-200 flex items-center gap-2">
+                    <Settings className="h-5 w-5 text-indigo-500 dark:text-indigo-400" />
                     Password
                   </h3>
-                  <div className="p-5 bg-white rounded-lg border border-indigo-100 shadow-sm">
-                    <p className="text-sm text-gray-600 mb-3">Change your password to keep your account secure</p>
-                    <Button variant="outline" className="border-indigo-200 hover:border-indigo-300 hover:bg-indigo-50 text-gray-700 rounded-md">
+                  <div className="p-5 bg-white dark:bg-gray-800 rounded-lg border border-indigo-100 dark:border-gray-700 shadow-sm">
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">Change your password to keep your account secure</p>
+                    <Button variant="outline" className="border-indigo-200 dark:border-gray-700 hover:border-indigo-300 dark:hover:border-gray-600 hover:bg-indigo-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-md">
                       Change Password
                     </Button>
                   </div>
                 </div>
                 
                 <div className="space-y-3">
-                  <h3 className="text-lg font-medium text-gray-800 flex items-center gap-2 text-red-600">
+                  <h3 className="text-lg font-medium text-gray-800 dark:text-gray-200 flex items-center gap-2 text-red-600 dark:text-red-400">
                     <LogOut className="h-5 w-5" />
                     Delete Account
                   </h3>
-                  <div className="p-5 bg-red-50 rounded-lg border border-red-100 shadow-sm">
-                    <p className="text-sm text-red-600 mb-3">Permanently delete your account and all data. This action cannot be undone.</p>
-                    <Button variant="destructive" className="bg-red-600 hover:bg-red-700 rounded-md">
+                  <div className="p-5 bg-red-50 dark:bg-red-900/10 rounded-lg border border-red-100 dark:border-red-900/30 shadow-sm">
+                    <p className="text-sm text-red-600 dark:text-red-400 mb-3">Permanently delete your account and all data. This action cannot be undone.</p>
+                    <Button variant="destructive" className="bg-red-600 hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-800 rounded-md">
                       Delete Account
                     </Button>
                   </div>
@@ -1410,33 +1378,33 @@ export default function DashboardPage() {
           setIsCreateModalOpen(open);
         }
       }}>
-        <DialogContent className="sm:max-w-[600px] p-0 rounded-xl overflow-hidden max-h-[90vh] flex flex-col">
-          <DialogHeader className="px-6 pt-6 pb-3 border-b bg-gradient-to-r from-indigo-50 to-purple-50 shrink-0">
-            <DialogTitle className="text-2xl font-bold text-gray-800">Create New Portfolio</DialogTitle>
-            <DialogDescription className="text-indigo-700">
+        <DialogContent className="sm:max-w-[600px] p-0 rounded-xl overflow-hidden max-h-[90vh] flex flex-col bg-white dark:bg-gray-800 border-none">
+          <DialogHeader className="px-6 pt-6 pb-3 border-b dark:border-gray-700 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-gray-800 dark:to-gray-800 shrink-0">
+            <DialogTitle className="text-2xl font-bold text-gray-800 dark:text-gray-200">Create New Portfolio</DialogTitle>
+            <DialogDescription className="text-indigo-700 dark:text-indigo-400">
               Complete the steps below to set up your portfolio
             </DialogDescription>
           </DialogHeader>
           
-          <div className="px-6 pb-3 pt-4 border-b shrink-0">
-            <div className="flex justify-between mb-2 text-xs text-gray-500">
+          <div className="px-6 pb-3 pt-4 border-b dark:border-gray-700 shrink-0">
+            <div className="flex justify-between mb-2 text-xs text-gray-500 dark:text-gray-400">
               <span>Step {currentStep} of {totalSteps}</span>
               <span>{Math.round(progress)}%</span>
             </div>
-            <Progress value={progress} className="h-2 bg-indigo-100 progress" />
+            <Progress value={progress} className="h-2 bg-indigo-100 dark:bg-indigo-900/30 progress" />
           </div>
           
-          <div className="px-6 pt-4 overflow-y-auto flex-grow" style={{ maxHeight: 'calc(90vh - 210px)' }}>
+          <div className="px-6 pt-4 overflow-y-auto flex-grow dark:bg-gray-800" style={{ maxHeight: 'calc(90vh - 210px)' }}>
             {/* Content for each step */}
             <div className="pb-6">
               {/* Step 1: Basic Information */}
               {currentStep === 1 && (
                 <div className="py-4 space-y-4">
-                  <h3 className="text-lg font-medium text-gray-800">Basic Information</h3>
+                  <h3 className="text-lg font-medium text-gray-800 dark:text-gray-200">Basic Information</h3>
                   
                   {/* Full Name Field - required */}
                   <div className="space-y-2">
-                    <Label htmlFor="fullName" className={hasError('fullName') ? errorLabelClass : ""}>
+                    <Label htmlFor="fullName" className={hasError('fullName') ? errorLabelClass : "dark:text-gray-300"}>
                       Full Name <span className="text-red-500">*</span>
                     </Label>
                     <Input 
@@ -1445,24 +1413,24 @@ export default function DashboardPage() {
                       placeholder="Pablos Tselioudis" 
                       value={portfolioData.fullName}
                       onChange={handleInputChange}
-                      className={`border-indigo-100 focus:border-indigo-300 focus:ring-indigo-200 ${
+                      className={`border-indigo-100 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 focus:border-indigo-300 focus:ring-indigo-200 dark:focus:border-indigo-500 dark:focus:ring-indigo-500 ${
                         hasError('fullName') ? errorInputClass : ""
                       }`}
                       required
                     />
-                    <p className="text-xs text-gray-500">Your complete name as it will appear on your portfolio.</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">Your complete name as it will appear on your portfolio.</p>
                   </div>
                   
                   {/* Profile Picture Upload - required */}
                   <div className="space-y-2">
-                    <Label htmlFor="profilePicture" className={hasError('profilePicture') ? errorLabelClass : ""}>
+                    <Label htmlFor="profilePicture" className={hasError('profilePicture') ? errorLabelClass : "dark:text-gray-300"}>
                       Profile Picture <span className="text-red-500">*</span>
                     </Label>
                     <div className="flex items-center gap-4">
                       <div className={`w-24 h-24 rounded-full overflow-hidden flex items-center justify-center ${
                         hasError('profilePicture') 
                           ? "bg-red-50 border border-red-300" 
-                          : "bg-indigo-50 border border-indigo-100"
+                          : "bg-indigo-50 dark:bg-gray-700 border border-indigo-100 dark:border-gray-600"
                       }`}>
                         {portfolioData.profilePicture ? (
                           <img 
@@ -1471,7 +1439,7 @@ export default function DashboardPage() {
                             className="w-full h-full object-cover"
                           />
                         ) : (
-                          <User className={`w-12 h-12 ${hasError('profilePicture') ? "text-red-300" : "text-indigo-300"}`} />
+                          <User className={`w-12 h-12 ${hasError('profilePicture') ? "text-red-300" : "text-indigo-300 dark:text-indigo-400"}`} />
                         )}
                       </div>
                       
@@ -1482,18 +1450,18 @@ export default function DashboardPage() {
                           className={`border-2 border-dashed rounded-lg p-4 text-center transition-colors ${
                             hasError('profilePicture') 
                               ? "border-red-300 hover:border-red-500 bg-red-50" 
-                              : "border-indigo-100 hover:border-indigo-300"
+                              : "border-indigo-100 dark:border-gray-600 hover:border-indigo-300 dark:hover:border-indigo-500 dark:bg-gray-700"
                           }`}
                         >
                           {portfolioData.profilePicture ? (
                             <div className="space-y-2">
-                              <div className="text-sm text-indigo-600">
+                              <div className="text-sm text-indigo-600 dark:text-indigo-400">
                                 Selected image: {portfolioData.profilePicture.name}
                               </div>
                               <Button 
                                 variant="outline" 
                                 size="sm" 
-                                className="border-indigo-200 text-xs rounded-md"
+                                className="border-indigo-200 dark:border-gray-600 text-xs rounded-md dark:text-gray-300"
                                 onClick={() => document.getElementById('profile-picture-upload')?.click()}
                               >
                                 Change Image
@@ -1501,14 +1469,14 @@ export default function DashboardPage() {
                             </div>
                           ) : (
                             <>
-                              <Upload className={`h-8 w-8 mx-auto mb-2 ${hasError('profilePicture') ? "text-red-300" : "text-indigo-300"}`} />
-                              <div className="text-sm text-gray-600 mb-2">
+                              <Upload className={`h-8 w-8 mx-auto mb-2 ${hasError('profilePicture') ? "text-red-300" : "text-indigo-300 dark:text-indigo-400"}`} />
+                              <div className="text-sm text-gray-600 dark:text-gray-400 mb-2">
                                 Upload a profile picture
                               </div>
                               <Button 
                                 variant="outline" 
                                 size="sm" 
-                                className="border-indigo-200 text-xs rounded-md"
+                                className="border-indigo-200 dark:border-gray-600 text-xs rounded-md dark:text-gray-300"
                                 onClick={() => document.getElementById('profile-picture-upload')?.click()}
                               >
                                 Select Image
@@ -1529,13 +1497,13 @@ export default function DashboardPage() {
                             }}
                           />
                         </div>
-                        <p className="text-xs text-gray-500 mt-1">Recommended: Square image (1:1 ratio), max 2MB. Formats: JPG, PNG.</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Recommended: Square image (1:1 ratio), max 2MB. Formats: JPG, PNG.</p>
                       </div>
                     </div>
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="name" className={hasError('name') ? errorLabelClass : ""}>
+                    <Label htmlFor="name" className={hasError('name') ? errorLabelClass : "dark:text-gray-300"}>
                       Portfolio Name <span className="text-red-500">*</span>
                     </Label>
                     <Input 
@@ -1544,15 +1512,15 @@ export default function DashboardPage() {
                       placeholder="My Professional Portfolio" 
                       value={portfolioData.name}
                       onChange={handleInputChange}
-                      className={`border-indigo-100 focus:border-indigo-300 focus:ring-indigo-200 ${
+                      className={`border-indigo-100 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 focus:border-indigo-300 focus:ring-indigo-200 dark:focus:border-indigo-500 dark:focus:ring-indigo-500 ${
                         hasError('name') ? errorInputClass : ""
                       }`}
                       required
                     />
-                    <p className="text-xs text-gray-500">This name is only used to identify your portfolio in your dashboard. It will NOT appear on the actual portfolio.</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">This name is only used to identify your portfolio in your dashboard. It will NOT appear on the actual portfolio.</p>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="title" className={hasError('title') ? errorLabelClass : ""}>
+                    <Label htmlFor="title" className={hasError('title') ? errorLabelClass : "dark:text-gray-300"}>
                       Professional Title <span className="text-red-500">*</span>
                     </Label>
                     <Input 
@@ -1561,15 +1529,15 @@ export default function DashboardPage() {
                       placeholder="Frontend Developer" 
                       value={portfolioData.title}
                       onChange={handleInputChange}
-                      className={`border-indigo-100 focus:border-indigo-300 focus:ring-indigo-200 ${
+                      className={`border-indigo-100 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 focus:border-indigo-300 focus:ring-indigo-200 dark:focus:border-indigo-500 dark:focus:ring-indigo-500 ${
                         hasError('title') ? errorInputClass : ""
                       }`}
                       required
                     />
-                    <p className="text-xs text-gray-500">Your job title or professional focus.</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">Your job title or professional focus.</p>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="smallIntro" className={hasError('smallIntro') ? errorLabelClass : ""}>
+                    <Label htmlFor="smallIntro" className={hasError('smallIntro') ? errorLabelClass : "dark:text-gray-300"}>
                       Small Intro <span className="text-red-500">*</span>
                     </Label>
                     <Input 
@@ -1578,15 +1546,15 @@ export default function DashboardPage() {
                       placeholder="A brief one-sentence introduction" 
                       value={portfolioData.smallIntro}
                       onChange={handleInputChange}
-                      className={`border-indigo-100 focus:border-indigo-300 focus:ring-indigo-200 ${
+                      className={`border-indigo-100 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 focus:border-indigo-300 focus:ring-indigo-200 dark:focus:border-indigo-500 dark:focus:ring-indigo-500 ${
                         hasError('smallIntro') ? errorInputClass : ""
                       }`}
                       required
                     />
-                    <p className="text-xs text-gray-500">A short introduction for the homepage header (1 sentence).</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">A short introduction for the homepage header (1 sentence).</p>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="about" className={hasError('about') ? errorLabelClass : ""}>
+                    <Label htmlFor="about" className={hasError('about') ? errorLabelClass : "dark:text-gray-300"}>
                       About Me <span className="text-red-500">*</span>
                     </Label>
                     <Textarea 
@@ -1595,12 +1563,12 @@ export default function DashboardPage() {
                       placeholder="I'm a passionate developer with 5 years of experience..." 
                       value={portfolioData.about}
                       onChange={handleInputChange}
-                      className={`min-h-[120px] border-indigo-100 focus:border-indigo-300 focus:ring-indigo-200 ${
+                      className={`min-h-[120px] border-indigo-100 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 focus:border-indigo-300 focus:ring-indigo-200 dark:focus:border-indigo-500 dark:focus:ring-indigo-500 ${
                         hasError('about') ? errorInputClass : ""
                       }`}
                       required
                     />
-                    <p className="text-xs text-gray-500">A brief introduction about yourself.</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">A brief introduction about yourself.</p>
                   </div>
                 </div>
               )}
@@ -1608,14 +1576,14 @@ export default function DashboardPage() {
               {/* Step 2: CV Upload and Personal Details */}
               {currentStep === 2 && (
                 <div className="py-4 space-y-6">
-                  <h3 className="text-lg font-medium text-gray-800">Resume/CV & Personal Details</h3>
+                  <h3 className="text-lg font-medium text-gray-800 dark:text-gray-200">Resume/CV & Personal Details</h3>
                   
                   {/* Resume Upload Section - Optional */}
                   <div className="space-y-3">
-                    <Label className="text-gray-800 font-medium">Resume/CV Upload (Optional)</Label>
-                    <div className="border-2 border-dashed border-indigo-100 rounded-lg p-8 text-center hover:border-indigo-300 transition-colors">
-                      <Upload className="h-10 w-10 text-indigo-300 mx-auto mb-4" />
-                      <div className="text-sm text-gray-600 mb-4">
+                    <Label className="text-gray-800 dark:text-gray-200 font-medium">Resume/CV Upload <span className="text-indigo-500 dark:text-indigo-400 font-normal">(Optional)</span></Label>
+                    <div className="border-2 border-dashed border-indigo-100 dark:border-gray-700 rounded-lg p-8 text-center hover:border-indigo-300 dark:hover:border-indigo-500 transition-colors bg-white dark:bg-gray-800">
+                      <Upload className="h-10 w-10 text-indigo-300 dark:text-indigo-400 mx-auto mb-4" />
+                      <div className="text-sm text-gray-600 dark:text-gray-300 mb-4">
                         {portfolioData.cv 
                           ? `Selected file: ${portfolioData.cv.name}` 
                           : "Drag and drop your CV here, or click to browse"}
@@ -1634,22 +1602,23 @@ export default function DashboardPage() {
                       <Button 
                         variant="outline" 
                         size="sm" 
-                        className="border-indigo-200 hover:border-indigo-300 hover:bg-indigo-50 text-gray-700 rounded-md"
+                        className="border-indigo-200 dark:border-gray-600 hover:border-indigo-300 dark:hover:border-indigo-500 hover:bg-indigo-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-md"
                         onClick={() => document.getElementById('cv-upload')?.click()}
                       >
                         Select File
                       </Button>
                     </div>
-                    <p className="text-xs text-gray-500 font-medium">Accepted formats: PDF, DOC, DOCX, max 5MB.</p>
-                    <p className="text-xs text-indigo-600">Visitors to your portfolio will be able to download your CV.</p>
+                    <p className="text-xs text-gray-600 dark:text-gray-300 font-medium">Accepted formats: PDF, DOC, DOCX, max 5MB.</p>
+                    <p className="text-xs text-indigo-600 dark:text-indigo-400">Visitors to your portfolio will be able to download your CV.</p>
+                    <p className="text-xs italic text-gray-500 dark:text-gray-400">Your CV is optional. You can create your portfolio without uploading a CV.</p>
                   </div>
                   
                   {/* Personal Information Section */}
                   <div className="space-y-3">
-                    <Label className="text-gray-800 font-medium">Personal Information</Label>
-                    <div className="space-y-3 p-3 rounded-lg border border-indigo-100 bg-indigo-50/30">
+                    <Label className="text-gray-800 dark:text-gray-200 font-medium">Personal Information</Label>
+                    <div className="space-y-3 p-3 rounded-lg border border-indigo-100 dark:border-gray-700 bg-indigo-50/30 dark:bg-gray-800/50">
                       <div className="space-y-2">
-                        <Label htmlFor="email" className={hasError('email') ? errorLabelClass : ""}>
+                        <Label htmlFor="email" className={hasError('email') ? errorLabelClass : "dark:text-gray-300"}>
                           Email Address <span className="text-red-500">*</span>
                         </Label>
                         <Input 
@@ -1659,16 +1628,16 @@ export default function DashboardPage() {
                           value={portfolioData.email || ""}
                           onChange={handleInputChange}
                           placeholder="email@example.com" 
-                          className={`border-indigo-100 focus:border-indigo-300 focus:ring-indigo-200 ${
+                          className={`border-indigo-100 dark:border-gray-700 dark:bg-gray-700 dark:text-gray-200 focus:border-indigo-300 dark:focus:border-indigo-500 focus:ring-indigo-200 dark:focus:ring-indigo-500 ${
                             hasError('email') ? errorInputClass : ""
                           }`}
                           required
                         />
-                        <p className="text-xs text-gray-500">Your contact email for professional inquiries.</p>
+                        <p className="text-xs text-gray-600 dark:text-gray-300">Your contact email for professional inquiries.</p>
                       </div>
                       
                       <div className="space-y-2">
-                        <Label htmlFor="phone" className={hasError('phone') ? errorLabelClass : ""}>
+                        <Label htmlFor="phone" className={hasError('phone') ? errorLabelClass : "dark:text-gray-300"}>
                           Phone Number <span className="text-red-500">*</span>
                         </Label>
                         <Input 
@@ -1677,18 +1646,18 @@ export default function DashboardPage() {
                           value={portfolioData.phone || ""}
                           onChange={handleInputChange}
                           placeholder="+1 (555) 123-4567" 
-                          className={`border-indigo-100 focus:border-indigo-300 focus:ring-indigo-200 ${
+                          className={`border-indigo-100 dark:border-gray-700 dark:bg-gray-700 dark:text-gray-200 focus:border-indigo-300 dark:focus:border-indigo-500 focus:ring-indigo-200 dark:focus:ring-indigo-500 ${
                             hasError('phone') ? errorInputClass : ""
                           }`}
                           required
                         />
-                        <p className="text-xs text-gray-500">Your contact phone number.</p>
+                        <p className="text-xs text-gray-600 dark:text-gray-300">Your contact phone number.</p>
                       </div>
                       
                       {/* GitHub Profile Field - optional */}
                       <div className="space-y-2">
-                        <Label htmlFor="githubProfile">
-                          GitHub Profile URL <span className="text-gray-400">(optional)</span>
+                        <Label htmlFor="githubProfile" className="dark:text-gray-300">
+                          GitHub Profile URL <span className="text-gray-400 dark:text-gray-500">(optional)</span>
                         </Label>
                         <Input 
                           id="githubProfile"
@@ -1696,9 +1665,9 @@ export default function DashboardPage() {
                           value={portfolioData.githubProfile || ""}
                           onChange={handleInputChange}
                           placeholder="https://github.com/yourusername" 
-                          className="border-indigo-100 focus:border-indigo-300 focus:ring-indigo-200"
+                          className="border-indigo-100 dark:border-gray-700 dark:bg-gray-700 dark:text-gray-200 focus:border-indigo-300 dark:focus:border-indigo-500 focus:ring-indigo-200 dark:focus:ring-indigo-500"
                         />
-                        <p className="text-xs text-gray-500">Your GitHub profile URL. Will be linked from your projects section.</p>
+                        <p className="text-xs text-gray-600 dark:text-gray-300">Your GitHub profile URL. Will be linked from your projects section.</p>
                       </div>
                     </div>
                   </div>
@@ -1706,14 +1675,14 @@ export default function DashboardPage() {
                   {/* Skills Section - At least 3 required */}
                   <div className="space-y-3">
                     <div className="flex justify-between items-center">
-                      <Label className={`text-gray-800 ${hasError('skills') ? errorLabelClass : ""}`}>
-                        Skills <span className="text-red-500">*</span> <span className="text-xs font-normal">(at least 3 required)</span>
+                      <Label className={`text-gray-800 dark:text-gray-200 ${hasError('skills') ? errorLabelClass : ""}`}>
+                        Skills <span className="text-red-500">*</span> <span className="text-xs font-normal dark:text-gray-300">(at least 3 required)</span>
                       </Label>
                       <Button 
                         type="button" 
                         size="sm" 
                         variant="outline" 
-                        className="h-8 text-xs border-indigo-200"
+                        className="h-8 text-xs border-indigo-200 dark:border-gray-700 text-gray-700 dark:text-gray-300"
                         onClick={handleAddSkill}
                       >
                         Add Skill
@@ -1721,7 +1690,7 @@ export default function DashboardPage() {
                     </div>
                     
                     {portfolioData.skills.length === 0 ? (
-                      <p className={`text-sm italic ${hasError('skills') ? "text-red-500" : "text-gray-500"}`}>
+                      <p className={`text-sm italic ${hasError('skills') ? "text-red-500" : "text-gray-500 dark:text-gray-400"}`}>
                         No skills added yet. Click "Add Skill" to begin.
                       </p>
                     ) : (
@@ -1741,7 +1710,7 @@ export default function DashboardPage() {
                                 }
                               }}
                               placeholder="e.g. React, JavaScript, UI Design" 
-                              className={`flex-1 border-indigo-100 ${
+                              className={`flex-1 border-indigo-100 dark:border-gray-700 dark:bg-gray-700 dark:text-gray-200 ${
                                 hasError(`skill-${index}`) ? errorInputClass : ""
                               }`}
                             />
@@ -1749,7 +1718,7 @@ export default function DashboardPage() {
                               type="button" 
                               variant="ghost" 
                               size="icon" 
-                              className="h-8 w-8 text-gray-400 hover:text-red-500"
+                              className="h-8 w-8 text-gray-400 hover:text-red-500 dark:text-gray-500 dark:hover:text-red-400"
                               onClick={() => handleRemoveSkill(index)}
                               disabled={portfolioData.skills.length <= 3} // Prevent removing if only 3 skills left
                             >
@@ -1769,21 +1738,21 @@ export default function DashboardPage() {
               {/* Step 3: Projects */}
               {currentStep === 3 && (
                 <div className="py-4 space-y-6">
-                  <h3 className="text-lg font-medium text-gray-800">Projects</h3>
+                  <h3 className="text-lg font-medium text-gray-800 dark:text-gray-200">Projects</h3>
                   
                   <div className="space-y-2">
-                    <Label htmlFor="projectCount">How many projects would you like to showcase?</Label>
+                    <Label htmlFor="projectCount" className="dark:text-gray-300">How many projects would you like to showcase?</Label>
                     <select 
                       id="projectCount"
                       value={portfolioData.projectCount}
                       onChange={(e) => handleUpdateProjectCount(e.target.value)}
-                      className="w-full h-10 rounded-md border border-indigo-100 focus:border-indigo-300 focus:ring-indigo-200"
+                      className="w-full h-10 rounded-md border border-indigo-100 dark:border-gray-700 dark:bg-gray-700 dark:text-gray-200 focus:border-indigo-300 dark:focus:border-indigo-500 focus:ring-indigo-200 dark:focus:ring-indigo-500"
                     >
                       {[1, 2, 3, 4, 5, 6].map(num => (
                         <option key={num} value={num}>{num}</option>
                       ))}
                     </select>
-                    <p className="text-xs text-gray-500">You can showcase up to 6 projects in your portfolio.</p>
+                    <p className="text-xs text-gray-600 dark:text-gray-300">You can showcase up to 6 projects in your portfolio.</p>
                   </div>
                   
                   <div className="space-y-6 mt-4">
@@ -1792,9 +1761,9 @@ export default function DashboardPage() {
                         key={index} 
                         data-project-index={index}
                         id={`project-container-${index}`}
-                        className="project-container p-4 border border-indigo-100 rounded-lg space-y-4 bg-indigo-50/30"
+                        className="project-container p-4 border border-indigo-100 dark:border-gray-700 rounded-lg space-y-4 bg-indigo-50/30 dark:bg-gray-800/50"
                       >
-                        <h4 className="font-medium text-indigo-600 flex justify-between">
+                        <h4 className="font-medium text-indigo-600 dark:text-indigo-400 flex justify-between">
                           Project {index + 1}
                         </h4>
                         
@@ -1802,7 +1771,7 @@ export default function DashboardPage() {
                           <div className="space-y-2">
                             <Label 
                               htmlFor={`project-${index}-name`}
-                              className={hasError(`project-${index}-name`) ? errorLabelClass : ""}
+                              className={hasError(`project-${index}-name`) ? errorLabelClass : "dark:text-gray-300"}
                             >
                               Project Name <span className="text-red-500">*</span>
                             </Label>
@@ -1819,7 +1788,7 @@ export default function DashboardPage() {
                                 }
                               }}
                               placeholder="My Awesome Project"
-                              className={`border-indigo-100 ${
+                              className={`border-indigo-100 dark:border-gray-700 dark:bg-gray-700 dark:text-gray-200 ${
                                 hasError(`project-${index}-name`) ? errorInputClass : ""
                               }`}
                               required
@@ -1829,7 +1798,7 @@ export default function DashboardPage() {
                           <div className="space-y-2">
                             <Label 
                               htmlFor={`project-${index}-description`}
-                              className={hasError(`project-${index}-description`) ? errorLabelClass : ""}
+                              className={hasError(`project-${index}-description`) ? errorLabelClass : "dark:text-gray-300"}
                             >
                               Description <span className="text-red-500">*</span>
                             </Label>
@@ -1846,7 +1815,7 @@ export default function DashboardPage() {
                                 }
                               }}
                               placeholder="Describe what this project is about, technologies used, and your role"
-                              className={`min-h-[80px] border-indigo-100 ${
+                              className={`min-h-[80px] border-indigo-100 dark:border-gray-700 dark:bg-gray-700 dark:text-gray-200 ${
                                 hasError(`project-${index}-description`) ? errorInputClass : ""
                               }`}
                               required
@@ -1856,7 +1825,7 @@ export default function DashboardPage() {
                           <div className="space-y-2">
                             <Label 
                               htmlFor={`project-${index}-image`}
-                              className={hasError(`project-${index}-image`) ? errorLabelClass : ""}
+                              className={hasError(`project-${index}-image`) ? errorLabelClass : "dark:text-gray-300"}
                             >
                               Project Image <span className="text-red-500">*</span>
                             </Label>
@@ -1864,19 +1833,19 @@ export default function DashboardPage() {
                               data-image-upload-container={`project-${index}`}
                               className={`border-2 border-dashed rounded-lg p-4 text-center transition-colors ${
                                 hasError(`project-${index}-image`) 
-                                  ? "border-red-300 hover:border-red-500 bg-red-50" 
-                                  : "border-indigo-100 hover:border-indigo-300"
+                                  ? "border-red-300 dark:border-red-700 hover:border-red-500 dark:hover:border-red-600 bg-red-50 dark:bg-red-900/20" 
+                                  : "border-indigo-100 dark:border-gray-700 hover:border-indigo-300 dark:hover:border-indigo-500 dark:bg-gray-800"
                               }`}
                             >
                               {project.image ? (
                                 <div className="space-y-2">
-                                  <div className="text-sm text-indigo-600">
+                                  <div className="text-sm text-indigo-600 dark:text-indigo-400">
                                     Selected image: {project.image.name}
                                   </div>
                                   <Button 
                                     variant="outline" 
                                     size="sm" 
-                                    className="border-indigo-200 text-xs rounded-md"
+                                    className="border-indigo-200 dark:border-gray-700 text-xs rounded-md text-gray-700 dark:text-gray-300"
                                     onClick={() => document.getElementById(`project-${index}-image-upload`)?.click()}
                                   >
                                     Change Image
@@ -1885,15 +1854,17 @@ export default function DashboardPage() {
                               ) : (
                                 <>
                                   <Upload className={`h-8 w-8 mx-auto mb-2 ${
-                                    hasError(`project-${index}-image`) ? "text-red-300" : "text-indigo-300"
+                                    hasError(`project-${index}-image`) 
+                                      ? "text-red-300 dark:text-red-400" 
+                                      : "text-indigo-300 dark:text-indigo-400"
                                   }`} />
-                                  <div className="text-sm text-gray-600 mb-2">
+                                  <div className="text-sm text-gray-600 dark:text-gray-300 mb-2">
                                     Upload a screenshot or image of your project
                                   </div>
                                   <Button 
                                     variant="outline" 
                                     size="sm" 
-                                    className="border-indigo-200 text-xs rounded-md"
+                                    className="border-indigo-200 dark:border-gray-700 text-xs rounded-md text-gray-700 dark:text-gray-300"
                                     onClick={() => document.getElementById(`project-${index}-image-upload`)?.click()}
                                   >
                                     Select Image
@@ -1916,37 +1887,37 @@ export default function DashboardPage() {
                                 }}
                               />
                             </div>
-                            <p className="text-xs text-gray-500">Recommended size: 1200x800px, max 2MB. Formats: JPG, PNG.</p>
+                            <p className="text-xs text-gray-600 dark:text-gray-300">Recommended size: 1200x800px, max 2MB. Formats: JPG, PNG.</p>
                           </div>
 
                           <div className="space-y-2">
-                            <Label htmlFor={`project-${index}-github`}>
-                              GitHub Repository URL <span className="text-xs text-gray-500 font-normal">(optional)</span>
+                            <Label htmlFor={`project-${index}-github`} className="dark:text-gray-300">
+                              GitHub Repository URL <span className="text-xs text-gray-500 dark:text-gray-400 font-normal">(optional)</span>
                             </Label>
                             <Input 
                               id={`project-${index}-github`}
                               value={project.githubUrl || ''}
                               onChange={(e) => handleUpdateProject(index, 'githubUrl', e.target.value)}
                               placeholder="https://github.com/username/repository"
-                              className="border-indigo-100"
+                              className="border-indigo-100 dark:border-gray-700 dark:bg-gray-700 dark:text-gray-200"
                             />
-                            <p className="text-xs text-gray-500">Link to your GitHub repository</p>
+                            <p className="text-xs text-gray-600 dark:text-gray-300">Link to your GitHub repository</p>
                           </div>
 
                           <div className="space-y-2">
-                            <Label htmlFor={`project-${index}-report`}>
-                              Project Report <span className="text-xs text-gray-500 font-normal">(optional)</span>
+                            <Label htmlFor={`project-${index}-report`} className="dark:text-gray-300">
+                              Project Report <span className="text-xs text-gray-500 dark:text-gray-400 font-normal">(optional)</span>
                             </Label>
-                            <div className="border-2 border-dashed border-indigo-100 rounded-lg p-4 text-center hover:border-indigo-300 transition-colors">
+                            <div className="border-2 border-dashed border-indigo-100 dark:border-gray-700 rounded-lg p-4 text-center hover:border-indigo-300 dark:hover:border-indigo-500 transition-colors dark:bg-gray-800">
                               {project.reportFile ? (
                                 <div className="space-y-2">
-                                  <div className="text-sm text-indigo-600">
+                                  <div className="text-sm text-indigo-600 dark:text-indigo-400">
                                     Selected file: {project.reportFile.name}
                                   </div>
                                   <Button 
                                     variant="outline" 
                                     size="sm" 
-                                    className="border-indigo-200 text-xs rounded-md"
+                                    className="border-indigo-200 dark:border-gray-700 text-xs rounded-md text-gray-700 dark:text-gray-300"
                                     onClick={() => document.getElementById(`project-${index}-report-upload`)?.click()}
                                   >
                                     Change Report
@@ -1954,14 +1925,14 @@ export default function DashboardPage() {
                                 </div>
                               ) : (
                                 <>
-                                  <File className="h-8 w-8 text-indigo-300 mx-auto mb-2" />
-                                  <div className="text-sm text-gray-600 mb-2">
+                                  <File className="h-8 w-8 text-indigo-300 dark:text-indigo-400 mx-auto mb-2" />
+                                  <div className="text-sm text-gray-600 dark:text-gray-300 mb-2">
                                     Upload a report or documentation for your project
                                   </div>
                                   <Button 
                                     variant="outline" 
                                     size="sm" 
-                                    className="border-indigo-200 text-xs rounded-md"
+                                    className="border-indigo-200 dark:border-gray-700 text-xs rounded-md text-gray-700 dark:text-gray-300"
                                     onClick={() => document.getElementById(`project-${index}-report-upload`)?.click()}
                                   >
                                     Select Report
@@ -1980,7 +1951,7 @@ export default function DashboardPage() {
                                 }}
                               />
                             </div>
-                            <p className="text-xs text-gray-500">Upload project documentation (PDF, Word, PowerPoint). Max 10MB.</p>
+                            <p className="text-xs text-gray-600 dark:text-gray-300">Upload project documentation (PDF, Word, PowerPoint). Max 10MB.</p>
                           </div>
                         </div>
                       </div>
@@ -1992,8 +1963,8 @@ export default function DashboardPage() {
               {/* Step 4: Choose Template */}
               {currentStep === 4 && (
                 <div className="py-4 space-y-4">
-                  <h3 className="text-lg font-medium text-gray-800">Choose a template</h3>
-                  <p className="text-sm text-gray-600">Select a design template for your portfolio website.</p>
+                  <h3 className="text-lg font-medium text-gray-800 dark:text-gray-200">Choose a template</h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">Select a design template for your portfolio website.</p>
                   
                   <div className="grid grid-cols-2 gap-4 mt-2">
                     {TEMPLATES.map(template => (
@@ -2001,14 +1972,14 @@ export default function DashboardPage() {
                         key={template.id}
                       className={`border rounded-lg overflow-hidden cursor-pointer transition-all ${
                           selectedTemplate === template.id 
-                          ? "border-indigo-500 ring-2 ring-indigo-200" 
-                          : "border-gray-200 hover:border-indigo-300"
+                          ? "border-indigo-500 dark:border-indigo-400 ring-2 ring-indigo-200 dark:ring-indigo-700" 
+                          : "border-gray-200 dark:border-gray-700 hover:border-indigo-300 dark:hover:border-indigo-500"
                       }`}
                         onClick={() => handleTemplateSelect(template.id)}
                         onMouseEnter={() => setHoveredTemplate(template.id)}
                       onMouseLeave={() => setHoveredTemplate(null)}
                     >
-                      <div className="aspect-[16/9] bg-white flex items-center justify-center relative overflow-hidden">
+                      <div className="aspect-[16/9] bg-white dark:bg-gray-800 flex items-center justify-center relative overflow-hidden">
                         <div className="absolute inset-0 w-full h-full">
                           <img 
                               src={template.previewImage}
@@ -2033,16 +2004,16 @@ export default function DashboardPage() {
                             )}
                         </div>
                       </div>
-                      <div className="p-3 bg-white text-center">
-                          <div className="font-medium text-gray-800">{template.name}</div>
-                          <div className="text-xs text-gray-500">{template.description}</div>
+                      <div className="p-3 bg-white dark:bg-gray-800 text-center">
+                          <div className="font-medium text-gray-800 dark:text-gray-200">{template.name}</div>
+                          <div className="text-xs text-gray-500 dark:text-gray-400">{template.description}</div>
                       </div>
                     </div>
                     ))}
                   </div>
                   
-                  <div className="mt-4 p-4 bg-indigo-50 rounded-lg border border-indigo-100">
-                    <p className="text-sm text-indigo-700">
+                  <div className="mt-4 p-4 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg border border-indigo-100 dark:border-indigo-800">
+                    <p className="text-sm text-indigo-700 dark:text-indigo-300">
                       Each template features a single-page design with progressive disclosure for a smooth user experience.
                     </p>
                   </div>
@@ -2051,12 +2022,12 @@ export default function DashboardPage() {
             </div>
           </div>
           
-          <div className="flex justify-between p-6 bg-gradient-to-r from-indigo-50 to-purple-50 border-t shrink-0">
+          <div className="flex justify-between p-6 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-gray-800 dark:to-gray-800 border-t dark:border-gray-700 shrink-0">
             <Button 
               variant="outline" 
               onClick={() => currentStep === 1 ? setIsCreateModalOpen(false) : handlePreviousStep()}
               disabled={isSubmitting}
-              className="border-indigo-200 hover:border-indigo-300 hover:bg-indigo-50 text-gray-700 rounded-md"
+              className="border-indigo-200 dark:border-gray-600 hover:border-indigo-300 dark:hover:border-gray-500 hover:bg-indigo-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-md"
             >
               {currentStep === 1 ? (
                 <>
@@ -2071,7 +2042,7 @@ export default function DashboardPage() {
             <Button 
               onClick={handleNextStep}
               disabled={isSubmitting}
-              className="bg-black hover:bg-gray-800 text-white px-6 rounded-md"
+              className="bg-black hover:bg-gray-800 dark:bg-indigo-600 dark:hover:bg-indigo-700 text-white px-6 rounded-md"
             >
               {currentStep === totalSteps ? (
                 <>

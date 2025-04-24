@@ -1,15 +1,24 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/lib/auth-context"
 import { Button } from "@/components/ui/button"
-import { Sparkles } from "lucide-react"
+import { Sparkles, Moon, Sun } from "lucide-react"
 import { toast } from "sonner"
+import { useTheme } from "next-themes"
 
 export function AuthNav() {
   const { user, logout, loading } = useAuth()
   const router = useRouter()
+  const { theme, setTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+
+  // After hydration, set mounted to true
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const handleLogout = async () => {
     const { success, error } = await logout()
@@ -25,52 +34,76 @@ export function AuthNav() {
     }
   }
 
+  const toggleTheme = () => {
+    setTheme(theme === 'dark' ? 'light' : 'dark')
+  }
+
   return (
-    <header className="bg-white shadow-sm border-b border-indigo-100">
+    <header className="bg-white dark:bg-gray-900 shadow-sm border-b border-indigo-100 dark:border-gray-800">
       <div className="container mx-auto flex items-center justify-between py-4 px-4">
         <Link href="/" className="flex items-center gap-2">
-          <Sparkles className="h-5 w-5 text-indigo-600" />
+          <Sparkles className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
           <span className="font-bold text-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-transparent bg-clip-text">PortfolioMaker</span>
         </Link>
 
         <nav className="hidden md:flex items-center gap-6">
-          <Link href="/" className="text-sm font-medium text-gray-700 hover:text-indigo-600 transition-colors">
+          <Link href="/" className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
             Home
           </Link>
-          <Link href="#features" className="text-sm font-medium text-gray-700 hover:text-indigo-600 transition-colors">
+          <Link href="#features" className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
             Features
           </Link>
-          <Link href="#templates" className="text-sm font-medium text-gray-700 hover:text-indigo-600 transition-colors">
+          <Link href="#templates" className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
             Templates
           </Link>
-          <Link href="#pricing" className="text-sm font-medium text-gray-700 hover:text-indigo-600 transition-colors">
+          <Link href="#pricing" className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
             Pricing
           </Link>
         </nav>
 
         <div className="flex items-center gap-3">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={toggleTheme} 
+            className="rounded-full w-9 h-9"
+            aria-label="Toggle theme"
+          >
+            {/* Only show icon when client-side mounted to avoid hydration mismatch */}
+            {mounted ? (
+              theme === 'dark' ? (
+                <Sun className="h-4 w-4 text-yellow-300" />
+              ) : (
+                <Moon className="h-4 w-4 text-indigo-700" />
+              )
+            ) : (
+              // Show empty div with same dimensions during server render
+              <div className="h-4 w-4" />
+            )}
+          </Button>
+          
           {loading ? (
-            <div className="h-10 w-24 bg-indigo-50 rounded-md animate-pulse" />
+            <div className="h-10 w-24 bg-indigo-50 dark:bg-gray-800 rounded-md animate-pulse" />
           ) : user ? (
             <>
               <Link href="/dashboard">
-                <Button variant="outline" size="sm" className="border-indigo-200 hover:border-indigo-300 hover:bg-indigo-50 text-gray-700 rounded-md">
+                <Button variant="outline" size="sm" className="border-indigo-200 dark:border-gray-700 hover:border-indigo-300 dark:hover:border-gray-600 hover:bg-indigo-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-md">
                   Dashboard
                 </Button>
               </Link>
-              <Button onClick={handleLogout} size="sm" className="bg-black hover:bg-gray-800 text-white rounded-md">
+              <Button onClick={handleLogout} size="sm" className="bg-black hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-700 text-white rounded-md">
                 Sign out
               </Button>
             </>
           ) : (
             <>
               <Link href="/auth/login">
-                <Button variant="outline" size="sm" className="border-indigo-200 hover:border-indigo-300 hover:bg-indigo-50 text-gray-700 rounded-md">
+                <Button variant="outline" size="sm" className="border-indigo-200 dark:border-gray-700 hover:border-indigo-300 dark:hover:border-gray-600 hover:bg-indigo-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-md">
                   Sign in
                 </Button>
               </Link>
               <Link href="/auth/signup">
-                <Button size="sm" className="bg-black hover:bg-gray-800 text-white rounded-md shadow-sm hover:shadow-md transition-all">
+                <Button size="sm" className="bg-black hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-700 text-white rounded-md shadow-sm hover:shadow-md transition-all">
                   Sign up
                 </Button>
               </Link>

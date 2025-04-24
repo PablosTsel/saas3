@@ -295,6 +295,58 @@ export default function PortfolioEditorPage() {
     })
   }
 
+  // Handle experience
+  const handleAddExperience = () => {
+    setPortfolioData({
+      ...portfolioData,
+      experience: [...portfolioData.experience, { company: "", position: "", period: "", description: "" }]
+    })
+  }
+
+  const handleUpdateExperience = (index: number, field: keyof Experience, value: string) => {
+    const newExperience = [...portfolioData.experience]
+    newExperience[index] = { ...newExperience[index], [field]: value }
+    setPortfolioData({
+      ...portfolioData,
+      experience: newExperience
+    })
+  }
+
+  const handleRemoveExperience = (index: number) => {
+    const newExperience = [...portfolioData.experience]
+    newExperience.splice(index, 1)
+    setPortfolioData({
+      ...portfolioData,
+      experience: newExperience
+    })
+  }
+
+  // Handle education
+  const handleAddEducation = () => {
+    setPortfolioData({
+      ...portfolioData,
+      education: [...portfolioData.education, { institution: "", degree: "", period: "" }]
+    })
+  }
+
+  const handleUpdateEducation = (index: number, field: keyof Education, value: string) => {
+    const newEducation = [...portfolioData.education]
+    newEducation[index] = { ...newEducation[index], [field]: value }
+    setPortfolioData({
+      ...portfolioData,
+      education: newEducation
+    })
+  }
+
+  const handleRemoveEducation = (index: number) => {
+    const newEducation = [...portfolioData.education]
+    newEducation.splice(index, 1)
+    setPortfolioData({
+      ...portfolioData,
+      education: newEducation
+    })
+  }
+
   // Handle save/update
   const handleSaveChanges = async () => {
     if (!user) {
@@ -547,38 +599,38 @@ export default function PortfolioEditorPage() {
 
   if (loading || isLoading) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-50">
-        <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-indigo-500"></div>
-        <p className="mt-4 text-lg text-indigo-700">Loading portfolio...</p>
+      <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-indigo-500 dark:border-indigo-400"></div>
+        <p className="mt-4 text-lg text-indigo-700 dark:text-indigo-300">Loading portfolio...</p>
       </div>
     )
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-gradient-to-br from-blue-50 to-indigo-50">
-      <header className="bg-white shadow-sm border-b border-indigo-100 sticky top-0 z-10">
+    <div className="flex min-h-screen flex-col bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800">
+      <header className="bg-white dark:bg-gray-800 shadow-sm border-b border-indigo-100 dark:border-gray-700 sticky top-0 z-10">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center">
-            <Button variant="ghost" onClick={handleCancel} className="mr-4">
+            <Button variant="ghost" onClick={handleCancel} className="mr-4 dark:text-gray-300 dark:hover:text-white">
               <ChevronLeft className="h-5 w-5 mr-1" /> Back
             </Button>
             <div>
-              <h1 className="text-xl font-bold text-gray-800">Edit Portfolio: {portfolioData.name}</h1>
-              <p className="text-sm text-gray-600">Make changes to your portfolio</p>
+              <h1 className="text-xl font-bold text-gray-800 dark:text-white">Edit Portfolio: {portfolioData.name}</h1>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Make changes to your portfolio</p>
             </div>
           </div>
           <div className="flex gap-2">
             <Button 
               variant="outline" 
               onClick={handleCancel}
-              className="border-indigo-200 hover:border-indigo-300 hover:bg-indigo-50"
+              className="border-indigo-200 dark:border-gray-600 hover:border-indigo-300 dark:hover:border-gray-500 hover:bg-indigo-50 dark:hover:bg-gray-700 dark:text-gray-300"
             >
               Cancel
             </Button>
             <Button 
               onClick={handleSaveChanges} 
               disabled={isSaving || !hasChanges}
-              className={`${hasChanges ? 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700' : 'bg-gray-300'} text-white`}
+              className={`${hasChanges ? 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700' : 'bg-gray-300 dark:bg-gray-600'} text-white`}
             >
               <Save className="h-4 w-4 mr-1" /> {isSaving ? "Saving..." : "Save Changes"}
             </Button>
@@ -588,74 +640,77 @@ export default function PortfolioEditorPage() {
 
       <div className="container mx-auto px-4 py-8">
         <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-8">
-          <TabsList className="grid grid-cols-3 gap-2 bg-white p-1 rounded-lg shadow-sm border border-indigo-100">
-            <TabsTrigger value="general" className="data-[state=active]:bg-indigo-50 data-[state=active]:text-indigo-700">
-              General
+          <TabsList className="grid grid-cols-3 gap-2 bg-white dark:bg-gray-800 p-1 rounded-lg shadow-sm border border-indigo-100 dark:border-gray-700">
+            <TabsTrigger value="general" className="data-[state=active]:bg-indigo-50 dark:data-[state=active]:bg-gray-700 data-[state=active]:text-indigo-700 dark:data-[state=active]:text-indigo-300 dark:text-gray-300">
+              <User className="h-4 w-4 mr-1" /> General
             </TabsTrigger>
-            <TabsTrigger value="skills" className="data-[state=active]:bg-indigo-50 data-[state=active]:text-indigo-700">
+            <TabsTrigger value="skills" className="data-[state=active]:bg-indigo-50 dark:data-[state=active]:bg-gray-700 data-[state=active]:text-indigo-700 dark:data-[state=active]:text-indigo-300 dark:text-gray-300">
               <ListChecks className="h-4 w-4 mr-1" /> Skills
             </TabsTrigger>
-            <TabsTrigger value="projects" className="data-[state=active]:bg-indigo-50 data-[state=active]:text-indigo-700">
+            <TabsTrigger value="projects" className="data-[state=active]:bg-indigo-50 dark:data-[state=active]:bg-gray-700 data-[state=active]:text-indigo-700 dark:data-[state=active]:text-indigo-300 dark:text-gray-300">
               Projects
             </TabsTrigger>
           </TabsList>
 
           {/* General Information Tab */}
           <TabsContent value="general" className="space-y-6">
-            <Card className="bg-white shadow-sm border border-indigo-100">
+            <Card className="bg-white dark:bg-gray-800 shadow-sm border border-indigo-100 dark:border-gray-700">
               <CardHeader>
-                <CardTitle>General Information</CardTitle>
-                <CardDescription>Update your basic information and bio</CardDescription>
+                <CardTitle className="dark:text-white">General Information</CardTitle>
+                <CardDescription className="dark:text-gray-400">Update your basic information and bio</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="grid gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="name">Portfolio Name (cannot be changed)</Label>
+                    <Label htmlFor="name" className="dark:text-gray-300">Portfolio Name (cannot be changed)</Label>
                     <Input 
                       id="name" 
                       name="name"
                       value={portfolioData.name}
                       disabled
-                      className="bg-gray-50"
+                      className="bg-gray-50 dark:bg-gray-700 dark:text-gray-300"
                     />
                   </div>
                   
                   <div className="space-y-2">
-                    <Label htmlFor="fullName">Full Name</Label>
+                    <Label htmlFor="fullName" className="dark:text-gray-300">Full Name</Label>
                     <Input 
                       id="fullName" 
                       name="fullName"
                       placeholder="e.g. John Doe"
                       value={portfolioData.fullName}
                       onChange={handleInputChange}
+                      className="dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600"
                     />
                   </div>
                   
                   <div className="space-y-2">
-                    <Label htmlFor="title">Professional Title</Label>
+                    <Label htmlFor="title" className="dark:text-gray-300">Professional Title</Label>
                     <Input 
                       id="title" 
                       name="title"
                       placeholder="e.g. Senior Frontend Developer"
                       value={portfolioData.title}
                       onChange={handleInputChange}
+                      className="dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600"
                     />
                   </div>
                   
                   <div className="space-y-2">
-                    <Label htmlFor="smallIntro">Small Intro</Label>
+                    <Label htmlFor="smallIntro" className="dark:text-gray-300">Small Intro</Label>
                     <Input 
                       id="smallIntro" 
                       name="smallIntro"
                       placeholder="A brief one-sentence introduction"
                       value={portfolioData.smallIntro}
                       onChange={handleInputChange}
+                      className="dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600"
                     />
-                    <p className="text-xs text-gray-500">A short introduction for the homepage header (1 sentence).</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">A short introduction for the homepage header (1 sentence).</p>
                   </div>
                   
                   <div className="space-y-2">
-                    <Label htmlFor="about">About Me</Label>
+                    <Label htmlFor="about" className="dark:text-gray-300">About Me</Label>
                     <Textarea 
                       id="about" 
                       name="about"
@@ -663,26 +718,27 @@ export default function PortfolioEditorPage() {
                       value={portfolioData.about}
                       onChange={handleInputChange}
                       rows={5}
+                      className="dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600"
                     />
                   </div>
                   
                   <div className="space-y-2">
-                    <Label htmlFor="templateId">Template</Label>
+                    <Label htmlFor="templateId" className="dark:text-gray-300">Template</Label>
                     <Select 
                       value={portfolioData.templateId} 
                       onValueChange={(value) => setPortfolioData({...portfolioData, templateId: value})}
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className="dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600">
                         <SelectValue placeholder="Select a template" />
                       </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="template1">Template 1 (Modern Minimal)</SelectItem>
-                        <SelectItem value="template2">Template 2 (Professional Dark)</SelectItem>
-                        <SelectItem value="template3">Template 3 (Creative Bold)</SelectItem>
-                        <SelectItem value="template4">Template 4 (Minimal Portfolio)</SelectItem>
-                        <SelectItem value="template5">Template 5 (Visual Portfolio)</SelectItem>
-                        <SelectItem value="template6">Template 6 (Glass Morphism)</SelectItem>
-                        <SelectItem value="template7">Template 7 (Gradient Wave)</SelectItem>
+                      <SelectContent className="dark:bg-gray-800 dark:border-gray-700">
+                        <SelectItem value="template1" className="dark:text-gray-300 dark:focus:bg-gray-700">Template 1 (Modern Minimal)</SelectItem>
+                        <SelectItem value="template2" className="dark:text-gray-300 dark:focus:bg-gray-700">Template 2 (Professional Dark)</SelectItem>
+                        <SelectItem value="template3" className="dark:text-gray-300 dark:focus:bg-gray-700">Template 3 (Creative Bold)</SelectItem>
+                        <SelectItem value="template4" className="dark:text-gray-300 dark:focus:bg-gray-700">Template 4 (Minimal Portfolio)</SelectItem>
+                        <SelectItem value="template5" className="dark:text-gray-300 dark:focus:bg-gray-700">Template 5 (Visual Portfolio)</SelectItem>
+                        <SelectItem value="template6" className="dark:text-gray-300 dark:focus:bg-gray-700">Template 6 (Glass Morphism)</SelectItem>
+                        <SelectItem value="template7" className="dark:text-gray-300 dark:focus:bg-gray-700">Template 7 (Gradient Wave)</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -690,9 +746,9 @@ export default function PortfolioEditorPage() {
 
                 {/* Profile Picture Upload */}
                 <div className="space-y-4">
-                  <Label className="block">Profile Picture</Label>
+                  <Label className="block dark:text-gray-300">Profile Picture</Label>
                   <div className="flex items-center gap-4">
-                    <div className="h-24 w-24 rounded-full bg-indigo-50 flex items-center justify-center overflow-hidden border-2 border-indigo-100">
+                    <div className="h-24 w-24 rounded-full bg-indigo-50 dark:bg-gray-700 flex items-center justify-center overflow-hidden border-2 border-indigo-100 dark:border-gray-600">
                       {portfolioData.profilePicture || portfolioData.profilePictureUrl ? (
                         <img 
                           src={portfolioData.profilePicture ? URL.createObjectURL(portfolioData.profilePicture) : portfolioData.profilePictureUrl}
@@ -700,7 +756,7 @@ export default function PortfolioEditorPage() {
                           className="h-full w-full object-cover"
                         />
                       ) : (
-                        <User className="h-12 w-12 text-indigo-300" />
+                        <User className="h-12 w-12 text-indigo-300 dark:text-gray-500" />
                       )}
                     </div>
                     <div className="space-y-2">
@@ -708,7 +764,7 @@ export default function PortfolioEditorPage() {
                         type="button"
                         variant="outline"
                         size="sm"
-                        className="flex items-center gap-2 text-indigo-600 border-indigo-200"
+                        className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-gray-600"
                         onClick={() => document.getElementById('profilePicture-upload')?.click()}
                       >
                         <UploadCloud className="h-4 w-4" />
@@ -721,17 +777,17 @@ export default function PortfolioEditorPage() {
                         className="hidden"
                         onChange={(e) => e.target.files?.[0] && handleFileUpload(e.target.files[0], 'profilePicture')}
                       />
-                      <p className="text-xs text-gray-500">Recommended: Square image, at least 300x300px</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">Recommended: Square image, at least 300x300px</p>
                     </div>
                   </div>
                 </div>
                 
                 {/* Contact Information */}
                 <div className="space-y-4">
-                  <Label className="block">Contact Information</Label>
+                  <Label className="block dark:text-gray-300">Contact Information</Label>
                   <div className="grid gap-4 md:grid-cols-2">
                     <div className="space-y-2">
-                      <Label htmlFor="email">Email Address</Label>
+                      <Label htmlFor="email" className="dark:text-gray-300">Email Address</Label>
                       <Input 
                         id="email" 
                         name="email"
@@ -739,16 +795,18 @@ export default function PortfolioEditorPage() {
                         placeholder="email@example.com"
                         value={portfolioData.email}
                         onChange={handleInputChange}
+                        className="dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600"
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="phone">Phone Number</Label>
+                      <Label htmlFor="phone" className="dark:text-gray-300">Phone Number</Label>
                       <Input 
                         id="phone" 
                         name="phone"
                         placeholder="+1 (555) 123-4567"
                         value={portfolioData.phone}
                         onChange={handleInputChange}
+                        className="dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600"
                       />
                     </div>
                   </div>
@@ -756,13 +814,13 @@ export default function PortfolioEditorPage() {
                 
                 <div className="space-y-4">
                   <div className="flex items-center">
-                    <Label className="mr-4">CV / Resume</Label>
+                    <Label className="mr-4 dark:text-gray-300">CV / Resume</Label>
                     <div className="flex gap-2">
                       <Button 
                         type="button" 
                         variant="outline"
                         size="sm"
-                        className={`${portfolioData.hasCv ? 'bg-indigo-50 text-indigo-700 border-indigo-300' : 'text-gray-700'}`}
+                        className={`${portfolioData.hasCv ? 'bg-indigo-50 dark:bg-gray-700 text-indigo-700 dark:text-indigo-400 border-indigo-300 dark:border-gray-600' : 'text-gray-700 dark:text-gray-300 dark:border-gray-600'}`}
                         onClick={() => handleCvToggle(true)}
                       >
                         Upload CV
@@ -771,7 +829,7 @@ export default function PortfolioEditorPage() {
                         type="button" 
                         variant="outline"
                         size="sm"
-                        className={`${!portfolioData.hasCv ? 'bg-indigo-50 text-indigo-700 border-indigo-300' : 'text-gray-700'}`}
+                        className={`${!portfolioData.hasCv ? 'bg-indigo-50 dark:bg-gray-700 text-indigo-700 dark:text-indigo-400 border-indigo-300 dark:border-gray-600' : 'text-gray-700 dark:text-gray-300 dark:border-gray-600'}`}
                         onClick={() => handleCvToggle(false)}
                       >
                         No CV
@@ -786,7 +844,7 @@ export default function PortfolioEditorPage() {
                           type="button"
                           variant="outline"
                           size="sm"
-                          className="flex items-center gap-2 text-indigo-600 border-indigo-200"
+                          className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-gray-600"
                           onClick={() => document.getElementById('cv-upload')?.click()}
                         >
                           <UploadCloud className="h-4 w-4" />
@@ -799,19 +857,19 @@ export default function PortfolioEditorPage() {
                           className="hidden"
                           onChange={(e) => e.target.files?.[0] && handleFileUpload(e.target.files[0], 'cv')}
                         />
-                        <span className="text-sm text-gray-600">
+                        <span className="text-sm text-gray-600 dark:text-gray-400">
                           {portfolioData.cv ? portfolioData.cv.name : portfolioData.cvUrl ? "Current CV (click to replace)" : "No file chosen"}
                         </span>
                       </div>
                       {portfolioData.cvUrl && !portfolioData.cv && (
                         <div className="flex items-center gap-2 text-sm">
-                          <FileText className="h-4 w-4 text-indigo-500" />
-                          <a href={portfolioData.cvUrl} target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:underline">
+                          <FileText className="h-4 w-4 text-indigo-500 dark:text-indigo-400" />
+                          <a href={portfolioData.cvUrl} target="_blank" rel="noopener noreferrer" className="text-indigo-600 dark:text-indigo-400 hover:underline">
                             View current CV
                           </a>
                         </div>
                       )}
-                      <p className="text-xs text-gray-500">Accepted formats: PDF, DOC, DOCX, max 5MB.</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">Accepted formats: PDF, DOC, DOCX, max 5MB.</p>
                     </div>
                   )}
                 </div>
@@ -821,16 +879,16 @@ export default function PortfolioEditorPage() {
 
           {/* Skills Tab */}
           <TabsContent value="skills" className="space-y-6">
-            <Card className="bg-white shadow-sm border border-indigo-100">
+            <Card className="bg-white dark:bg-gray-800 shadow-sm border border-indigo-100 dark:border-gray-700">
               <CardHeader>
-                <CardTitle>Skills</CardTitle>
-                <CardDescription>List your technical and professional skills</CardDescription>
+                <CardTitle className="dark:text-white">Skills</CardTitle>
+                <CardDescription className="dark:text-gray-400">List your technical and professional skills</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 {portfolioData.skills.length === 0 ? (
                   <div className="text-center py-8">
-                    <p className="text-gray-500 mb-4">No skills added yet</p>
-                    <Button onClick={handleAddSkill} variant="outline" className="border-dashed border-indigo-200">
+                    <p className="text-gray-500 dark:text-gray-400 mb-4">No skills added yet</p>
+                    <Button onClick={handleAddSkill} variant="outline" className="border-dashed border-indigo-200 dark:border-gray-600 dark:text-gray-300">
                       <Plus className="h-4 w-4 mr-1" /> Add Your First Skill
                     </Button>
                   </div>
@@ -843,13 +901,28 @@ export default function PortfolioEditorPage() {
                             placeholder="e.g. React, JavaScript, UI Design"
                             value={skill.name}
                             onChange={(e) => handleUpdateSkill(index, 'name', e.target.value)}
+                            className="dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600"
                           />
                         </div>
+                        <Select 
+                          value={skill.level} 
+                          onValueChange={(value) => handleUpdateSkill(index, 'level', value)}
+                        >
+                          <SelectTrigger className="w-[140px] dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600">
+                            <SelectValue placeholder="Level" />
+                          </SelectTrigger>
+                          <SelectContent className="dark:bg-gray-800 dark:border-gray-700">
+                            <SelectItem value="Beginner" className="dark:text-gray-300 dark:focus:bg-gray-700">Beginner</SelectItem>
+                            <SelectItem value="Intermediate" className="dark:text-gray-300 dark:focus:bg-gray-700">Intermediate</SelectItem>
+                            <SelectItem value="Advanced" className="dark:text-gray-300 dark:focus:bg-gray-700">Advanced</SelectItem>
+                            <SelectItem value="Expert" className="dark:text-gray-300 dark:focus:bg-gray-700">Expert</SelectItem>
+                          </SelectContent>
+                        </Select>
                         <Button 
                           variant="ghost" 
                           size="icon" 
                           onClick={() => handleRemoveSkill(index)}
-                          className="text-red-500 hover:bg-red-50 hover:text-red-600"
+                          className="text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-300"
                         >
                           <X className="h-4 w-4" />
                         </Button>
@@ -859,7 +932,7 @@ export default function PortfolioEditorPage() {
                     <Button 
                       onClick={handleAddSkill} 
                       variant="outline" 
-                      className="mt-4 border-dashed border-indigo-200"
+                      className="mt-4 border-dashed border-indigo-200 dark:border-gray-600 dark:text-gray-300"
                     >
                       <Plus className="h-4 w-4 mr-1" /> Add Another Skill
                     </Button>
@@ -869,16 +942,193 @@ export default function PortfolioEditorPage() {
             </Card>
           </TabsContent>
 
+          {/* Experience Tab - Hidden for future use */}
+          <TabsContent value="experience" className="hidden space-y-6">
+            <Card className="bg-white dark:bg-gray-800 shadow-sm border border-indigo-100 dark:border-gray-700">
+              <CardHeader>
+                <CardTitle className="dark:text-white">Experience & Education</CardTitle>
+                <CardDescription className="dark:text-gray-400">List your work experience and educational background</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div>
+                  <h3 className="text-lg font-medium mb-4 text-gray-800 dark:text-white">Work Experience</h3>
+                  
+                  {portfolioData.experience.length === 0 ? (
+                    <div className="text-center py-8 border border-dashed border-indigo-200 dark:border-gray-700 rounded-lg">
+                      <p className="text-gray-500 dark:text-gray-400 mb-4">No work experience added yet</p>
+                      <Button 
+                        onClick={handleAddExperience} 
+                        variant="outline" 
+                        className="border-indigo-200 dark:border-gray-600 dark:text-gray-300"
+                      >
+                        <Plus className="h-4 w-4 mr-1" /> Add Work Experience
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="space-y-6">
+                      {portfolioData.experience.map((exp, index) => (
+                        <div key={index} className="p-4 bg-indigo-50/30 dark:bg-gray-700/30 rounded-lg border border-indigo-100 dark:border-gray-700">
+                          <div className="flex justify-between items-start mb-3">
+                            <h4 className="font-medium text-gray-800 dark:text-white">Experience #{index + 1}</h4>
+                            <Button 
+                              variant="ghost" 
+                              size="icon" 
+                              onClick={() => handleRemoveExperience(index)}
+                              className="text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-300"
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </div>
+                          
+                          <div className="grid gap-4 md:grid-cols-2">
+                            <div className="space-y-2">
+                              <Label htmlFor={`exp-company-${index}`} className="dark:text-gray-300">Company</Label>
+                              <Input
+                                id={`exp-company-${index}`}
+                                placeholder="Company name"
+                                value={exp.company}
+                                onChange={(e) => handleUpdateExperience(index, 'company', e.target.value)}
+                                className="dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600"
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label htmlFor={`exp-position-${index}`} className="dark:text-gray-300">Position</Label>
+                              <Input
+                                id={`exp-position-${index}`}
+                                placeholder="Your job title"
+                                value={exp.position}
+                                onChange={(e) => handleUpdateExperience(index, 'position', e.target.value)}
+                                className="dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600"
+                              />
+                            </div>
+                          </div>
+                          
+                          <div className="mt-4 space-y-2">
+                            <Label htmlFor={`exp-period-${index}`} className="dark:text-gray-300">Period</Label>
+                            <Input
+                              id={`exp-period-${index}`}
+                              placeholder="e.g. 2020 - Present"
+                              value={exp.period}
+                              onChange={(e) => handleUpdateExperience(index, 'period', e.target.value)}
+                              className="dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600"
+                            />
+                          </div>
+                          
+                          <div className="mt-4 space-y-2">
+                            <Label htmlFor={`exp-desc-${index}`} className="dark:text-gray-300">Description</Label>
+                            <Textarea
+                              id={`exp-desc-${index}`}
+                              placeholder="Describe your responsibilities and achievements"
+                              value={exp.description}
+                              onChange={(e) => handleUpdateExperience(index, 'description', e.target.value)}
+                              rows={3}
+                              className="dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600"
+                            />
+                          </div>
+                        </div>
+                      ))}
+                      
+                      <Button 
+                        onClick={handleAddExperience} 
+                        variant="outline" 
+                        className="border-dashed border-indigo-200 dark:border-gray-600 dark:text-gray-300"
+                      >
+                        <Plus className="h-4 w-4 mr-1" /> Add More Experience
+                      </Button>
+                    </div>
+                  )}
+                </div>
+                
+                <div className="mt-8">
+                  <h3 className="text-lg font-medium mb-4 text-gray-800 dark:text-white">Education</h3>
+                  
+                  {portfolioData.education.length === 0 ? (
+                    <div className="text-center py-8 border border-dashed border-indigo-200 dark:border-gray-700 rounded-lg">
+                      <p className="text-gray-500 dark:text-gray-400 mb-4">No education added yet</p>
+                      <Button 
+                        onClick={handleAddEducation} 
+                        variant="outline" 
+                        className="border-indigo-200 dark:border-gray-600 dark:text-gray-300"
+                      >
+                        <Plus className="h-4 w-4 mr-1" /> Add Education
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="space-y-6">
+                      {portfolioData.education.map((edu, index) => (
+                        <div key={index} className="p-4 bg-indigo-50/30 dark:bg-gray-700/30 rounded-lg border border-indigo-100 dark:border-gray-700">
+                          <div className="flex justify-between items-start mb-3">
+                            <h4 className="font-medium text-gray-800 dark:text-white">Education #{index + 1}</h4>
+                            <Button 
+                              variant="ghost" 
+                              size="icon" 
+                              onClick={() => handleRemoveEducation(index)}
+                              className="text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-300"
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </div>
+                          
+                          <div className="grid gap-4 md:grid-cols-2">
+                            <div className="space-y-2">
+                              <Label htmlFor={`edu-institution-${index}`} className="dark:text-gray-300">Institution</Label>
+                              <Input
+                                id={`edu-institution-${index}`}
+                                placeholder="School or university name"
+                                value={edu.institution}
+                                onChange={(e) => handleUpdateEducation(index, 'institution', e.target.value)}
+                                className="dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600"
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label htmlFor={`edu-degree-${index}`} className="dark:text-gray-300">Degree</Label>
+                              <Input
+                                id={`edu-degree-${index}`}
+                                placeholder="e.g. Bachelor of Science in Computer Science"
+                                value={edu.degree}
+                                onChange={(e) => handleUpdateEducation(index, 'degree', e.target.value)}
+                                className="dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600"
+                              />
+                            </div>
+                          </div>
+                          
+                          <div className="mt-4 space-y-2">
+                            <Label htmlFor={`edu-period-${index}`} className="dark:text-gray-300">Period</Label>
+                            <Input
+                              id={`edu-period-${index}`}
+                              placeholder="e.g. 2015 - 2019"
+                              value={edu.period}
+                              onChange={(e) => handleUpdateEducation(index, 'period', e.target.value)}
+                              className="dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600"
+                            />
+                          </div>
+                        </div>
+                      ))}
+                      
+                      <Button 
+                        onClick={handleAddEducation} 
+                        variant="outline" 
+                        className="border-dashed border-indigo-200 dark:border-gray-600 dark:text-gray-300"
+                      >
+                        <Plus className="h-4 w-4 mr-1" /> Add More Education
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
           {/* Projects Tab */}
           <TabsContent value="projects" className="space-y-6">
-            <Card className="bg-white shadow-sm border border-indigo-100">
+            <Card className="bg-white dark:bg-gray-800 shadow-sm border border-indigo-100 dark:border-gray-700">
               <CardHeader>
-                <CardTitle>Projects</CardTitle>
-                <CardDescription>Showcase your work and projects</CardDescription>
+                <CardTitle className="dark:text-white">Projects</CardTitle>
+                <CardDescription className="dark:text-gray-400">Showcase your work and projects</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="space-y-2">
-                  <Label htmlFor="project-count">Number of Projects</Label>
+                  <Label htmlFor="project-count" className="dark:text-gray-300">Number of Projects</Label>
                   <div className="max-w-xs">
                     <Input
                       id="project-count"
@@ -886,47 +1136,50 @@ export default function PortfolioEditorPage() {
                       min="1"
                       value={portfolioData.projectCount}
                       onChange={(e) => handleUpdateProjectCount(e.target.value)}
+                      className="dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600"
                     />
                   </div>
                 </div>
                 
                 <div className="space-y-8">
                   {portfolioData.projects.map((project, index) => (
-                    <div key={index} className="space-y-4 p-4 bg-indigo-50/30 rounded-lg border border-indigo-100">
-                      <h3 className="font-medium text-gray-800">Project #{index + 1}</h3>
+                    <div key={index} className="space-y-4 p-4 bg-indigo-50/30 dark:bg-gray-700/30 rounded-lg border border-indigo-100 dark:border-gray-700">
+                      <h3 className="font-medium text-gray-800 dark:text-white">Project #{index + 1}</h3>
                       
                       <div className="grid gap-4 md:grid-cols-2">
                         <div className="space-y-2">
-                          <Label htmlFor={`project-name-${index}`}>Project Name</Label>
+                          <Label htmlFor={`project-name-${index}`} className="dark:text-gray-300">Project Name</Label>
                           <Input
                             id={`project-name-${index}`}
                             placeholder="Name of your project"
                             value={project.name}
                             onChange={(e) => handleUpdateProject(index, 'name', e.target.value)}
+                            className="dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600"
                           />
                         </div>
                       </div>
                       
                       <div className="space-y-2">
-                        <Label htmlFor={`project-desc-${index}`}>Description</Label>
+                        <Label htmlFor={`project-desc-${index}`} className="dark:text-gray-300">Description</Label>
                         <Textarea
                           id={`project-desc-${index}`}
                           placeholder="Describe your project"
                           value={project.description}
                           onChange={(e) => handleUpdateProject(index, 'description', e.target.value)}
                           rows={3}
+                          className="dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600"
                         />
                       </div>
                       
                       <div className="space-y-2">
-                        <Label>Project Image</Label>
+                        <Label className="dark:text-gray-300">Project Image</Label>
                         <div className="flex flex-col space-y-2">
                           <div className="flex items-center gap-2">
                             <Button
                               type="button"
                               variant="outline"
                               size="sm"
-                              className="flex items-center gap-2 text-indigo-600 border-indigo-200"
+                              className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-gray-600"
                               onClick={() => document.getElementById(`project-image-${index}`)?.click()}
                             >
                               <UploadCloud className="h-4 w-4" />
@@ -939,7 +1192,7 @@ export default function PortfolioEditorPage() {
                               className="hidden"
                               onChange={(e) => e.target.files?.[0] && handleFileUpload(e.target.files[0], 'projectImage', index)}
                             />
-                            <span className="text-sm text-gray-600">
+                            <span className="text-sm text-gray-600 dark:text-gray-400">
                               {project.image ? project.image.name : project.imageUrl ? "Current image (click to replace)" : "No image chosen"}
                             </span>
                           </div>
@@ -949,7 +1202,7 @@ export default function PortfolioEditorPage() {
                               <img 
                                 src={project.imageUrl} 
                                 alt={project.name || "Project image"} 
-                                className="h-24 w-auto object-cover rounded-md border border-indigo-100"
+                                className="h-24 w-auto object-cover rounded-md border border-indigo-100 dark:border-gray-700"
                               />
                             </div>
                           )}

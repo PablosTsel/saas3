@@ -1,20 +1,44 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, ReactNode } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
-import { getPortfolioById, updatePortfolio } from '@/lib/firebase';
+import { getPortfolioById, updatePortfolio, getPortfolioBySlug } from '@/lib/firebase';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
 import PaymentModal from '@/components/payment-modal';
+import PortfolioMeta from '@/components/portfolio-meta';
 
 // Check if payment bypass is enabled in development
 const BYPASS_PAYMENT = process.env.NEXT_PUBLIC_BYPASS_PORTFOLIO_PAYMENT === 'true';
+
+// Wrapper component to include meta tags
+function PortfolioWrapper({ portfolio, children }: { portfolio: any | null, children: ReactNode }) {
+  const getSkillNames = () => {
+    if (!portfolio?.skills) return [];
+    return portfolio.skills.map((skill: any) => skill.name);
+  };
+
+  return (
+    <>
+      {portfolio && (
+        <PortfolioMeta
+          title={`${portfolio.name || portfolio.fullName || 'Portfolio'} - ${portfolio.title || 'Professional Portfolio'}`}
+          description={portfolio.smallIntro || portfolio.about?.substring(0, 160)}
+          name={portfolio.fullName || portfolio.name}
+          profilePictureUrl={portfolio.profilePictureUrl}
+          skills={getSkillNames()}
+        />
+      )}
+      {children}
+    </>
+  );
+}
 
 export default function PortfolioViewPage() {
   const params = useParams();
   const searchParams = useSearchParams();
   const router = useRouter();
-  const portfolioId = params.id as string;
+  const portfolioIdOrSlug = params.id as string;
   const [portfolio, setPortfolio] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -24,82 +48,90 @@ export default function PortfolioViewPage() {
   const [detailedError, setDetailedError] = useState<any>(null);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [checkingPayment, setCheckingPayment] = useState(false);
+  const [portfolioId, setPortfolioId] = useState<string>("");
 
-  // Check for payment success from query params
+  // First effect - handle payment status from query params
   useEffect(() => {
     const paymentStatus = searchParams.get('payment');
-    const sessionId = searchParams.get('session_id');
     
-    if (paymentStatus === 'success' && sessionId && portfolioId) {
-      // Update the portfolio payment status
-      const updatePaymentStatus = async () => {
+    if (paymentStatus === 'success' && portfolioId) {
+      const sessionId = searchParams.get('session_id');
+      console.log(`Payment success with session ID: ${sessionId}`);
+      
+      if (sessionId) {
         setCheckingPayment(true);
-        try {
-          console.log("Payment success detected, updating portfolio status");
-          
-          // Fetch fresh portfolio data to ensure we have the latest state
-          const { portfolio: freshPortfolio } = await getPortfolioById(portfolioId);
-          
-          if (freshPortfolio) {
-            // Type assertion for freshPortfolio
-            const typedFreshPortfolio = freshPortfolio as {
-              id: string;
-              isPreviewPaid?: boolean;
-              paymentStatus?: string;
-              [key: string]: any;
-            };
+        
+        const updatePaymentStatus = async () => {
+          try {
+            // Update the portfolio with payment information
+            const { portfolio: portfolioData, error: fetchError } = await getPortfolioById(portfolioId);
             
-            // Check if it's already marked as paid in the database
-            if (!typedFreshPortfolio.isPreviewPaid && 
-                typedFreshPortfolio.paymentStatus !== 'paid' && 
-                typedFreshPortfolio.paymentStatus !== 'completed') {
-              console.log("Portfolio not yet marked as paid, updating...");
-              // Update the portfolio payment status
-              await updatePortfolio(portfolioId, {
-                ...freshPortfolio,
-                isPreviewPaid: true,
-                paymentStatus: 'completed',
-                paymentCompletedAt: new Date().toISOString(),
-              });
-              
-              console.log("Portfolio payment status updated successfully");
-            } else {
-              console.log("Portfolio already marked as paid, skipping update");
+            if (fetchError || !portfolioData) {
+              console.error('Error fetching portfolio for payment update:', fetchError);
+              setCheckingPayment(false);
+              return;
             }
             
-            // Set the portfolio with payment completed to trigger page refresh
-            setPortfolio({
-              ...freshPortfolio,
+            // Update portfolio payment status
+            await updatePortfolio(portfolioId, {
+              ...portfolioData,
               isPreviewPaid: true,
-              paymentStatus: 'completed'
+              paymentStatus: 'paid'
             });
             
+            console.log('Portfolio payment status updated successfully');
+            
             // Clear the query params to avoid reprocessing on refresh
-            router.replace(`/portfolio/${portfolioId}`);
+            router.replace(`/portfolio/${portfolioIdOrSlug}`);
             
             // Force a portfolio generation
             setTimeout(() => {
               generatePortfolio(portfolioId);
             }, 500);
+          } catch (err) {
+            console.error('Error updating payment status:', err);
+          } finally {
+            setCheckingPayment(false);
           }
-        } catch (err) {
-          console.error('Error updating payment status:', err);
-        } finally {
-          setCheckingPayment(false);
-        }
-      };
-      
-      updatePaymentStatus();
+        };
+        
+        updatePaymentStatus();
+      }
     }
-  }, [portfolioId, searchParams, router]);
+  }, [portfolioId, searchParams, router, portfolioIdOrSlug]);
 
+  // Second effect - fetch portfolio data and determine if it's an ID or slug
   useEffect(() => {
     const fetchPortfolio = async () => {
-      if (!portfolioId) return;
+      if (!portfolioIdOrSlug) return;
       
       try {
         setLoading(true);
-        const { portfolio: portfolioData, error: fetchError } = await getPortfolioById(portfolioId);
+        
+        // First, check if this is a UUID (portfolio ID) or a slug
+        const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+        const isUUID = uuidPattern.test(portfolioIdOrSlug);
+        
+        let fetchedPortfolioId = portfolioIdOrSlug;
+        let portfolioData: any = null;
+        let fetchError: string | null = null;
+        
+        if (isUUID) {
+          // If it's a UUID, fetch directly by ID
+          const result = await getPortfolioById(portfolioIdOrSlug);
+          portfolioData = result.portfolio;
+          fetchError = result.error;
+        } else {
+          // If it's a slug, need to query for the portfolio with this slug
+          // This requires a new function to get portfolio by slug
+          const result = await getPortfolioBySlug(portfolioIdOrSlug);
+          portfolioData = result.portfolio;
+          fetchError = result.error;
+          
+          if (portfolioData) {
+            fetchedPortfolioId = portfolioData.id;
+          }
+        }
         
         if (fetchError || !portfolioData) {
           setError(fetchError || 'Portfolio not found');
@@ -108,6 +140,7 @@ export default function PortfolioViewPage() {
         }
         
         setPortfolio(portfolioData);
+        setPortfolioId(fetchedPortfolioId);
         
         // Add type assertion for the portfolio data
         const typedPortfolioData = portfolioData as {
@@ -139,20 +172,20 @@ export default function PortfolioViewPage() {
         
         // Check if portfolio HTML exists
         try {
-          console.log(`Checking if portfolio exists at /portfolios/${portfolioId}/index.html`);
-          const response = await fetch(`/portfolios/${portfolioId}/index.html`, { method: 'HEAD' });
+          console.log(`Checking if portfolio exists at /portfolios/${fetchedPortfolioId}/index.html`);
+          const response = await fetch(`/portfolios/${fetchedPortfolioId}/index.html`, { method: 'HEAD' });
           if (response.ok) {
             console.log('Portfolio HTML file exists, setting URL');
-            setPortfolioUrl(`/portfolios/${portfolioId}/index.html`);
+            setPortfolioUrl(`/portfolios/${fetchedPortfolioId}/index.html`);
           } else {
             console.log('Portfolio HTML file not found, need to generate');
             // Need to generate the portfolio
-            generatePortfolio(portfolioId);
+            generatePortfolio(fetchedPortfolioId);
           }
         } catch (e) {
           console.log('Error checking portfolio file:', e);
           // File doesn't exist, generate it
-          generatePortfolio(portfolioId);
+          generatePortfolio(fetchedPortfolioId);
         }
         
         setLoading(false);
@@ -165,7 +198,7 @@ export default function PortfolioViewPage() {
     };
     
     fetchPortfolio();
-  }, [portfolioId]);
+  }, [portfolioIdOrSlug]);
   
   const generatePortfolio = async (id: string) => {
     setGenerating(true);
@@ -269,38 +302,42 @@ export default function PortfolioViewPage() {
   
   if (loading || checkingPayment) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-50">
-        <div className="text-center">
-          <Loader2 className="h-10 w-10 animate-spin text-indigo-600 mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-gray-800">Loading portfolio...</h1>
+      <PortfolioWrapper portfolio={portfolio}>
+        <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-50">
+          <div className="text-center">
+            <Loader2 className="h-10 w-10 animate-spin text-indigo-600 mx-auto mb-4" />
+            <h1 className="text-2xl font-bold text-gray-800">Loading portfolio...</h1>
+          </div>
         </div>
-      </div>
+      </PortfolioWrapper>
     );
   }
   
   if (error) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-50">
-        <div className="text-center max-w-md p-8 bg-white rounded-xl shadow-sm border border-red-100">
-          <h1 className="text-2xl font-bold text-red-600 mb-4">Error</h1>
-          <p className="text-gray-700 mb-6">{error}</p>
-          {detailedError && (
-            <div className="mb-6 text-left p-3 bg-gray-50 rounded text-sm overflow-auto max-h-40">
-              <pre className="whitespace-pre-wrap break-words">
-                {JSON.stringify(detailedError, null, 2)}
-              </pre>
+      <PortfolioWrapper portfolio={portfolio}>
+        <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-50">
+          <div className="text-center max-w-md p-8 bg-white rounded-xl shadow-sm border border-red-100">
+            <h1 className="text-2xl font-bold text-red-600 mb-4">Error</h1>
+            <p className="text-gray-700 mb-6">{error}</p>
+            {detailedError && (
+              <div className="mb-6 text-left p-3 bg-gray-50 rounded text-sm overflow-auto max-h-40">
+                <pre className="whitespace-pre-wrap break-words">
+                  {JSON.stringify(detailedError, null, 2)}
+                </pre>
+              </div>
+            )}
+            <div className="flex gap-4 justify-center">
+              <Button onClick={handleRetry} className="bg-indigo-600 hover:bg-indigo-700">
+                Try Again
+              </Button>
+              <Button onClick={() => window.history.back()} className="bg-gray-600 hover:bg-gray-700">
+                Go Back
+              </Button>
             </div>
-          )}
-          <div className="flex gap-4 justify-center">
-            <Button onClick={handleRetry} className="bg-indigo-600 hover:bg-indigo-700">
-              Try Again
-            </Button>
-            <Button onClick={() => window.history.back()} className="bg-gray-600 hover:bg-gray-700">
-              Go Back
-            </Button>
           </div>
         </div>
-      </div>
+      </PortfolioWrapper>
     );
   }
   
@@ -312,100 +349,110 @@ export default function PortfolioViewPage() {
   // Only show the payment screen if payment is required (bypass is disabled) and portfolio is not paid
   if (portfolio && !isPaid && !BYPASS_PAYMENT) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-50">
-        <div className="text-center max-w-md p-8 bg-white rounded-xl shadow-sm border border-indigo-100">
-          <h1 className="text-2xl font-bold text-gray-800 mb-4">Preview Your Portfolio</h1>
-          <p className="text-gray-600 mb-6">
-            To view your portfolio "{portfolio.name}", a one-time payment of €1 is required.
-          </p>
-          <Button 
-            onClick={handleStartPayment}
-            className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
-          >
-            Pay €1 to View Portfolio
-          </Button>
-          
-          <div className="mt-6 text-sm text-gray-500">
-            <p>• Secure payment via Stripe</p>
-            <p>• One-time payment, no subscription</p>
-            <p>• Immediate access after payment</p>
+      <PortfolioWrapper portfolio={portfolio}>
+        <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-50">
+          <div className="text-center max-w-md p-8 bg-white rounded-xl shadow-sm border border-indigo-100">
+            <h1 className="text-2xl font-bold text-gray-800 mb-4">Preview Your Portfolio</h1>
+            <p className="text-gray-600 mb-6">
+              To view your portfolio "{portfolio.name}", a one-time payment of €1 is required.
+            </p>
+            <Button 
+              onClick={handleStartPayment}
+              className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
+            >
+              Pay €1 to View Portfolio
+            </Button>
+            
+            <div className="mt-6 text-sm text-gray-500">
+              <p>• Secure payment via Stripe</p>
+              <p>• One-time payment, no subscription</p>
+              <p>• Immediate access after payment</p>
+            </div>
+            
+            <Button 
+              variant="outline" 
+              className="mt-4" 
+              onClick={() => router.push('/dashboard')}
+            >
+              Return to Dashboard
+            </Button>
           </div>
           
-          <Button 
-            variant="outline" 
-            className="mt-4" 
-            onClick={() => router.push('/dashboard')}
-          >
-            Return to Dashboard
-          </Button>
+          {/* Payment Modal */}
+          <PaymentModal 
+            isOpen={showPaymentModal}
+            onClose={() => setShowPaymentModal(false)}
+            portfolioId={portfolioId}
+            portfolioName={portfolio.name || 'Your Portfolio'}
+          />
         </div>
-        
-        {/* Payment Modal */}
-        <PaymentModal 
-          isOpen={showPaymentModal}
-          onClose={() => setShowPaymentModal(false)}
-          portfolioId={portfolioId}
-          portfolioName={portfolio.name || 'Your Portfolio'}
-        />
-      </div>
+      </PortfolioWrapper>
     );
   }
   
   if (generating) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-50">
-        <div className="text-center max-w-md p-8 bg-white rounded-xl shadow-sm border border-indigo-100">
-          <Loader2 className="h-10 w-10 animate-spin text-indigo-600 mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-gray-800 mb-2">Generating portfolio...</h1>
-          <p className="text-gray-600">We're creating your portfolio from your selected template. This may take a moment.</p>
+      <PortfolioWrapper portfolio={portfolio}>
+        <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-50">
+          <div className="text-center max-w-md p-8 bg-white rounded-xl shadow-sm border border-indigo-100">
+            <Loader2 className="h-10 w-10 animate-spin text-indigo-600 mx-auto mb-4" />
+            <h1 className="text-2xl font-bold text-gray-800 mb-2">Generating portfolio...</h1>
+            <p className="text-gray-600">We're creating your portfolio from your selected template. This may take a moment.</p>
+          </div>
         </div>
-      </div>
+      </PortfolioWrapper>
     );
   }
   
   // If we have direct HTML content, render it in an iframe
   if (htmlContent) {
     return (
-      <iframe
-        srcDoc={htmlContent}
-        className="w-full h-screen border-0"
-        title={portfolio?.name || 'Portfolio'}
-        sandbox="allow-scripts allow-same-origin"
-      />
+      <PortfolioWrapper portfolio={portfolio}>
+        <iframe
+          srcDoc={htmlContent}
+          className="w-full h-screen border-0"
+          title={portfolio?.name || 'Portfolio'}
+          sandbox="allow-scripts allow-same-origin"
+        />
+      </PortfolioWrapper>
     );
   }
   
   // If we have a URL, load the portfolio from that URL
   if (portfolioUrl) {
     return (
-      <iframe 
-        src={portfolioUrl} 
-        className="w-full h-screen border-0" 
-        title={portfolio?.name || 'Portfolio'}
-      />
+      <PortfolioWrapper portfolio={portfolio}>
+        <iframe 
+          src={portfolioUrl} 
+          className="w-full h-screen border-0" 
+          title={portfolio?.name || 'Portfolio'}
+        />
+      </PortfolioWrapper>
     );
   }
   
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-50">
-      <div className="text-center max-w-md p-8 bg-white rounded-xl shadow-sm border border-indigo-100">
-        <h1 className="text-2xl font-bold text-gray-800 mb-4">Ready to generate your portfolio?</h1>
-        <p className="text-gray-600 mb-6">Your portfolio template is ready to be created. Click the button below to generate it.</p>
-        <Button 
-          onClick={() => generatePortfolio(portfolioId)} 
-          className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
-          disabled={generating}
-        >
-          {generating ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Generating...
-            </>
-          ) : (
-            'Generate Portfolio'
-          )}
-        </Button>
+    <PortfolioWrapper portfolio={portfolio}>
+      <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-50">
+        <div className="text-center max-w-md p-8 bg-white rounded-xl shadow-sm border border-indigo-100">
+          <h1 className="text-2xl font-bold text-gray-800 mb-4">Ready to generate your portfolio?</h1>
+          <p className="text-gray-600 mb-6">Your portfolio template is ready to be created. Click the button below to generate it.</p>
+          <Button 
+            onClick={() => generatePortfolio(portfolioId)} 
+            className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
+            disabled={generating}
+          >
+            {generating ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Generating...
+              </>
+            ) : (
+              'Generate Portfolio'
+            )}
+          </Button>
+        </div>
       </div>
-    </div>
+    </PortfolioWrapper>
   );
 } 

@@ -367,7 +367,59 @@ export async function POST(request: NextRequest) {
           `;
         }).join('');
         
-        // Add custom CSS for Template3 buttons
+        // Fix for theme toggle functionality in template3
+        // This ensures the theme toggle persists in the generated HTML
+        const themeToggleScript = `
+        <script>
+          // Theme toggle functionality - runs after document is loaded
+          document.addEventListener("DOMContentLoaded", () => {
+            const themeToggleBtn = document.getElementById("theme-toggle");
+            const prefersDarkScheme = window.matchMedia("(prefers-color-scheme: dark)");
+
+            // Set initial theme based on user preference or system preference
+            function setInitialTheme() {
+              // Get saved theme from localStorage or use system preference
+              let theme = localStorage.getItem("theme");
+              if (!theme) {
+                theme = prefersDarkScheme.matches ? "dark" : "light";
+              }
+              
+              // Apply theme to both html and body elements for maximum compatibility
+              document.documentElement.setAttribute("data-theme", theme);
+              document.body.setAttribute("data-theme", theme);
+            }
+
+            // Call immediately to prevent flash of wrong theme
+            setInitialTheme();
+
+            if (themeToggleBtn) {
+              themeToggleBtn.addEventListener("click", () => {
+                // Check theme from documentElement (html tag)
+                const currentTheme = document.documentElement.getAttribute("data-theme") || "light";
+                const newTheme = currentTheme === "light" ? "dark" : "light";
+
+                // Apply new theme to both elements
+                document.documentElement.setAttribute("data-theme", newTheme);
+                document.body.setAttribute("data-theme", newTheme);
+                
+                // Save user preference
+                localStorage.setItem("theme", newTheme);
+              });
+            }
+
+            // Also listen for system preference changes
+            prefersDarkScheme.addEventListener("change", (event) => {
+              if (!localStorage.getItem("theme")) {
+                const newTheme = event.matches ? "dark" : "light";
+                document.documentElement.setAttribute("data-theme", newTheme);
+                document.body.setAttribute("data-theme", newTheme);
+              }
+            });
+          });
+        </script>
+        `;
+        
+        // Add custom CSS for Template3
         const template3Css = `
         <style>
           /* Fix for hero section positioning */
@@ -471,6 +523,12 @@ export async function POST(request: NextRequest) {
           }
         </style>
         `;
+        
+        // Insert theme toggle script before the closing body tag
+        htmlContent = htmlContent.replace('</body>', `${themeToggleScript}</body>`);
+        
+        // Replace both html and body tags to have the data-theme attribute
+        htmlContent = htmlContent.replace('<html lang="en" data-theme="light">', '<html lang="en" data-theme="light">');
         
         // Insert custom CSS
         htmlContent = htmlContent.replace('</head>', `${template3Css}</head>`);
@@ -660,7 +718,7 @@ export async function POST(request: NextRequest) {
                             <h3>${portfolioData.fullName || portfolioData.name}</h3>
                             <p class="profile-title">${portfolioData.title || ''}</p>
                             <p>${portfolioData.about || ''}</p>
-                        </div>
+          </div>
                         
                         <div class="about-details-container">
                             <div class="about-details">

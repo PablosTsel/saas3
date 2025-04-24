@@ -72,18 +72,15 @@ export default function PortfolioRegenerate({
       size="sm"
       onClick={handleRegenerate}
       disabled={isRegenerating}
-      className={`flex items-center gap-2 ${className}`}
+      className={`flex items-center gap-1.5 min-w-[100px] ${className}`}
       title="Regenerate this portfolio with the latest template updates"
     >
       {isRegenerating ? (
-        <>
-          <Loader2 className="h-4 w-4 animate-spin" />
-          <span>Regenerating...</span>
-        </>
+        <Loader2 className="h-3.5 w-3.5 animate-spin dark:text-gray-300" />
       ) : (
         <>
-          <RefreshCw className="h-4 w-4" />
-          <span>Regenerate</span>
+          <RefreshCw className="h-3.5 w-3.5 dark:text-indigo-400" />
+          <span className="dark:text-gray-300 text-xs">Regenerate</span>
         </>
       )}
     </Button>

@@ -1,7 +1,3 @@
----
-description: # Unused Template Sections
-globs: 
----
 # Unused Template Sections
 
 ## Problem
@@ -20,4 +16,4 @@ An "interests" section was included in a template but wasn't necessary for the p
 - Check for dependencies before removing sections (styles, scripts, or data references)
 - Update documentation when removing sections to prevent confusion
 - Test template rendering after removing sections to ensure no unexpected layout issues occur
-- Consider commenting out sections temporarily before permanently removing them if unsure about their purpose
+- Consider commenting out sections temporarily before permanently removing them if unsure about their purpose 

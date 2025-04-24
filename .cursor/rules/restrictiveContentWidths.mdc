@@ -1,8 +1,4 @@
----
-description: # Restrictive Content Widths
-globs: 
----
- # Restrictive Content Widths
+# Restrictive Content Widths
 
 ## Problem
 Fixed width constraints on content elements limited text display inappropriately.
@@ -20,4 +16,4 @@ Bio text in the About Me section was limited to `max-width: 500px` which was too
 - Consider responsive approaches instead of fixed widths
 - Use percentage-based widths with reasonable min/max constraints
 - Set container widths relative to their parent elements, not fixed pixel values
-- Test with actual content of varying lengths, not just placeholder text
+- Test with actual content of varying lengths, not just placeholder text 
