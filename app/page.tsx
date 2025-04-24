@@ -55,9 +55,9 @@ export default function Home() {
 
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="py-24 md:py-32 lg:py-40 relative overflow-hidden">
+        <section className="py-12 md:py-16 lg:py-20 relative overflow-hidden">
           <div className="container px-4 md:px-6 max-w-5xl mx-auto">
-            <div className="flex flex-col items-center text-center space-y-8">
+            <div className="flex flex-col items-center text-center space-y-6">
               <div className="space-y-4 max-w-3xl">
                 <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-black dark:text-white">
                   Create a stunning portfolio in minutes
@@ -66,7 +66,7 @@ export default function Home() {
                   Showcase your work professionally with our easy-to-use portfolio builder.
                 </p>
               </div>
-              <div className="flex flex-col sm:flex-row gap-4 pt-4">
+              <div className="flex flex-col sm:flex-row gap-4 pt-2">
                 <Button size="lg" className="bg-black hover:bg-gray-800 dark:bg-indigo-600 dark:hover:bg-indigo-700 text-white px-8 py-6 h-auto rounded-md" asChild>
                   <Link href="/auth/signup">
                     Get started <ArrowRight className="ml-2 h-4 w-4" />
@@ -76,26 +76,26 @@ export default function Home() {
                   <Link href="#templates">View templates</Link>
                 </Button>
               </div>
-              <div className="mt-16 relative w-full max-w-4xl mx-auto">
+              <div className="mt-12 relative w-full max-w-4xl mx-auto">
                 {/* Outer container with gradient border */}
                 <div className="p-[3px] rounded-xl bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-500 dark:from-indigo-400 dark:via-purple-400 dark:to-indigo-400 shadow-2xl">
                   {/* Inner container with video */}
                   <div className="aspect-[16/9] rounded-lg overflow-hidden bg-white dark:bg-gray-800 relative">
                     <video 
-                      src="/videosandpictures/template1/template1.webm"
+                      src="/videosandpictures/template3/template3.webm"
                       autoPlay
                       muted
                       loop
                       playsInline
                       className="w-full h-full object-cover"
-                      poster="/videosandpictures/template1/template1.png"
+                      poster="/videosandpictures/template3/template3.png"
                       onError={(e) => {
                         console.error('Video failed to load:', e);
                         // Fallback to image if video fails to load
                         const target = e.target as HTMLVideoElement;
                         target.style.display = 'none';
                         const img = document.createElement('img');
-                        img.src = '/videosandpictures/template1/template1.png';
+                        img.src = '/videosandpictures/template3/template3.png';
                         img.className = 'w-full h-full object-cover';
                         img.alt = 'Portfolio Preview';
                         target.parentNode?.appendChild(img);
