@@ -1757,5 +1757,74 @@ function setupSkillsAnimation() {
             });
           });
         </script>
-        <script>window.portfolioTitle = "AI Engineer";</script></body>
+        <script>window.portfolioTitle = "AI Engineer";</script>
+      <script>
+        // Auto-scrolling functionality for recording portfolios
+        (function() {
+          let isScrolling = false;
+          let scrollSpeed = 3.2; // Pixels per frame (adjust for faster/slower scrolling)
+          
+          // Listen for Shift+S key combination to start/stop scrolling
+          document.addEventListener('keydown', (e) => {
+            // Shift + S key to toggle scrolling
+            if (e.shiftKey && e.key === 'S') {
+              e.preventDefault();
+              
+              if (isScrolling) {
+                // Stop scrolling
+                isScrolling = false;
+                console.log('Auto-scrolling stopped');
+              } else {
+                // Start scrolling from current position
+                isScrolling = true;
+                console.log('Auto-scrolling started with speed: ' + scrollSpeed.toFixed(1));
+                
+                // Smooth scrolling animation using requestAnimationFrame for better performance
+                let lastTime = null;
+                
+                function smoothScroll(timestamp) {
+                  if (!isScrolling) return;
+                  
+                  if (!lastTime) lastTime = timestamp;
+                  const elapsed = timestamp - lastTime;
+                  
+                  // Calculate how much to scroll based on elapsed time for consistent speed
+                  const scrollAmount = (scrollSpeed * elapsed) / 16.66; // Normalize to 60fps
+                  
+                  window.scrollBy(0, scrollAmount);
+                  lastTime = timestamp;
+                  
+                  // Check if we've reached the bottom of the page
+                  if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 20) {
+                    // We've reached the bottom, stop scrolling
+                    isScrolling = false;
+                    console.log('Reached bottom of page, auto-scrolling stopped');
+                    return;
+                  }
+                  
+                  requestAnimationFrame(smoothScroll);
+                }
+                
+                requestAnimationFrame(smoothScroll);
+              }
+            }
+            
+            // Shift + Up Arrow to increase scroll speed
+            if (isScrolling && e.shiftKey && e.key === 'ArrowUp') {
+              e.preventDefault();
+              scrollSpeed += 0.2;
+              console.log('Scroll speed increased to ' + scrollSpeed.toFixed(1));
+            }
+            
+            // Shift + Down Arrow to decrease scroll speed
+            if (isScrolling && e.shiftKey && e.key === 'ArrowDown') {
+              e.preventDefault();
+              scrollSpeed = Math.max(0.2, scrollSpeed - 0.2);
+              console.log('Scroll speed decreased to ' + scrollSpeed.toFixed(1));
+            }
+          });
+        })();
+      </script>
+      
+</body>
 </html> 

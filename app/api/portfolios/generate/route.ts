@@ -1955,7 +1955,7 @@ export async function POST(request: NextRequest) {
         </script>`;
         
         // Add this script right before the closing body tag, after the title script
-        htmlContent = htmlContent.replace('</body>', `${skillsEnhancementScript}</body>`);
+        htmlContent = htmlContent.replace('</body>', `${skillsEnhancementScript}\n</body>`);
       } else if (templateId === 'template6') {
         projectsHtml = portfolioData.projects.map((project: Project) => {
           // Check if we have GitHub URL or report URL
@@ -2998,25 +2998,86 @@ export async function POST(request: NextRequest) {
         );
       }
       
-      // Create output directory with improved error handling
+      // Add auto-scrolling functionality for recording purposes
+      const autoScrollScript = `
+      <script>
+        // Auto-scrolling functionality for recording portfolios
+        (function() {
+          let isScrolling = false;
+          let scrollSpeed = 3.2; // Pixels per frame (adjust for faster/slower scrolling)
+          
+          // Listen for Shift+S key combination to start/stop scrolling
+          document.addEventListener('keydown', (e) => {
+            // Shift + S key to toggle scrolling
+            if (e.shiftKey && e.key === 'S') {
+              e.preventDefault();
+              
+              if (isScrolling) {
+                // Stop scrolling
+                isScrolling = false;
+                console.log('Auto-scrolling stopped');
+              } else {
+                // Start scrolling from current position
+                isScrolling = true;
+                console.log('Auto-scrolling started with speed: ' + scrollSpeed.toFixed(1));
+                
+                // Smooth scrolling animation using requestAnimationFrame for better performance
+                let lastTime = null;
+                
+                function smoothScroll(timestamp) {
+                  if (!isScrolling) return;
+                  
+                  if (!lastTime) lastTime = timestamp;
+                  const elapsed = timestamp - lastTime;
+                  
+                  // Calculate how much to scroll based on elapsed time for consistent speed
+                  const scrollAmount = (scrollSpeed * elapsed) / 16.66; // Normalize to 60fps
+                  
+                  window.scrollBy(0, scrollAmount);
+                  lastTime = timestamp;
+                  
+                  // Check if we've reached the bottom of the page
+                  if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 20) {
+                    // We've reached the bottom, stop scrolling
+                    isScrolling = false;
+                    console.log('Reached bottom of page, auto-scrolling stopped');
+                    return;
+                  }
+                  
+                  requestAnimationFrame(smoothScroll);
+                }
+                
+                requestAnimationFrame(smoothScroll);
+              }
+            }
+            
+            // Shift + Up Arrow to increase scroll speed
+            if (isScrolling && e.shiftKey && e.key === 'ArrowUp') {
+              e.preventDefault();
+              scrollSpeed += 0.2;
+              console.log('Scroll speed increased to ' + scrollSpeed.toFixed(1));
+            }
+            
+            // Shift + Down Arrow to decrease scroll speed
+            if (isScrolling && e.shiftKey && e.key === 'ArrowDown') {
+              e.preventDefault();
+              scrollSpeed = Math.max(0.2, scrollSpeed - 0.2);
+              console.log('Scroll speed decreased to ' + scrollSpeed.toFixed(1));
+            }
+          });
+        })();
+      </script>
+      `;
+      
+      // Insert the auto-scroll script right before the closing body tag
+      htmlContent = htmlContent.replace('</body>', `${autoScrollScript}\n</body>`);
+      
+      // Create output directory and write file with improved error handling
       const publicOutputDir = path.join(process.cwd(), 'public', 'portfolios', portfolioId);
       
       try {
-        // First, try writing to the public directory
-        console.log(`Attempting to create directory: ${publicOutputDir}`);
-        
-        // Ensure parent directories exist first
-        const parentDir = path.join(process.cwd(), 'public', 'portfolios');
-        if (!fs.existsSync(parentDir)) {
-          fs.mkdirSync(parentDir, { recursive: true, mode: 0o777 });
-          console.log(`Created parent directory: ${parentDir}`);
-        }
-        
-        // Then create the portfolio-specific directory
-        if (!fs.existsSync(publicOutputDir)) {
-          fs.mkdirSync(publicOutputDir, { recursive: true, mode: 0o777 });
-          console.log(`Created directory: ${publicOutputDir}`);
-        }
+        // Ensure all parent directories exist (recursive: true handles this)
+        fs.mkdirSync(path.join(process.cwd(), 'public', 'portfolios', portfolioId), { recursive: true, mode: 0o777 } as any);
         
         // Write the generated HTML to a file
         const outputPath = path.join(publicOutputDir, 'index.html');
@@ -3030,9 +3091,9 @@ export async function POST(request: NextRequest) {
           message: 'Portfolio generated successfully' 
         });
       } catch (fsError: any) {
-        console.error('Filesystem error with public directory:', fsError);
+        console.error('Filesystem error:', fsError);
         
-        // If we can't write to the public directory, return HTML content directly
+        // If we can't write to the filesystem, return HTML content directly
         console.log('Falling back to returning HTML content directly...');
         
         return NextResponse.json({ 
