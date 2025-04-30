@@ -67,12 +67,12 @@ export default function Home() {
                 </p>
               </div>
               <div className="flex flex-col sm:flex-row gap-4 pt-2">
-                <Button size="lg" className="bg-black hover:bg-gray-800 dark:bg-indigo-600 dark:hover:bg-indigo-700 text-white px-8 py-6 h-auto rounded-md" asChild>
+                <Button size="lg" className="bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-600 dark:hover:bg-indigo-700 text-white px-8 py-6 h-auto rounded-md" asChild>
                   <Link href="/auth/signup">
                     Get started <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
                 </Button>
-                <Button size="lg" variant="outline" className="border-black hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800 px-8 py-6 h-auto rounded-md text-black dark:text-white" asChild>
+                <Button size="lg" variant="outline" className="border-indigo-300 hover:bg-indigo-50 dark:border-gray-700 dark:hover:bg-gray-800 px-8 py-6 h-auto rounded-md text-indigo-700 dark:text-white" asChild>
                   <Link href="#templates">View templates</Link>
                 </Button>
               </div>
@@ -125,7 +125,7 @@ export default function Home() {
             </ScrollReveal>
             <div className="grid md:grid-cols-3 gap-8 mt-12">
               <ScrollReveal>
-                <div className="flex flex-col space-y-4">
+                <div className="flex flex-col items-center text-center space-y-4">
                   <div className="bg-white dark:bg-gray-800 p-4 w-12 h-12 flex items-center justify-center rounded-lg shadow-sm">
                     <svg
                       className="w-6 h-6 text-indigo-600 dark:text-indigo-400"
@@ -148,7 +148,7 @@ export default function Home() {
                 </div>
               </ScrollReveal>
               <ScrollReveal delay={100}>
-                <div className="flex flex-col space-y-4">
+                <div className="flex flex-col items-center text-center space-y-4">
                   <div className="bg-white dark:bg-gray-800 p-4 w-12 h-12 flex items-center justify-center rounded-lg shadow-sm">
                     <svg
                       className="w-6 h-6 text-indigo-600 dark:text-indigo-400"
@@ -170,7 +170,7 @@ export default function Home() {
                 </div>
               </ScrollReveal>
               <ScrollReveal delay={200}>
-                <div className="flex flex-col space-y-4">
+                <div className="flex flex-col items-center text-center space-y-4">
                   <div className="bg-white dark:bg-gray-800 p-4 w-12 h-12 flex items-center justify-center rounded-lg shadow-sm">
                     <svg
                       className="w-6 h-6 text-indigo-600 dark:text-indigo-400"
@@ -298,14 +298,14 @@ export default function Home() {
                     </li>
                   </ul>
                   
-                  <Button size="lg" variant="outline" className="w-full border-black dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 py-6 h-auto rounded-md text-black dark:text-white" asChild>
+                  <Button size="lg" variant="outline" className="w-full border-indigo-200 dark:border-gray-600 hover:bg-indigo-50 dark:hover:bg-gray-700 py-6 h-auto rounded-md text-indigo-700 dark:text-white" asChild>
                     <Link href="/auth/signup">Get started</Link>
                   </Button>
                 </div>
               </ScrollReveal>
               
               <ScrollReveal delay={200}>
-                <div className="bg-black dark:bg-indigo-900 p-8 text-white">
+                <div className="bg-indigo-600 dark:bg-indigo-900 p-8 text-white">
                   <div className="mb-6">
                     <h3 className="text-xl font-medium">Pro</h3>
                     <p className="text-sm text-gray-300 mt-1">For serious professionals</p>
@@ -338,7 +338,7 @@ export default function Home() {
                     </li>
                   </ul>
                   
-                  <Button size="lg" className="w-full bg-white hover:bg-gray-200 dark:bg-indigo-600 dark:hover:bg-indigo-700 dark:text-white text-black py-6 h-auto rounded-md" asChild>
+                  <Button size="lg" className="w-full bg-white hover:bg-gray-200 dark:bg-indigo-600 dark:hover:bg-indigo-700 dark:text-white text-indigo-700 py-6 h-auto rounded-md" asChild>
                     <Link href="/auth/signup">Get Pro</Link>
                   </Button>
                 </div>
@@ -358,7 +358,7 @@ export default function Home() {
                 <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl">
                   Join thousands of professionals who trust us to showcase their work.
                 </p>
-                <Button size="lg" className="mt-4 bg-black hover:bg-gray-800 dark:bg-indigo-600 dark:hover:bg-indigo-700 text-white px-8 py-6 h-auto rounded-md" asChild>
+                <Button size="lg" className="mt-4 bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-600 dark:hover:bg-indigo-700 text-white px-8 py-6 h-auto rounded-md" asChild>
                   <Link href="/auth/signup">
                     Create your portfolio <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>

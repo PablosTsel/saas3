@@ -42,7 +42,7 @@ export function AuthNav() {
   return (
     <header className="bg-white dark:bg-gray-900 shadow-sm border-b border-indigo-100 dark:border-gray-800">
       <div className="container mx-auto flex items-center justify-between py-4 px-4">
-        <Link href="/" className="flex items-center gap-3">
+        <Link href="/" className="flex items-center gap-2">
           {mounted ? (
             theme === 'dark' ? (
               <>
@@ -51,10 +51,10 @@ export function AuthNav() {
                   alt="MakePortfolio Logo" 
                   width={150} 
                   height={40} 
-                  className="h-10 w-auto"
+                  className="h-8 sm:h-10 w-auto"
                   priority
                 />
-                <span className="font-bold text-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-transparent bg-clip-text">MakePortfolio</span>
+                <span className="hidden sm:inline font-bold text-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-transparent bg-clip-text">MakePortfolio</span>
               </>
             ) : (
               <>
@@ -63,15 +63,15 @@ export function AuthNav() {
                   alt="MakePortfolio Logo" 
                   width={150} 
                   height={40} 
-                  className="h-10 w-auto"
+                  className="h-8 sm:h-10 w-auto"
                   priority
                 />
-                <span className="font-bold text-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-transparent bg-clip-text">MakePortfolio</span>
+                <span className="hidden sm:inline font-bold text-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-transparent bg-clip-text">MakePortfolio</span>
               </>
             )
           ) : (
             // Show a placeholder during server render to avoid hydration mismatch
-            <div className="h-10 w-32 bg-gray-100 dark:bg-gray-800 rounded animate-pulse" />
+            <div className="h-8 sm:h-10 w-24 sm:w-32 bg-gray-100 dark:bg-gray-800 rounded animate-pulse" />
           )}
         </Link>
 
@@ -120,7 +120,7 @@ export function AuthNav() {
                   Dashboard
                 </Button>
               </Link>
-              <Button onClick={handleLogout} size="sm" className="bg-black hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-700 text-white rounded-md">
+              <Button onClick={handleLogout} size="sm" className="bg-indigo-600 hover:bg-indigo-700 dark:bg-gray-800 dark:hover:bg-gray-700 text-white rounded-md">
                 Sign out
               </Button>
             </>
@@ -132,7 +132,7 @@ export function AuthNav() {
                 </Button>
               </Link>
               <Link href="/auth/signup">
-                <Button size="sm" className="bg-black hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-700 text-white rounded-md shadow-sm hover:shadow-md transition-all">
+                <Button size="sm" className="bg-indigo-600 hover:bg-indigo-700 dark:bg-gray-800 dark:hover:bg-gray-700 text-white rounded-md shadow-sm hover:shadow-md transition-all">
                   Sign up
                 </Button>
               </Link>

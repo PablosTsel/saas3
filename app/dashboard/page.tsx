@@ -1244,7 +1244,7 @@ export default function DashboardPage() {
           
           <Button 
             onClick={handleCreatePortfolio}
-            className="mt-4 md:mt-0 bg-black hover:bg-gray-800 dark:bg-indigo-600 dark:hover:bg-indigo-700 text-white shadow-md px-6 py-6 h-auto rounded-md transition-all hover:shadow-lg"
+            className="mt-4 md:mt-0 bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-600 dark:hover:bg-indigo-700 text-white shadow-md px-6 py-6 h-auto rounded-md transition-all hover:shadow-lg"
           >
             <Plus className="mr-2 h-4 w-4" /> Create New Portfolio
           </Button>
@@ -1254,13 +1254,13 @@ export default function DashboardPage() {
           <TabsList className="flex space-x-2 bg-white dark:bg-gray-800 p-1 rounded-lg border border-indigo-100 dark:border-gray-700 mb-6 shadow-sm">
             <TabsTrigger 
               value="portfolios" 
-              className="flex-1 py-3 rounded-md data-[state=active]:bg-black data-[state=active]:text-white dark:data-[state=active]:bg-indigo-600 data-[state=inactive]:bg-white dark:data-[state=inactive]:bg-gray-800 data-[state=inactive]:text-gray-600 dark:data-[state=inactive]:text-gray-300 data-[state=inactive]:hover:text-gray-800 dark:data-[state=inactive]:hover:text-white transition-all"
+              className="flex-1 py-3 rounded-md data-[state=active]:bg-indigo-600 data-[state=active]:text-white dark:data-[state=active]:bg-indigo-600 data-[state=inactive]:bg-white dark:data-[state=inactive]:bg-gray-800 data-[state=inactive]:text-gray-600 dark:data-[state=inactive]:text-gray-300 data-[state=inactive]:hover:text-gray-800 dark:data-[state=inactive]:hover:text-white transition-all"
             >
               Portfolios
             </TabsTrigger>
             <TabsTrigger 
               value="settings" 
-              className="flex-1 py-3 rounded-md data-[state=active]:bg-black data-[state=active]:text-white dark:data-[state=active]:bg-indigo-600 data-[state=inactive]:bg-white dark:data-[state=inactive]:bg-gray-800 data-[state=inactive]:text-gray-600 dark:data-[state=inactive]:text-gray-300 data-[state=inactive]:hover:text-gray-800 dark:data-[state=inactive]:hover:text-white transition-all"
+              className="flex-1 py-3 rounded-md data-[state=active]:bg-indigo-600 data-[state=active]:text-white dark:data-[state=active]:bg-indigo-600 data-[state=inactive]:bg-white dark:data-[state=inactive]:bg-gray-800 data-[state=inactive]:text-gray-600 dark:data-[state=inactive]:text-gray-300 data-[state=inactive]:hover:text-gray-800 dark:data-[state=inactive]:hover:text-white transition-all"
             >
               Settings
             </TabsTrigger>
@@ -1286,7 +1286,7 @@ export default function DashboardPage() {
                     <p className="text-gray-600 dark:text-gray-400 text-center mb-6">Create your first portfolio to showcase your skills and projects.</p>
                     <Button 
                       onClick={handleCreatePortfolio}
-                      className="bg-black hover:bg-gray-800 dark:bg-indigo-600 dark:hover:bg-indigo-700 text-white shadow-md px-6 py-6 h-auto rounded-md transition-all hover:shadow-lg"
+                      className="bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-600 dark:hover:bg-indigo-700 text-white shadow-md px-6 py-6 h-auto rounded-md transition-all hover:shadow-lg"
                     >
                       <Plus className="mr-2 h-4 w-4" /> Create Your First Portfolio
                     </Button>

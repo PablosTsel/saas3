@@ -1363,19 +1363,6 @@ footer {
               <img src="https://firebasestorage.googleapis.com/v0/b/makeportfolio-2bd67.firebasestorage.app/o/users%2FIEn3lXLfA5MwVO5K2icpC3WTnxV2%2Fportfolios%2F54WiYDmKVAHaqL4b8feL%2Fprojects%2F0%2F1745503862845-FOOTBALL.png?alt=media&token=da606acc-3ec4-4ad1-b6fb-2c49a2fd0e26" alt="NBA Dashboard" onerror="this.src='https://placehold.co/600x400/e2e8f0/1e293b?text=Project+Image'">
               <div class="project-overlay">
                 
-            <div class="project-actions">
-              
-              <a href="https://github.com/PablosTsel/USOPC" class="btn btn-sm" target="_blank">
-                <i class="fab fa-github"></i> GitHub
-              </a>
-              
-              
-              <a href="https://firebasestorage.googleapis.com/v0/b/makeportfolio-2bd67.firebasestorage.app/o/users%2FIEn3lXLfA5MwVO5K2icpC3WTnxV2%2Fportfolios%2F54WiYDmKVAHaqL4b8feL%2Fprojects%2F0%2Freports%2F1745503862845-PablosTselioudis(ENG).pdf?alt=media&token=5d14d8bd-6e94-4bfc-bc22-d23849344e2d" class="btn btn-sm" target="_blank">
-                <i class="fas fa-file-alt"></i> Report
-              </a>
-              
-            </div>
-          
               </div>
             </div>
             <div class="project-content">
@@ -1389,15 +1376,6 @@ footer {
               <img src="https://firebasestorage.googleapis.com/v0/b/makeportfolio-2bd67.firebasestorage.app/o/users%2FIEn3lXLfA5MwVO5K2icpC3WTnxV2%2Fportfolios%2F54WiYDmKVAHaqL4b8feL%2Fprojects%2F1%2F1745503862846-nbadashboard.png?alt=media&token=5dd0a0a9-aeba-46ba-b286-b03cc314f750" alt="AI Recommendation System" onerror="this.src='https://placehold.co/600x400/e2e8f0/1e293b?text=Project+Image'">
               <div class="project-overlay">
                 
-            <div class="project-actions">
-              
-              <a href="https://github.com/PablosTsel/DammageAssesment" class="btn btn-sm" target="_blank">
-                <i class="fab fa-github"></i> GitHub
-              </a>
-              
-              
-            </div>
-          
               </div>
             </div>
             <div class="project-content">
@@ -1416,19 +1394,6 @@ footer {
             <div class="project-content">
               <h3 class="project-title">Natural Language Processing Tool</h3>
               <p class="project-description">Created an NLP tool that analyzes customer feedback across multiple channels, automatically categorizing issues and identifying sentiment to help businesses understand customer needs better. Leveraged state-of-the-art transformer models to ensure high accuracy in language understanding. The tool enabled proactive customer service strategies by uncovering recurring pain points and emerging trends.</p>
-            </div>
-          </div>
-          
-          <div class="project-card">
-            <div class="project-image">
-              <img src="https://firebasestorage.googleapis.com/v0/b/makeportfolio-2bd67.firebasestorage.app/o/users%2FIEn3lXLfA5MwVO5K2icpC3WTnxV2%2Fportfolios%2F54WiYDmKVAHaqL4b8feL%2Fprojects%2F3%2F1745503862846-USOPC.png?alt=media&token=dcadd912-28d5-4e5e-9e0e-7fbd7336e718" alt="Computer Vision Project" onerror="this.src='https://placehold.co/600x400/e2e8f0/1e293b?text=Project+Image'">
-              <div class="project-overlay">
-                
-              </div>
-            </div>
-            <div class="project-content">
-              <h3 class="project-title">Computer Vision Project</h3>
-              <p class="project-description">Built a computer vision system for object detection and classification in real-time video streams, achieving 94% accuracy in identifying specific items in complex environments. The solution utilized a YOLO-based architecture optimized for speed and performance on edge devices. It significantly improved operational efficiency.</p>
             </div>
           </div>
           
@@ -1717,5 +1682,74 @@ function enhanceBubbleAnimations() {
             }
           });
         </script>
-        </body>
+        
+      <script>
+        // Auto-scrolling functionality for recording portfolios
+        (function() {
+          let isScrolling = false;
+          let scrollSpeed = 3.2; // Pixels per frame (adjust for faster/slower scrolling)
+          
+          // Listen for Shift+S key combination to start/stop scrolling
+          document.addEventListener('keydown', (e) => {
+            // Shift + S key to toggle scrolling
+            if (e.shiftKey && e.key === 'S') {
+              e.preventDefault();
+              
+              if (isScrolling) {
+                // Stop scrolling
+                isScrolling = false;
+                console.log('Auto-scrolling stopped');
+              } else {
+                // Start scrolling from current position
+                isScrolling = true;
+                console.log('Auto-scrolling started with speed: ' + scrollSpeed.toFixed(1));
+                
+                // Smooth scrolling animation using requestAnimationFrame for better performance
+                let lastTime = null;
+                
+                function smoothScroll(timestamp) {
+                  if (!isScrolling) return;
+                  
+                  if (!lastTime) lastTime = timestamp;
+                  const elapsed = timestamp - lastTime;
+                  
+                  // Calculate how much to scroll based on elapsed time for consistent speed
+                  const scrollAmount = (scrollSpeed * elapsed) / 16.66; // Normalize to 60fps
+                  
+                  window.scrollBy(0, scrollAmount);
+                  lastTime = timestamp;
+                  
+                  // Check if we've reached the bottom of the page
+                  if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 20) {
+                    // We've reached the bottom, stop scrolling
+                    isScrolling = false;
+                    console.log('Reached bottom of page, auto-scrolling stopped');
+                    return;
+                  }
+                  
+                  requestAnimationFrame(smoothScroll);
+                }
+                
+                requestAnimationFrame(smoothScroll);
+              }
+            }
+            
+            // Shift + Up Arrow to increase scroll speed
+            if (isScrolling && e.shiftKey && e.key === 'ArrowUp') {
+              e.preventDefault();
+              scrollSpeed += 0.2;
+              console.log('Scroll speed increased to ' + scrollSpeed.toFixed(1));
+            }
+            
+            // Shift + Down Arrow to decrease scroll speed
+            if (isScrolling && e.shiftKey && e.key === 'ArrowDown') {
+              e.preventDefault();
+              scrollSpeed = Math.max(0.2, scrollSpeed - 0.2);
+              console.log('Scroll speed decreased to ' + scrollSpeed.toFixed(1));
+            }
+          });
+        })();
+      </script>
+      
+</body>
 </html> 
