@@ -1,19 +1,23 @@
 "use client"
 
 import Link from "next/link"
+import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Sparkles } from "lucide-react"
-import { useState, FormEvent } from "react"
+import { useState, FormEvent, useEffect } from "react"
 import { useAuth } from "@/lib/auth-context"
 import { toast } from "sonner"
+import { useTheme } from "next-themes"
 
 export default function SignupPage() {
   const router = useRouter()
   const { signup, loginWithGoogle } = useAuth()
+  const { theme } = useTheme()
+  const [mounted, setMounted] = useState(false)
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -22,6 +26,11 @@ export default function SignupPage() {
   const [isGoogleLoading, setIsGoogleLoading] = useState(false)
   const [termsAccepted, setTermsAccepted] = useState(true)
   const [error, setError] = useState("")
+
+  // After hydration, set mounted to true
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
@@ -125,9 +134,37 @@ export default function SignupPage() {
       <div className="flex flex-1 flex-col justify-center px-6 py-12 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
           <div className="flex justify-center">
-            <Link href="/" className="flex items-center gap-2 font-bold text-xl">
-              <Sparkles className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
-              <span className="text-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-transparent bg-clip-text dark:from-indigo-400 dark:to-purple-400">PortfolioMaker</span>
+            <Link href="/" className="flex items-center gap-3">
+              {mounted ? (
+                theme === 'dark' ? (
+                  <>
+                    <Image 
+                      src="/logos/DarkThemeLogo.png" 
+                      alt="MakePortfolio Logo" 
+                      width={150} 
+                      height={40} 
+                      className="h-12 w-auto"
+                      priority
+                    />
+                    <span className="font-bold text-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-transparent bg-clip-text">MakePortfolio</span>
+                  </>
+                ) : (
+                  <>
+                    <Image 
+                      src="/logos/LightThemeLogo.png" 
+                      alt="MakePortfolio Logo" 
+                      width={150} 
+                      height={40} 
+                      className="h-12 w-auto"
+                      priority
+                    />
+                    <span className="font-bold text-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-transparent bg-clip-text">MakePortfolio</span>
+                  </>
+                )
+              ) : (
+                // Show a placeholder during server render to avoid hydration mismatch
+                <div className="h-12 w-40 bg-gray-100 dark:bg-gray-800 rounded animate-pulse" />
+              )}
             </Link>
           </div>
           <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-800 dark:text-gray-100">Create your account</h2>

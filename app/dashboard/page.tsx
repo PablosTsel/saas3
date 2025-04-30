@@ -1,10 +1,11 @@
 "use client"
 
 import Link from "next/link"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { BarChart3, Edit, Eye, Globe, Plus, Settings, Sparkles, User, Users, Bell, LogOut, ChevronRight, ChevronLeft, Upload, X, Check, File, Loader2 } from "lucide-react"
+import { BarChart3, Edit, Eye, Globe, Plus, Settings, User, Users, Bell, LogOut, ChevronRight, ChevronLeft, Upload, X, Check, File, Loader2 } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
   DropdownMenu,
@@ -26,6 +27,7 @@ import { Progress } from "@/components/ui/progress"
 import { createPortfolio, getUserPortfolios, deletePortfolio } from "@/lib/firebase"
 import PortfolioCard from "@/components/portfolio-card"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { useTheme } from "next-themes"
 
 // Define types for our portfolio data
 interface Skill {
@@ -145,6 +147,8 @@ const TEMPLATES = [
 export default function DashboardPage() {
   const { user, logout } = useAuth()
   const router = useRouter()
+  const { theme, setTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
   const [isLoggingOut, setIsLoggingOut] = useState(false)
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
   const [currentStep, setCurrentStep] = useState(1)
@@ -638,7 +642,7 @@ export default function DashboardPage() {
       const reader = new FileReader();
       reader.readAsDataURL(file);
       reader.onload = (event) => {
-        const img = new Image();
+        const img = document.createElement('img');
         img.src = event.target?.result as string;
         img.onload = () => {
           // Create a canvas to resize the image
@@ -1143,17 +1147,48 @@ export default function DashboardPage() {
   const errorInputClass = "border-red-500 focus:border-red-500 focus:ring-red-200 bg-red-50 dark:bg-red-900/20 dark:border-red-700 dark:focus:ring-red-900";
   const errorLabelClass = "text-red-500 dark:text-red-400";
 
+  // Add useEffect to handle mounted state
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-white dark:bg-gray-950">
       {/* Header */}
-      <header className="border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-800 sticky top-0 z-10 shadow-sm">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <Link href="/" className="text-black dark:text-white font-medium text-lg flex items-center gap-2">
-              <Sparkles className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
-              <span className="bg-gradient-to-r from-indigo-600 to-purple-600 text-transparent bg-clip-text font-bold">PortfolioMaker</span>
-            </Link>
-          </div>
+      <header className="border-b border-indigo-100 dark:border-gray-800 bg-white dark:bg-gray-900 sticky top-0 z-10 shadow-sm">
+        <div className="container mx-auto flex items-center justify-between py-4 px-4">
+          <Link href="/" className="flex items-center gap-3">
+            {mounted ? (
+              theme === 'dark' ? (
+                <>
+                  <Image 
+                    src="/logos/DarkThemeLogo.png" 
+                    alt="MakePortfolio Logo" 
+                    width={150} 
+                    height={40} 
+                    className="h-10 w-auto"
+                    priority
+                  />
+                  <span className="font-bold text-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-transparent bg-clip-text">MakePortfolio</span>
+                </>
+              ) : (
+                <>
+                  <Image 
+                    src="/logos/LightThemeLogo.png" 
+                    alt="MakePortfolio Logo" 
+                    width={150} 
+                    height={40} 
+                    className="h-10 w-auto"
+                    priority
+                  />
+                  <span className="font-bold text-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-transparent bg-clip-text">MakePortfolio</span>
+                </>
+              )
+            ) : (
+              // Show a placeholder during server render to avoid hydration mismatch
+              <div className="h-10 w-32 bg-gray-100 dark:bg-gray-800 rounded animate-pulse" />
+            )}
+          </Link>
           <div className="flex items-center space-x-4">
             <ThemeToggle />
             <DropdownMenu>
@@ -1318,24 +1353,6 @@ export default function DashboardPage() {
                         <p className="text-sm text-indigo-500 dark:text-indigo-400 mb-1">Account Created</p>
                         <p className="font-medium text-gray-800 dark:text-gray-200">{user?.metadata?.creationTime ? new Date(user.metadata.creationTime).toLocaleDateString() : "Unknown"}</p>
                       </div>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="space-y-3">
-                  <h3 className="text-lg font-medium text-gray-800 dark:text-gray-200 flex items-center gap-2">
-                    <Sparkles className="h-5 w-5 text-indigo-500 dark:text-indigo-400" />
-                    Subscription
-                  </h3>
-                  <div className="p-5 bg-white dark:bg-gray-800 rounded-lg border border-indigo-100 dark:border-gray-700 shadow-sm">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="font-medium text-gray-800 dark:text-gray-200">Free Plan</p>
-                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Basic features</p>
-                      </div>
-                      <Button className="bg-black hover:bg-gray-800 dark:bg-indigo-600 dark:hover:bg-indigo-700 text-white px-6 py-2 h-auto rounded-md shadow-md hover:shadow-lg transition-all hover:scale-105">
-                        Upgrade
-                      </Button>
                     </div>
                   </div>
                 </div>

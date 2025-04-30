@@ -82,20 +82,20 @@ export default function Home() {
                   {/* Inner container with video */}
                   <div className="aspect-[16/9] rounded-lg overflow-hidden bg-white dark:bg-gray-800 relative">
                     <video 
-                      src="/videosandpictures/template3/template3.webm"
+                      src="/videosandpictures/landing/ExampleLandng.webm"
                       autoPlay
                       muted
                       loop
                       playsInline
                       className="w-full h-full object-cover"
-                      poster="/videosandpictures/template3/template3.png"
+                      poster="/videosandpictures/landing/ExampleLandng-poster.jpg"
                       onError={(e) => {
                         console.error('Video failed to load:', e);
                         // Fallback to image if video fails to load
                         const target = e.target as HTMLVideoElement;
                         target.style.display = 'none';
                         const img = document.createElement('img');
-                        img.src = '/videosandpictures/template3/template3.png';
+                        img.src = '/videosandpictures/landing/ExampleLandng-poster.jpg';
                         img.className = 'w-full h-full object-cover';
                         img.alt = 'Portfolio Preview';
                         target.parentNode?.appendChild(img);
@@ -213,14 +213,14 @@ export default function Home() {
                 <div className="border border-gray-200 dark:border-gray-800 overflow-hidden rounded-lg shadow-sm hover:shadow-md transition-shadow">
                   <div className="aspect-[16/9] bg-gray-100 dark:bg-gray-800 relative">
                     <img 
-                      src="/placeholder.svg?height=450&width=800" 
-                      alt="Template preview" 
+                      src="/showLanding/sofia.png" 
+                      alt="Template 1 - Sofia's Portfolio" 
                       className="w-full h-full object-cover"
                     />
                   </div>
                   <div className="p-4 bg-white dark:bg-gray-900">
-                    <h3 className="font-semibold text-black dark:text-white">Minimal</h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Clean and minimal design</p>
+                    <h3 className="font-semibold text-black dark:text-white">Clean Modern</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Clean and professional design with subtle animations</p>
                   </div>
                 </div>
               </ScrollReveal>
@@ -228,14 +228,14 @@ export default function Home() {
                 <div className="border border-gray-200 dark:border-gray-800 overflow-hidden rounded-lg shadow-sm hover:shadow-md transition-shadow">
                   <div className="aspect-[16/9] bg-gray-100 dark:bg-gray-800 relative">
                     <img 
-                      src="/placeholder.svg?height=450&width=800" 
-                      alt="Template preview" 
+                      src="/showLanding/john.png" 
+                      alt="Template 4 - John's Portfolio" 
                       className="w-full h-full object-cover"
                     />
                   </div>
                   <div className="p-4 bg-white dark:bg-gray-900">
-                    <h3 className="font-semibold text-black dark:text-white">Modern</h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Contemporary and sleek design</p>
+                    <h3 className="font-semibold text-black dark:text-white">Bubble Animation</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Sleek design with floating bubble animations</p>
                   </div>
                 </div>
               </ScrollReveal>
@@ -243,14 +243,14 @@ export default function Home() {
                 <div className="border border-gray-200 dark:border-gray-800 overflow-hidden rounded-lg shadow-sm hover:shadow-md transition-shadow">
                   <div className="aspect-[16/9] bg-gray-100 dark:bg-gray-800 relative">
                     <img 
-                      src="/placeholder.svg?height=450&width=800" 
-                      alt="Template preview" 
+                      src="/showLanding/marcus.png" 
+                      alt="Template 8 - Marcus's Portfolio" 
                       className="w-full h-full object-cover"
                     />
                   </div>
                   <div className="p-4 bg-white dark:bg-gray-900">
-                    <h3 className="font-semibold text-black dark:text-white">Creative</h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Bold and artistic design</p>
+                    <h3 className="font-semibold text-black dark:text-white">Artistic Minimal</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Ultra-minimalistic design with typography focus</p>
                   </div>
                 </div>
               </ScrollReveal>
@@ -372,47 +372,9 @@ export default function Home() {
       {/* Footer */}
       <footer className="py-12 border-t border-black dark:border-gray-800 bg-white dark:bg-gray-950">
         <div className="container px-4 md:px-6 max-w-5xl mx-auto">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            <div>
-              <div className="font-medium text-black dark:text-white mb-4">Product</div>
-              <ul className="space-y-2">
-                <li><Link href="#features" className="text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white text-sm">Features</Link></li>
-                <li><Link href="#templates" className="text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white text-sm">Templates</Link></li>
-                <li><Link href="#pricing" className="text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white text-sm">Pricing</Link></li>
-              </ul>
-            </div>
-            
-            <div>
-              <div className="font-medium text-black dark:text-white mb-4">Company</div>
-              <ul className="space-y-2">
-                <li><Link href="/about" className="text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white text-sm">About Us</Link></li>
-                <li><Link href="/contact" className="text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white text-sm">Contact</Link></li>
-                <li><Link href="/blog" className="text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white text-sm">Blog</Link></li>
-              </ul>
-            </div>
-            
-            <div>
-              <div className="font-medium text-black dark:text-white mb-4">Legal</div>
-              <ul className="space-y-2">
-                <li><Link href="/terms" className="text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white text-sm">Terms</Link></li>
-                <li><Link href="/privacy" className="text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white text-sm">Privacy</Link></li>
-                <li><Link href="/cookies" className="text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white text-sm">Cookies</Link></li>
-              </ul>
-            </div>
-            
-            <div>
-              <div className="font-medium text-black dark:text-white mb-4">Connect</div>
-              <ul className="space-y-2">
-                <li><Link href="https://twitter.com" target="_blank" className="text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white text-sm">Twitter</Link></li>
-                <li><Link href="https://github.com" target="_blank" className="text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white text-sm">GitHub</Link></li>
-                <li><Link href="https://linkedin.com" target="_blank" className="text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white text-sm">LinkedIn</Link></li>
-              </ul>
-            </div>
-          </div>
-          
-          <div className="mt-16 pt-8 border-t border-gray-200 dark:border-gray-800 text-center">
+          <div className="text-center">
             <p className="text-gray-600 dark:text-gray-400 text-sm">
-              © {new Date().getFullYear()} PortfolioMaker. All rights reserved.
+              © {new Date().getFullYear()} MakePortfolio by Pablos Tselioudis Garmendia. All rights reserved.
             </p>
           </div>
         </div>

@@ -2,10 +2,11 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/lib/auth-context"
 import { Button } from "@/components/ui/button"
-import { Sparkles, Moon, Sun } from "lucide-react"
+import { Moon, Sun } from "lucide-react"
 import { toast } from "sonner"
 import { useTheme } from "next-themes"
 
@@ -41,9 +42,37 @@ export function AuthNav() {
   return (
     <header className="bg-white dark:bg-gray-900 shadow-sm border-b border-indigo-100 dark:border-gray-800">
       <div className="container mx-auto flex items-center justify-between py-4 px-4">
-        <Link href="/" className="flex items-center gap-2">
-          <Sparkles className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
-          <span className="font-bold text-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-transparent bg-clip-text">PortfolioMaker</span>
+        <Link href="/" className="flex items-center gap-3">
+          {mounted ? (
+            theme === 'dark' ? (
+              <>
+                <Image 
+                  src="/logos/DarkThemeLogo.png" 
+                  alt="MakePortfolio Logo" 
+                  width={150} 
+                  height={40} 
+                  className="h-10 w-auto"
+                  priority
+                />
+                <span className="font-bold text-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-transparent bg-clip-text">MakePortfolio</span>
+              </>
+            ) : (
+              <>
+                <Image 
+                  src="/logos/LightThemeLogo.png" 
+                  alt="MakePortfolio Logo" 
+                  width={150} 
+                  height={40} 
+                  className="h-10 w-auto"
+                  priority
+                />
+                <span className="font-bold text-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-transparent bg-clip-text">MakePortfolio</span>
+              </>
+            )
+          ) : (
+            // Show a placeholder during server render to avoid hydration mismatch
+            <div className="h-10 w-32 bg-gray-100 dark:bg-gray-800 rounded animate-pulse" />
+          )}
         </Link>
 
         <nav className="hidden md:flex items-center gap-6">

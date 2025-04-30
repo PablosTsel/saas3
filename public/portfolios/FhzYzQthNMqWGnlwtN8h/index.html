@@ -1,0 +1,1614 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marcus Griffin | Cybersecurity Analyst</title>
+    <style>
+:root {
+  --background: #0f0f0f;
+  --surface: #1a1a1a;
+  --surface-hover: #2a2a2a;
+  --primary: #f0f0f0;
+  --secondary: #a0a0a0;
+  --accent: #6dc0ea;
+  --accent-light: #91d4f5;
+  --text: #f0f0f0;
+  --text-secondary: #b0b0b0;
+  --radius: 5px;
+  --transition: all 0.3s ease;
+  --shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  --font-main: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  --font-mono: 'SF Mono', Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+  --spacing: 8px;
+  --content-width: 1200px;
+}
+
+[data-theme="light"] {
+  --background: #fafafa;
+  --surface: #ffffff;
+  --surface-hover: #f0f0f0;
+  --primary: #0f0f0f;
+  --secondary: #505050;
+  --accent: #0082c8;
+  --accent-light: #0098eb;
+  --text: #0f0f0f;
+  --text-secondary: #404040;
+  --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-main);
+  background-color: var(--background);
+  color: var(--text);
+  line-height: 1.6;
+  overflow-x: hidden;
+  transition: var(--transition);
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+  transition: var(--transition);
+}
+
+a:hover {
+  color: var(--accent-light);
+}
+
+ul {
+  list-style: none;
+}
+
+/* Background animation */
+.bg-animation {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -1;
+  overflow: hidden;
+}
+
+.grain {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  pointer-events: none;
+}
+
+.gradient {
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle at 50% 50%, var(--accent), transparent 50%);
+  opacity: 0.05;
+  transform: translateZ(0);
+  animation: rotate 60s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Container */
+.container {
+  width: 100%;
+  max-width: var(--content-width);
+  margin: 0 auto;
+  padding: 0 calc(var(--spacing) * 3);
+}
+
+/* Navbar */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: calc(var(--spacing) * 3);
+  z-index: 100;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  background-color: rgba(var(--background-rgb), 0.8);
+  transition: var(--transition);
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text);
+  background: linear-gradient(to right, var(--text), var(--accent));
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  transition: var(--transition);
+}
+
+.nav-links {
+  display: flex;
+  gap: calc(var(--spacing) * 5);
+}
+
+.nav-links a {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  position: relative;
+}
+
+.nav-links a::after {
+  content: "";
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background-color: var(--accent);
+  transition: var(--transition);
+}
+
+.nav-links a:hover, .nav-links a.active {
+  color: var(--text);
+}
+
+.nav-links a:hover::after, .nav-links a.active::after {
+  width: 100%;
+}
+
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--spacing));
+}
+
+.theme-toggle i {
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+}
+
+.toggle-track {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 20px;
+  margin: 0 5px;
+}
+
+.toggle-track input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-track label {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--surface);
+  border-radius: 20px;
+  transition: var(--transition);
+}
+
+.toggle-track label:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 2px;
+  bottom: 2px;
+  background-color: var(--accent);
+  border-radius: 50%;
+  transition: var(--transition);
+}
+
+input:checked + label {
+  background-color: var(--surface-hover);
+}
+
+input:checked + label:before {
+  transform: translateX(20px);
+}
+
+.menu-toggle {
+  display: none;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 24px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.menu-toggle span {
+  height: 2px;
+  width: 100%;
+  background-color: var(--text);
+  transition: var(--transition);
+}
+
+/* Main sections */
+main {
+  padding-top: 80px;
+}
+
+section {
+  padding: calc(var(--spacing) * 10) 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.section-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: calc(var(--spacing) * 8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: calc(var(--spacing) * 2);
+}
+
+.github-link {
+  margin-left: calc(var(--spacing) * 2);
+  font-size: 1.5rem;
+  color: var(--accent);
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.github-link:hover {
+  transform: translateY(-3px);
+  color: var(--accent-light);
+}
+
+.section-title span {
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  color: var(--accent);
+  opacity: 0.8;
+}
+
+/* Hero section */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+}
+
+.hero-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: calc(var(--spacing) * 8);
+}
+
+.hero-text {
+  flex: 1;
+}
+
+.hero-text h1 {
+  font-size: 3.5rem;
+  font-weight: 800;
+  margin-bottom: calc(var(--spacing) * 2);
+  line-height: 1.1;
+  background: linear-gradient(to right, var(--text), var(--accent));
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero-text h2 {
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: var(--accent);
+  margin-bottom: calc(var(--spacing) * 4);
+  display: flex;
+  align-items: center;
+}
+
+.hero-text p {
+  font-size: 1.1rem;
+  margin-bottom: calc(var(--spacing) * 6);
+  max-width: 600px;
+  color: var(--text-secondary);
+}
+
+.cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1.5rem;
+  background-color: var(--accent);
+  margin-left: 2px;
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.hero-links {
+  display: flex;
+  gap: calc(var(--spacing) * 3);
+}
+
+.outline-btn, .solid-btn {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--spacing));
+  padding: calc(var(--spacing) * 1.5) calc(var(--spacing) * 3);
+  border-radius: var(--radius);
+  font-weight: 500;
+  font-size: 0.9rem;
+  transition: var(--transition);
+}
+
+.outline-btn {
+  color: var(--text);
+  border: 1px solid var(--text-secondary);
+}
+
+.outline-btn:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+
+.solid-btn {
+  background-color: var(--accent);
+  color: white;
+  border: 1px solid var(--accent);
+}
+
+.solid-btn:hover {
+  background-color: var(--accent-light);
+  color: white;
+  transform: translateY(-2px);
+}
+
+.outline-btn svg, .solid-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.hero-image {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.profile-frame {
+  position: relative;
+  width: 280px;
+  height: 280px;
+  border-radius: 50%;
+  overflow: hidden;
+  background-color: var(--surface);
+  box-shadow: var(--shadow);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.profile-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: var(--transition);
+}
+
+.profile-frame:hover img {
+  transform: scale(1.05);
+}
+
+.initials-avatar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(45deg, var(--accent), var(--accent-light));
+  color: white;
+  font-size: 5rem;
+  font-weight: 700;
+}
+
+/* About section */
+.about-content {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: calc(var(--spacing) * 6);
+}
+
+.about-text p {
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+  margin-bottom: calc(var(--spacing) * 4);
+}
+
+.about-details {
+  background-color: var(--surface);
+  border-radius: var(--radius);
+  padding: calc(var(--spacing) * 4);
+  box-shadow: var(--shadow);
+}
+
+.detail-item {
+  margin-bottom: calc(var(--spacing) * 3);
+  padding-bottom: calc(var(--spacing) * 3);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.detail-item:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.detail-label {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-secondary);
+  margin-bottom: calc(var(--spacing));
+}
+
+.detail-value {
+  font-size: 1rem;
+  color: var(--text);
+}
+
+.detail-value a {
+  color: var(--accent);
+}
+
+.detail-value a:hover {
+  text-decoration: underline;
+}
+
+/* Skills section */
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: calc(var(--spacing) * 3);
+}
+
+.skill-card {
+  background-color: var(--surface);
+  border-radius: var(--radius);
+  padding: calc(var(--spacing) * 3);
+  transition: var(--transition);
+  border: 1px solid transparent;
+}
+
+.skill-card:hover {
+  transform: translateY(-5px);
+  background-color: var(--surface-hover);
+  border-color: var(--accent);
+}
+
+.skill-name {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text);
+  text-align: center;
+}
+
+/* Projects section */
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: calc(var(--spacing) * 4);
+}
+
+.project-card {
+  background-color: var(--surface);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  transition: var(--transition);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.project-card:hover {
+  transform: translateY(-5px);
+}
+
+.project-image {
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+}
+
+.project-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: var(--transition);
+}
+
+.project-card:hover .project-image img {
+  transform: scale(1.05);
+}
+
+.project-content {
+  padding: calc(var(--spacing) * 4);
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.project-content h3 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: calc(var(--spacing) * 2);
+  color: var(--text);
+}
+
+.project-content p {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  margin-bottom: calc(var(--spacing) * 4);
+  flex-grow: 1;
+}
+
+.project-links {
+  display: flex;
+  gap: calc(var(--spacing) * 2);
+  margin-top: auto;
+}
+
+.project-link {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--spacing));
+  color: var(--accent);
+  font-size: 0.9rem;
+  font-weight: 500;
+  padding: calc(var(--spacing)) calc(var(--spacing) * 2);
+  border-radius: var(--radius);
+  background-color: var(--surface-hover);
+  transition: var(--transition);
+}
+
+.project-link:hover {
+  background-color: var(--accent);
+  color: white;
+}
+
+/* Contact section */
+.contact-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: calc(var(--spacing) * 8);
+}
+
+.contact-text p {
+  font-size: 1.1rem;
+  margin-bottom: calc(var(--spacing) * 4);
+  color: var(--text-secondary);
+}
+
+.contact-info {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacing) * 4);
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--spacing) * 3);
+  padding: calc(var(--spacing) * 3);
+  background-color: var(--surface);
+  border-radius: var(--radius);
+  transition: var(--transition);
+}
+
+.contact-item:hover {
+  transform: translateY(-3px);
+  background-color: var(--surface-hover);
+}
+
+.contact-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: rgba(var(--accent-rgb), 0.1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--accent);
+  font-size: 1.2rem;
+}
+
+.contact-details h3 {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: calc(var(--spacing) / 2);
+}
+
+.contact-details a {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.contact-details a:hover {
+  color: var(--accent);
+}
+
+/* Footer */
+footer {
+  padding: calc(var(--spacing) * 6) 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.footer-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.footer-content p {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+/* Animations for text elements */
+.animated-text {
+  animation: fadeIn 1s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Media queries */
+@media (max-width: 992px) {
+  .hero-content {
+    flex-direction: column-reverse;
+    text-align: center;
+    gap: calc(var(--spacing) * 6);
+  }
+  
+  .hero-links, .about-content {
+    justify-content: center;
+  }
+  
+  .hero-text h1 {
+    font-size: 3rem;
+  }
+  
+  .about-content {
+    grid-template-columns: 1fr;
+  }
+  
+  .contact-content {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .nav-links {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 70%;
+    height: 100vh;
+    background-color: var(--surface);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+    z-index: 99;
+  }
+  
+  .nav-links.active {
+    right: 0;
+  }
+  
+  .menu-toggle {
+    display: flex;
+    z-index: 100;
+  }
+  
+  .menu-toggle.active span:nth-child(1) {
+    transform: rotate(-45deg) translate(-5px, 6px);
+  }
+  
+  .menu-toggle.active span:nth-child(2) {
+    transform: rotate(45deg);
+  }
+  
+  .hero-text h1 {
+    font-size: 2.5rem;
+  }
+  
+  .hero-text h2 {
+    font-size: 1.2rem;
+    justify-content: center;
+  }
+  
+  .section-title {
+    font-size: 1.8rem;
+  }
+  
+  .projects-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 576px) {
+  .hero-text h1 {
+    font-size: 2rem;
+  }
+  
+  .hero-links {
+    flex-direction: column;
+    width: 100%;
+    gap: calc(var(--spacing) * 2);
+  }
+  
+  .outline-btn, .solid-btn {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .profile-frame {
+    width: 220px;
+    height: 220px;
+  }
+  
+  .skills-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  }
+} 
+</style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta name="description" content="Marcus Griffin's professional portfolio showcasing projects and skills in Cybersecurity Analyst">
+
+        <style>
+          /* Skills marquee styling for template8 */
+          .skills-marquee-wrapper {
+            width: 85%;
+            margin: 2rem auto 4rem;
+            position: relative;
+            padding: 1.5rem 0;
+            background-color: var(--card-bg, rgba(30, 41, 59, 0.5));
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+          }
+          
+          .skills-marquee {
+            width: 100%;
+            overflow: hidden;
+          }
+          
+          .skills-track {
+            display: flex;
+            width: max-content;
+            animation: scrollSkills 35s linear infinite;
+            gap: 2rem;
+            padding: 0.5rem 2rem;
+          }
+          
+          .skills-track:hover {
+            animation-play-state: paused;
+          }
+          
+          @keyframes scrollSkills {
+            0% {
+              transform: translateX(0);
+            }
+            100% {
+              transform: translateX(-50%);
+            }
+          }
+          
+          /* Enhanced skill card design */
+          .skill-card {
+            background-color: var(--accent-color, #4f46e5);
+            color: var(--light-text, #ffffff);
+            border-radius: 12px;
+            padding: 1rem 2rem;
+            min-width: 150px;
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+          }
+          
+          .skill-card:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+          }
+          
+          .skill-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+          }
+          
+          /* Responsive adjustments */
+          @media (max-width: 1200px) {
+            .skills-marquee-wrapper {
+              width: 90%;
+            }
+            
+            .skill-card {
+              padding: 0.9rem 1.5rem;
+              min-width: 130px;
+            }
+          }
+          
+          @media (max-width: 768px) {
+            .skills-marquee-wrapper {
+              width: 95%;
+              margin: 2rem auto 3rem;
+            }
+            
+            .skills-track {
+              gap: 1.5rem;
+              animation-duration: 25s;
+            }
+            
+            .skill-card {
+              padding: 0.8rem 1.2rem;
+              min-width: 120px;
+              height: 50px;
+            }
+            
+            .skill-name {
+              font-size: 0.9rem;
+            }
+          }
+          
+          /* Hide original skills section if it exists */
+          #skills .skills-container {
+            display: none !important;
+          }
+          
+          /* Minimalistic background animation */
+          .background-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.7;
+          }
+          
+          /* Ensure proper stacking context for content */
+          body {
+            position: relative;
+            z-index: 1;
+          }
+          
+          section {
+            position: relative;
+            z-index: 2;
+          }
+        </style>
+        
+        <style>
+          /* Reduce spacing between sections in template 8 */
+          section {
+            padding: calc(var(--spacing) * 5) 0; /* Reduced from 10x to 5x */
+            min-height: unset; /* Remove minimum height requirement */
+          }
+          
+          /* Add some minimal spacing between sections */
+          section + section {
+            padding-top: calc(var(--spacing) * 3);
+          }
+          
+          /* Maintain full height only for hero section */
+          section.hero {
+            min-height: 100vh;
+          }
+          
+          /* Adjust section title spacing to match new section spacing */
+          .section-title {
+            margin-bottom: calc(var(--spacing) * 5); /* Reduced from 8x to 5x */
+          }
+        </style>
+        <script>window.portfolioTitle = "Cybersecurity Analyst";</script></head>
+<body>
+    <div class="bg-animation">
+        <div class="grain"></div>
+        <div class="gradient"></div>
+    </div>
+    
+    <nav class="navbar">
+        <ul class="nav-links">
+            <li><a href="#home" class="active">Home</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#skills">Skills</a></li>
+            <li><a href="#projects">Projects</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+        <div class="theme-toggle">
+            <i class="fas fa-sun"></i>
+            <div class="toggle-track">
+                <input type="checkbox" id="theme-toggle" checked>
+                <label for="theme-toggle"></label>
+            </div>
+            <i class="fas fa-moon"></i>
+        </div>
+        <div class="menu-toggle">
+            <span></span>
+            <span></span>
+        </div>
+    </nav>
+    
+    <main>
+        <section id="home" class="hero">
+            <div class="container">
+                <div class="hero-content">
+                    <div class="hero-text">
+                        <h1 class="animated-text">Marcus Griffin</h1>
+                        <h2><span class="typed-text"></span><span class="cursor">&nbsp;</span></h2>
+                        <p>Cybersecurity specialist safeguarding systems against ever-evolving threats.</p>
+                        <div class="hero-links">
+                            
+                            <a href="https://firebasestorage.googleapis.com/v0/b/makeportfolio-2bd67.firebasestorage.app/o/users%2FIEn3lXLfA5MwVO5K2icpC3WTnxV2%2Fportfolios%2FFhzYzQthNMqWGnlwtN8h%2Fcv%2F1746036541297-PablosTselioudis(ENG).pdf?alt=media&token=efa94125-9df2-4cb2-a082-d0b690101ccc" class="outline-btn" target="_blank">
+                                <span>Resume</span>
+                                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="1.5" fill="none"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                            </a>
+                            
+                            <a href="#contact" class="solid-btn">
+                                <span>Contact</span>
+                                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="1.5" fill="none"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"></path></svg>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="hero-image">
+                        <div class="profile-frame">
+                            
+                            <img src="https://firebasestorage.googleapis.com/v0/b/makeportfolio-2bd67.firebasestorage.app/o/users%2FIEn3lXLfA5MwVO5K2icpC3WTnxV2%2Fportfolios%2FFhzYzQthNMqWGnlwtN8h%2Fprofile%2F1746036541296-MarcusGriffin.png?alt=media&token=6aeda2fd-3150-4e1c-8348-ff274f07727c" alt="Marcus Griffin" onerror="this.src='https://placehold.co/400x400?text=T'">
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="about" class="about">
+            <div class="container">
+                <h2 class="section-title"><span>01</span>About</h2>
+                <div class="about-content">
+                    <div class="about-text">
+                        <p>Hi, I’m Marcus Griffin, a Cybersecurity Analyst dedicated to protecting digital assets across finance and healthcare domains. I specialize in threat hunting, SIEM tuning, and incident response, leveraging both offensive and defensive techniques to build resilient security postures. My approach combines deep technical knowledge with a risk-based mindset, ensuring compliance with standards such as ISO 27001 and HIPAA. Continuous learning and ethical hacking keep me ahead of adversaries, while clear communication helps stakeholders understand and mitigate risks effectively.</p>
+                    </div>
+                    <div class="about-details">
+                        <div class="detail-item">
+                            <div class="detail-label">Email</div>
+                            <div class="detail-value"><a href="mailto:griffin@gmail.com">griffin@gmail.com</a></div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Phone</div>
+                            <div class="detail-value"><a href="tel:+34 603980731">+34 603980731</a></div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Role</div>
+                            <div class="detail-value">Cybersecurity Analyst</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        
+        <section id="skills" class="skills">
+          <div class="container">
+            <h2 class="section-title"><span>02</span>Skills</h2>
+            
+            <!-- Skills marquee wrapper -->
+            <div class="skills-marquee-wrapper">
+              <div class="skills-marquee">
+                <div class="skills-track">
+                  
+          <div class="skill-card">
+            <div class="skill-name">Python</div>
+          </div>
+          
+          <div class="skill-card">
+            <div class="skill-name">Machine Learning</div>
+          </div>
+          
+          <div class="skill-card">
+            <div class="skill-name">TensorFlow</div>
+          </div>
+          
+          <div class="skill-card">
+            <div class="skill-name">Data Structures & Algorithms</div>
+          </div>
+          
+          <div class="skill-card">
+            <div class="skill-name">Wireshark</div>
+          </div>
+          
+          <div class="skill-card">
+            <div class="skill-name">IDS/IPS</div>
+          </div>
+          
+          <div class="skill-card">
+            <div class="skill-name">SOC Operations</div>
+          </div>
+          
+                  <!-- Duplicate for seamless loop -->
+                  
+          <div class="skill-card">
+            <div class="skill-name">Python</div>
+          </div>
+          
+          <div class="skill-card">
+            <div class="skill-name">Machine Learning</div>
+          </div>
+          
+          <div class="skill-card">
+            <div class="skill-name">TensorFlow</div>
+          </div>
+          
+          <div class="skill-card">
+            <div class="skill-name">Data Structures & Algorithms</div>
+          </div>
+          
+          <div class="skill-card">
+            <div class="skill-name">Wireshark</div>
+          </div>
+          
+          <div class="skill-card">
+            <div class="skill-name">IDS/IPS</div>
+          </div>
+          
+          <div class="skill-card">
+            <div class="skill-name">SOC Operations</div>
+          </div>
+          
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        
+        
+        <section id="projects" class="projects">
+            <div class="container">
+                <h2 class="section-title"><span>03</span>Projects
+                    
+                    <a href="https://github.com/PablosTsel" class="github-link" target="_blank" title="Visit my GitHub profile">
+                        <i class="fab fa-github"></i>
+                    </a>
+                    
+                </h2>
+                <div class="projects-grid">
+                    
+          <div class="project-card">
+            <div class="project-image">
+              <img src="https://firebasestorage.googleapis.com/v0/b/makeportfolio-2bd67.firebasestorage.app/o/users%2FIEn3lXLfA5MwVO5K2icpC3WTnxV2%2Fportfolios%2FFhzYzQthNMqWGnlwtN8h%2Fprojects%2F0%2F1746036541297-phishing.png?alt=media&token=053105aa-165b-4355-889b-e48449298e13" alt="Phishing Simulation Suite" onerror="this.src='https://placehold.co/600x400?text=Project+Image'">
+          </div>
+            <div class="project-content">
+              <h3>Phishing Simulation Suite</h3>
+              <p>Developed an internal phishing-testing framework that reduced click-through rates by 68 % after three training cycles, dramatically improving user security awareness.</p>
+              
+            <div class="project-links">
+              <a href="https://github.com/PablosTsel/Incase" class="project-link" target="_blank">
+                <i class="fab fa-github"></i>
+                <span>GitHub</span>
+              </a>
+              <a href="https://firebasestorage.googleapis.com/v0/b/makeportfolio-2bd67.firebasestorage.app/o/users%2FIEn3lXLfA5MwVO5K2icpC3WTnxV2%2Fportfolios%2FFhzYzQthNMqWGnlwtN8h%2Fprojects%2F0%2Freports%2F1746036541298-PablosTselioudis(ENG).pdf?alt=media&token=82cf90f3-3934-4650-a05f-d8358e2d5516" class="project-link" target="_blank">
+                <i class="fas fa-file-alt"></i>
+                <span>Report</span>
+              </a>
+            </div>
+          
+              </div>
+            </div>
+        
+          <div class="project-card">
+            <div class="project-image">
+              <img src="https://firebasestorage.googleapis.com/v0/b/makeportfolio-2bd67.firebasestorage.app/o/users%2FIEn3lXLfA5MwVO5K2icpC3WTnxV2%2Fportfolios%2FFhzYzQthNMqWGnlwtN8h%2Fprojects%2F1%2F1746036541298-threat.png?alt=media&token=97a15782-6626-4f07-875d-ad2e6533c8f7" alt="Real-time Threat Correlation Engine" onerror="this.src='https://placehold.co/600x400?text=Project+Image'">
+          </div>
+            <div class="project-content">
+              <h3>Real-time Threat Correlation Engine</h3>
+              <p>Implemented custom Splunk correlation searches integrating OSINT feeds, cutting mean-time-to-detect from 90 minutes to 12 minutes.</p>
+              
+            <div class="project-links">
+              <a href="https://github.com/PablosTsel/DammageAssesment" class="project-link" target="_blank">
+                <i class="fab fa-github"></i>
+                <span>GitHub</span>
+              </a>
+              
+            </div>
+          
+              </div>
+            </div>
+        
+          <div class="project-card">
+            <div class="project-image">
+              <img src="https://firebasestorage.googleapis.com/v0/b/makeportfolio-2bd67.firebasestorage.app/o/users%2FIEn3lXLfA5MwVO5K2icpC3WTnxV2%2Fportfolios%2FFhzYzQthNMqWGnlwtN8h%2Fprojects%2F2%2F1746036541298-untrust.png?alt=media&token=6713c560-aa3a-48ae-abd7-37bd76839432" alt="Zero-Trust Network Implementation" onerror="this.src='https://placehold.co/600x400?text=Project+Image'">
+          </div>
+            <div class="project-content">
+              <h3>Zero-Trust Network Implementation</h3>
+              <p>Designed and rolled out a zero-trust architecture for a 2,000-employee firm, incorporating micro-segmentation and MFA, slashing lateral-movement incidents to zero.</p>
+              
+              </div>
+            </div>
+        
+                </div>
+            </div>
+        </section>
+        
+        <section id="contact" class="contact">
+            <div class="container">
+                <h2 class="section-title"><span>04</span>Contact</h2>
+                <div class="contact-content">
+                    <div class="contact-text">
+                        <p>Have a project in mind or want to discuss opportunities? Feel free to reach out!</p>
+                    </div>
+                    <div class="contact-info">
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div class="contact-details">
+                                <h3>Email</h3>
+                                <a href="mailto:griffin@gmail.com">griffin@gmail.com</a>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <i class="fas fa-phone"></i>
+                            </div>
+                            <div class="contact-details">
+                                <h3>Phone</h3>
+                                <a href="tel:+34 603980731">+34 603980731</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+
+    
+    <script>
+document.addEventListener('DOMContentLoaded', () => {
+  // Initialize theme
+  initializeTheme();
+  
+  // Setup mobile menu
+  setupMobileMenu();
+  
+  // Setup typing animation
+  setupTypingAnimation();
+  
+  // Update copyright year
+  updateCurrentYear();
+  
+  // Setup smooth scrolling
+  setupSmoothScrolling();
+  
+  // Setup scroll-based animations
+  setupScrollAnimations();
+});
+
+function initializeTheme() {
+  const themeToggle = document.getElementById('theme-toggle');
+  const storedTheme = localStorage.getItem('theme') || 'dark';
+  
+  // Set initial theme from local storage
+  document.documentElement.setAttribute('data-theme', storedTheme);
+  themeToggle.checked = storedTheme === 'dark';
+  
+  // Toggle theme on switch change
+  themeToggle.addEventListener('change', () => {
+    const newTheme = themeToggle.checked ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+    
+    // Add a transition class for smooth color changes
+    document.body.classList.add('theme-transition');
+    setTimeout(() => {
+      document.body.classList.remove('theme-transition');
+    }, 500);
+  });
+}
+
+function setupMobileMenu() {
+  const menuToggle = document.querySelector('.menu-toggle');
+  const navLinks = document.querySelector('.nav-links');
+  const navItems = document.querySelectorAll('.nav-links a');
+  
+  // Toggle mobile menu
+  menuToggle.addEventListener('click', () => {
+    menuToggle.classList.toggle('active');
+    navLinks.classList.toggle('active');
+    document.body.classList.toggle('no-scroll');
+  });
+  
+  // Close menu when a nav item is clicked
+  navItems.forEach(item => {
+    item.addEventListener('click', () => {
+      menuToggle.classList.remove('active');
+      navLinks.classList.remove('active');
+      document.body.classList.remove('no-scroll');
+    });
+  });
+  
+  // Highlight active section in navigation
+  window.addEventListener('scroll', highlightActiveSection);
+}
+
+function highlightActiveSection() {
+  const sections = document.querySelectorAll('section');
+  const navLinks = document.querySelectorAll('.nav-links a');
+  
+  // Get current scroll position
+  let scrollY = window.pageYOffset;
+  
+  // Check each section to see if it's in view
+  sections.forEach(section => {
+    const sectionHeight = section.offsetHeight;
+    const sectionTop = section.offsetTop - 100;
+    const sectionId = section.getAttribute('id');
+    
+    if (scrollY > sectionTop && scrollY <= sectionTop + sectionHeight) {
+      // Find the corresponding nav link
+      navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === `#${sectionId}`) {
+          link.classList.add('active');
+        }
+      });
+    }
+  });
+}
+
+function setupTypingAnimation() {
+  const typedTextSpan = document.querySelector('.typed-text');
+  const cursorSpan = document.querySelector('.cursor');
+  
+  // If the title element doesn't exist, exit
+  if (!typedTextSpan) return;
+  
+  // Get the title from the window variable, title tag, or fallback
+  const roleTitle = window.portfolioTitle || 
+                    document.querySelector('title').textContent.split('|')[1]?.trim() || 
+                    '{{title}}';
+  
+  const textArray = [roleTitle];
+  const typingDelay = 100;
+  const erasingDelay = 100;
+  const newTextDelay = 2000;
+  let textArrayIndex = 0;
+  let charIndex = 0;
+  
+  function type() {
+    if (charIndex < textArray[textArrayIndex].length) {
+      if (!cursorSpan.classList.contains('typing')) {
+        cursorSpan.classList.add('typing');
+      }
+      typedTextSpan.textContent += textArray[textArrayIndex].charAt(charIndex);
+      charIndex++;
+      setTimeout(type, typingDelay);
+    } else {
+      cursorSpan.classList.remove('typing');
+      setTimeout(erase, newTextDelay);
+    }
+  }
+  
+  function erase() {
+    if (charIndex > 0) {
+      if (!cursorSpan.classList.contains('typing')) {
+        cursorSpan.classList.add('typing');
+      }
+      typedTextSpan.textContent = textArray[textArrayIndex].substring(0, charIndex - 1);
+      charIndex--;
+      setTimeout(erase, erasingDelay);
+    } else {
+      cursorSpan.classList.remove('typing');
+      textArrayIndex++;
+      if (textArrayIndex >= textArray.length) textArrayIndex = 0;
+      setTimeout(type, typingDelay + 1100);
+    }
+  }
+  
+  // Start the typing animation
+  if (textArray.length) setTimeout(type, newTextDelay + 250);
+}
+
+function updateCurrentYear() {
+  const yearElement = document.querySelector('.current-year');
+  if (yearElement) {
+    yearElement.textContent = new Date().getFullYear();
+  }
+}
+
+function setupSmoothScrolling() {
+  const links = document.querySelectorAll('a[href^="#"]');
+  
+  links.forEach(link => {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      
+      const targetId = this.getAttribute('href');
+      if (targetId === '#') return;
+      
+      const targetElement = document.querySelector(targetId);
+      if (!targetElement) return;
+      
+      const offset = 80; // Adjust for fixed header
+      const targetPosition = targetElement.offsetTop - offset;
+      
+      window.scrollTo({
+        top: targetPosition,
+        behavior: 'smooth'
+      });
+    });
+  });
+}
+
+function setupScrollAnimations() {
+  // Reveal elements on scroll
+  const revealElements = () => {
+    const elements = document.querySelectorAll('.section-title, .project-card, .skill-card, .contact-item');
+    const windowHeight = window.innerHeight;
+    
+    elements.forEach(element => {
+      const elementPosition = element.getBoundingClientRect().top;
+      const revealPoint = 150;
+      
+      if (elementPosition < windowHeight - revealPoint) {
+        element.classList.add('revealed');
+      }
+    });
+  };
+  
+  // Initial check
+  revealElements();
+  
+  // Add event listener
+  window.addEventListener('scroll', revealElements);
+} 
+</script>
+
+        <script>
+          document.addEventListener('DOMContentLoaded', function() {
+            // Get the skills track and all skill cards
+            const skillsTrack = document.querySelector('.skills-track');
+            const skillCards = document.querySelectorAll('.skill-card');
+            
+            if (skillsTrack && skillCards.length > 0) {
+              // Adjust animation speed based on number of skills
+              const duration = Math.max(20, Math.min(40, 15 + skillCards.length * 2));
+              skillsTrack.style.animationDuration = duration + 's';
+              
+              // Fix for Safari browser - force recalculation of animation
+              setTimeout(() => {
+                skillsTrack.style.animationName = 'none';
+                setTimeout(() => {
+                  skillsTrack.style.animationName = 'scrollSkills';
+                }, 10);
+              }, 100);
+              
+              // Apply random subtle variations to each skill card for visual interest
+              skillCards.forEach(card => {
+                // Slight hue variation
+                const hueShift = Math.floor(Math.random() * 20) - 10; // -10 to +10
+                card.style.filter = 'hue-rotate(' + hueShift + 'deg)';
+              });
+            }
+            
+            // Create minimalistic animated background
+            const canvas = document.createElement('canvas');
+            canvas.classList.add('background-animation');
+            document.body.insertBefore(canvas, document.body.firstChild);
+            
+            const ctx = canvas.getContext('2d');
+            let width = canvas.width = window.innerWidth;
+            let height = canvas.height = window.innerHeight;
+            
+            // Get theme colors from CSS variables or use defaults
+            const getComputedStyle = window.getComputedStyle(document.body);
+            const accentColor = getComputedStyle.getPropertyValue('--accent-color') || '#4f46e5';
+            const bgColor = getComputedStyle.getPropertyValue('--bg-color') || '#0f172a';
+            
+            // Configuration
+            const dots = [];
+            const dotCount = Math.min(Math.floor(width * height / 15000), 100); // Reasonable number of dots
+            const dotSize = 1.5;
+            const connectionDistance = 150;
+            const connectionOpacity = 0.15;
+            
+            // Create dots
+            for (let i = 0; i < dotCount; i++) {
+              dots.push({
+                x: Math.random() * width,
+                y: Math.random() * height,
+                vx: (Math.random() - 0.5) * 0.5, // Slow horizontal velocity
+                vy: (Math.random() - 0.5) * 0.5, // Slow vertical velocity
+              });
+            }
+            
+            // Animation function
+            function animate() {
+              // Clear canvas with semi-transparent background for trailing effect
+              ctx.fillStyle = bgColor;
+              ctx.globalAlpha = 0.2;
+              ctx.fillRect(0, 0, width, height);
+              ctx.globalAlpha = 1;
+              
+              // Draw and update dots
+              for (let i = 0; i < dots.length; i++) {
+                const dot = dots[i];
+                
+                // Move dot
+                dot.x += dot.vx;
+                dot.y += dot.vy;
+                
+                // Bounce off edges
+                if (dot.x < 0 || dot.x > width) dot.vx *= -1;
+                if (dot.y < 0 || dot.y > height) dot.vy *= -1;
+                
+                // Draw dot
+                ctx.beginPath();
+                ctx.arc(dot.x, dot.y, dotSize, 0, Math.PI * 2);
+                ctx.fillStyle = accentColor;
+                ctx.fill();
+                
+                // Draw connections to nearby dots
+                for (let j = i + 1; j < dots.length; j++) {
+                  const otherDot = dots[j];
+                  const dx = dot.x - otherDot.x;
+                  const dy = dot.y - otherDot.y;
+                  const distance = Math.sqrt(dx * dx + dy * dy);
+                  
+                  if (distance < connectionDistance) {
+                    ctx.beginPath();
+                    ctx.moveTo(dot.x, dot.y);
+                    ctx.lineTo(otherDot.x, otherDot.y);
+                    ctx.strokeStyle = accentColor;
+                    ctx.globalAlpha = connectionOpacity * (1 - distance / connectionDistance);
+                    ctx.stroke();
+                    ctx.globalAlpha = 1;
+                  }
+                }
+              }
+              
+              requestAnimationFrame(animate);
+            }
+            
+            // Handle window resize
+            window.addEventListener('resize', () => {
+              width = canvas.width = window.innerWidth;
+              height = canvas.height = window.innerHeight;
+            });
+            
+            // Start animation
+            animate();
+          });
+        </script>
+        
+      <script>
+        // Auto-scrolling functionality for recording portfolios
+        (function() {
+          let isScrolling = false;
+          let scrollSpeed = 3.2; // Pixels per frame (adjust for faster/slower scrolling)
+          
+          // Listen for Shift+S key combination to start/stop scrolling
+          document.addEventListener('keydown', (e) => {
+            // Shift + S key to toggle scrolling
+            if (e.shiftKey && e.key === 'S') {
+              e.preventDefault();
+              
+              if (isScrolling) {
+                // Stop scrolling
+                isScrolling = false;
+                console.log('Auto-scrolling stopped');
+              } else {
+                // Start scrolling from current position
+                isScrolling = true;
+                console.log('Auto-scrolling started with speed: ' + scrollSpeed.toFixed(1));
+                
+                // Smooth scrolling animation using requestAnimationFrame for better performance
+                let lastTime = null;
+                
+                function smoothScroll(timestamp) {
+                  if (!isScrolling) return;
+                  
+                  if (!lastTime) lastTime = timestamp;
+                  const elapsed = timestamp - lastTime;
+                  
+                  // Calculate how much to scroll based on elapsed time for consistent speed
+                  const scrollAmount = (scrollSpeed * elapsed) / 16.66; // Normalize to 60fps
+                  
+                  window.scrollBy(0, scrollAmount);
+                  lastTime = timestamp;
+                  
+                  // Check if we've reached the bottom of the page
+                  if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 20) {
+                    // We've reached the bottom, stop scrolling
+                    isScrolling = false;
+                    console.log('Reached bottom of page, auto-scrolling stopped');
+                    return;
+                  }
+                  
+                  requestAnimationFrame(smoothScroll);
+                }
+                
+                requestAnimationFrame(smoothScroll);
+              }
+            }
+            
+            // Shift + Up Arrow to increase scroll speed
+            if (isScrolling && e.shiftKey && e.key === 'ArrowUp') {
+              e.preventDefault();
+              scrollSpeed += 0.2;
+              console.log('Scroll speed increased to ' + scrollSpeed.toFixed(1));
+            }
+            
+            // Shift + Down Arrow to decrease scroll speed
+            if (isScrolling && e.shiftKey && e.key === 'ArrowDown') {
+              e.preventDefault();
+              scrollSpeed = Math.max(0.2, scrollSpeed - 0.2);
+              console.log('Scroll speed decreased to ' + scrollSpeed.toFixed(1));
+            }
+          });
+        })();
+      </script>
+      
+</body>
+</html> 
