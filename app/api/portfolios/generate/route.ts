@@ -177,7 +177,7 @@ export const extractEmailAddress = (text: string): string | null => {
 export async function POST(request: NextRequest) {
   try {
     const data = await request.json();
-    const { portfolioId } = data;
+    const { portfolioId, portfolioData: directPortfolioData } = data;
 
     // Validate required parameters
     if (!portfolioId) {
@@ -187,17 +187,26 @@ export async function POST(request: NextRequest) {
     console.log(`Generating portfolio for ID: ${portfolioId}`);
     
     try {
-      // Fetch portfolio data from Firestore
-      const { portfolio, error } = await getPortfolioById(portfolioId);
+      // Check if this is a preview request from the interactive editor
+      // If directPortfolioData is provided, use it instead of fetching from Firestore
+      let portfolioData: Portfolio;
       
-      if (error || !portfolio) {
-        console.error(`Error fetching portfolio data: ${error}`);
-        return NextResponse.json({ error: error || 'Portfolio not found' }, { status: 404 });
-      }
+      if (directPortfolioData) {
+        console.log('Using direct portfolio data for preview');
+        portfolioData = directPortfolioData as Portfolio;
+      } else {
+        // Fetch portfolio data from Firestore
+        const { portfolio, error } = await getPortfolioById(portfolioId);
+        
+        if (error || !portfolio) {
+          console.error(`Error fetching portfolio data: ${error}`);
+          return NextResponse.json({ error: error || 'Portfolio not found' }, { status: 404 });
+        }
 
-      // Cast portfolio to our interface
-      const portfolioData = portfolio as unknown as Portfolio;
-      console.log(`Successfully retrieved portfolio data for: ${portfolioData.name}`);
+        // Cast portfolio to our interface
+        portfolioData = portfolio as unknown as Portfolio;
+        console.log(`Successfully retrieved portfolio data for: ${portfolioData.name}`);
+      }
       
       // Debug values to check what's happening with email and phone fields
       console.log(`DEBUG - Email value: "${portfolioData.email}", Phone value: "${portfolioData.phone}"`);

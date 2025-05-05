@@ -151,6 +151,7 @@ export default function DashboardPage() {
   const [mounted, setMounted] = useState(false)
   const [isLoggingOut, setIsLoggingOut] = useState(false)
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
+  const [isCreationMethodModalOpen, setIsCreationMethodModalOpen] = useState(false)
   const [currentStep, setCurrentStep] = useState(1)
   const [portfolioData, setPortfolioData] = useState<PortfolioData>({
     name: "",
@@ -316,6 +317,15 @@ export default function DashboardPage() {
   }
 
   const handleCreatePortfolio = () => {
+    // Open the creation method selection modal first
+    setIsCreationMethodModalOpen(true)
+  }
+
+  const handleTraditionalCreation = () => {
+    // Close the method selection modal
+    setIsCreationMethodModalOpen(false)
+    
+    // Continue with the existing 4-step process
     setCurrentStep(1)
     setPortfolioData({
       name: "",
@@ -370,6 +380,14 @@ export default function DashboardPage() {
     })
     setSelectedTemplate("")
     setIsCreateModalOpen(true)
+  }
+  
+  const handleInteractiveCreation = () => {
+    // Close the method selection modal
+    setIsCreationMethodModalOpen(false)
+    
+    // Redirect to template selection page with interactive mode flag
+    router.push('/create-portfolio/interactive')
   }
 
   // Add a state to track validation errors for each field
@@ -1388,7 +1406,51 @@ export default function DashboardPage() {
         </Tabs>
       </div>
 
-      {/* Create Portfolio Modal */}
+      {/* Creation Method Selection Modal */}
+      <Dialog open={isCreationMethodModalOpen} onOpenChange={setIsCreationMethodModalOpen}>
+        <DialogContent className="sm:max-w-[550px] p-0 rounded-xl overflow-hidden bg-white dark:bg-gray-800 border-none">
+          <DialogHeader className="px-6 pt-6 pb-3 border-b dark:border-gray-700 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-gray-800 dark:to-gray-800">
+            <DialogTitle className="text-2xl font-bold text-gray-800 dark:text-gray-200">Create Portfolio</DialogTitle>
+            <DialogDescription className="text-indigo-700 dark:text-indigo-400">
+              Choose how you'd like to create your portfolio
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="p-6 space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Traditional Method Card */}
+              <div 
+                onClick={handleTraditionalCreation}
+                className="border border-indigo-100 dark:border-gray-700 rounded-xl p-6 flex flex-col items-center text-center cursor-pointer hover:border-indigo-300 dark:hover:border-indigo-500 hover:shadow-md transition-all bg-white dark:bg-gray-800"
+              >
+                <div className="h-14 w-14 bg-indigo-50 dark:bg-indigo-900/30 rounded-full flex items-center justify-center mb-4">
+                  <Settings className="h-7 w-7 text-indigo-500 dark:text-indigo-400" />
+                </div>
+                <h3 className="font-medium text-gray-800 dark:text-gray-200 mb-2">Step-by-Step Process</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Fill in your information through our guided 4-step creation process</p>
+              </div>
+              
+              {/* Interactive Method Card */}
+              <div 
+                onClick={handleInteractiveCreation}
+                className="border border-indigo-100 dark:border-gray-700 rounded-xl p-6 flex flex-col items-center text-center cursor-pointer hover:border-indigo-300 dark:hover:border-indigo-500 hover:shadow-md transition-all bg-white dark:bg-gray-800"
+              >
+                <div className="h-14 w-14 bg-indigo-50 dark:bg-indigo-900/30 rounded-full flex items-center justify-center mb-4">
+                  <Edit className="h-7 w-7 text-indigo-500 dark:text-indigo-400" />
+                </div>
+                <h3 className="font-medium text-gray-800 dark:text-gray-200 mb-2">Interactive Editor</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Choose a template and edit your portfolio directly within the design</p>
+              </div>
+            </div>
+            
+            <div className="pt-2 text-sm text-center text-gray-500 dark:text-gray-400">
+              Both methods create the same high-quality portfolio. Choose the option that works best for you.
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Create Portfolio Modal (traditional method) */}
       <Dialog open={isCreateModalOpen} onOpenChange={(open) => {
         // Only allow closing if not submitting
         if (!isSubmitting) {
