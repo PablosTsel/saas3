@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useAuth } from "@/lib/auth-context"
 import { toast } from "sonner"
@@ -109,12 +109,36 @@ interface PortfolioData {
   templateId: string;
 }
 
+// Search Params wrapper component
+function ClientSearchParams() {
+  const searchParams = useSearchParams();
+  const templateId = searchParams.get("template") || "template1";
+  const isPrefilled = searchParams.get("prefilled") === "true";
+  
+  return { templateId, isPrefilled };
+}
+
 export default function InteractiveEditor() {
   const { user } = useAuth()
   const router = useRouter()
-  const searchParams = useSearchParams()
-  const templateId = searchParams.get("template") || "template1"
-  const isPrefilled = searchParams.get("prefilled") === "true"
+  
+  return (
+    <Suspense fallback={<div className="flex h-screen items-center justify-center">Loading...</div>}>
+      <InteractiveEditorContent user={user} router={router} />
+    </Suspense>
+  )
+}
+
+// Main content component
+function InteractiveEditorContent({ 
+  user, 
+  router 
+}: { 
+  user: any; 
+  router: any;
+}) {
+  // Use the client component to access searchParams safely
+  const { templateId, isPrefilled } = ClientSearchParams();
   
   const [portfolioData, setPortfolioData] = useState<PortfolioData>({
     ...defaultPortfolioData,
