@@ -154,6 +154,7 @@ function InteractiveEditorContent({
   const [isEditDialogOpen, setIsEditDialogOpen] = useState<boolean>(false)
   const [currentProjectIndex, setCurrentProjectIndex] = useState<number | null>(null)
   const [previewId, setPreviewId] = useState<string | null>(null)
+  const [previewURL, setPreviewURL] = useState<string | null>(null)
   
   const iframeRef = useRef<HTMLIFrameElement>(null)
   const profilePictureInputRef = useRef<HTMLInputElement>(null)
@@ -212,27 +213,44 @@ function InteractiveEditorContent({
       console.log('Generate preview response:', data)
       
       if (data.success) {
-        // Set the iframe source to the generated portfolio
+        let iframeSrc: string | null = null;
         if (data.url) {
-          console.log(`Setting iframe src to: ${data.url}`)
-          iframe.src = data.url
-          
-          // Send a message to the iframe with instructions to make elements editable
-          setTimeout(() => {
-            if (iframe.contentWindow) {
-              iframe.contentWindow.postMessage({
-                type: 'makeEditable',
-                data: portfolioData
-              }, '*')
-            }
-          }, 1000) // Give the iframe time to load
-        } else {
-          console.error('No URL returned from the API')
-          throw new Error('No URL returned from the API')
+          iframeSrc = data.url;
+        } else if (data.htmlContent) {
+          // Create an object URL from the returned HTML content
+          const blob = new Blob([data.htmlContent], { type: 'text/html' });
+          const objectURL = URL.createObjectURL(blob);
+          iframeSrc = objectURL;
+          // Revoke previous object URL to avoid memory leaks
+          if (previewURL) {
+            URL.revokeObjectURL(previewURL);
+          }
+          setPreviewURL(objectURL);
         }
+        
+        if (iframeSrc) {
+          console.log(`Setting iframe src to: ${iframeSrc}`);
+          iframe.src = iframeSrc;
+        } else {
+          console.error('No URL or htmlContent returned from the API');
+          throw new Error('No valid preview content returned');
+        }
+        
+        // Send a message to the iframe with instructions to make elements editable
+        setTimeout(() => {
+          if (iframe.contentWindow) {
+            iframe.contentWindow.postMessage({
+              type: 'makeEditable',
+              data: portfolioData
+            }, '*');
+          }
+        }, 1000);
+        
+        return; // success, exit function
       } else {
-        console.error('Generate preview error:', data.error)
-        throw new Error(data.error || 'Unknown error')
+        // After 3 failed attempts, show error and stop
+        toast.error('Failed to generate preview. Please refresh or try again later.');
+        setIframeLoading(false);
       }
     } catch (error) {
       console.error('Error generating preview:', error)
@@ -1341,17 +1359,8 @@ function InteractiveEditorContent({
           className="w-full h-full border-0"
           style={{ height: `${iframeHeight}px` }}
           onError={(e) => {
-            console.error("Iframe load error:", e);
-            const iframe = e.currentTarget;
-            
-            // If there's an error, try the production-compatible approach
-            if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
-              // For local development, regenerate using the portfolios/generate endpoint
-              setTimeout(generatePreview, 500);
-            } else {
-              // For production, use the API approach directly without debug flag
-              iframe.src = `/api/preview-template?template=${templateId}&editable=true`;
-            }
+            console.error('Iframe load error:', e);
+            setIframeLoading(false);
           }}
         />
       </div>
