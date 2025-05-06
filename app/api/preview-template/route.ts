@@ -2,14 +2,51 @@ import { NextRequest, NextResponse } from 'next/server'
 import fs from 'fs'
 import path from 'path'
 
+// Create a map of preloaded template HTML
+// This will ensure the templates are included in the build
+const templateCache: Record<string, string> = {}
+
+// Preload template function to be called during build
+async function preloadTemplates() {
+  try {
+    const templateDir = path.join(process.cwd(), 'templates')
+    
+    // Get all template directories
+    const templates = fs.readdirSync(templateDir).filter(dir => 
+      fs.statSync(path.join(templateDir, dir)).isDirectory() && dir.startsWith('template')
+    )
+    
+    // Load each template
+    for (const template of templates) {
+      const templatePath = path.join(templateDir, template, 'index.html')
+      if (fs.existsSync(templatePath)) {
+        templateCache[template] = fs.readFileSync(templatePath, 'utf-8')
+      }
+    }
+    
+    console.log(`Preloaded ${Object.keys(templateCache).length} templates`)
+  } catch (error) {
+    console.error('Error preloading templates:', error)
+  }
+}
+
+// Try to preload templates
+preloadTemplates()
+
+// Try using public templates directory first, then fall back to root templates
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams
   const templateId = searchParams.get('template') || 'template1'
   const editable = searchParams.get('editable') === 'true'
   
   try {
-    // Load the HTML template based on template ID
-    let templatePath = path.join(process.cwd(), 'templates', templateId, 'index.html')
+    // First try to get the template from the public directory (works in production)
+    let templatePath = path.join(process.cwd(), 'public', 'templates', templateId, 'index.html')
+    
+    // If it doesn't exist in public, fall back to the root templates directory (for development)
+    if (!fs.existsSync(templatePath)) {
+      templatePath = path.join(process.cwd(), 'templates', templateId, 'index.html')
+    }
     
     // Check if the template file exists
     if (!fs.existsSync(templatePath)) {

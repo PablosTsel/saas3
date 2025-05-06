@@ -1,0 +1,22 @@
+[build]
+  command = "pnpm build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "18"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+# Ensure templates directory is included
+[[plugins]]
+  package = "netlify-plugin-inline-source-content"
+
+  [plugins.inputs]
+    include = ["templates/**/*"]
+
+# Handle 404s properly
+[[redirects]]
+  from = "/*"
+  to = "/_not-found"
+  status = 404 
