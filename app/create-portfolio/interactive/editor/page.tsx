@@ -202,17 +202,22 @@ function InteractiveEditorContent({
       
       if (data.success) {
         // Set the iframe source to the generated portfolio
-        iframe.src = data.url
-        
-        // Send a message to the iframe with instructions to make elements editable
-        setTimeout(() => {
-          if (iframe.contentWindow) {
-            iframe.contentWindow.postMessage({
-              type: 'makeEditable',
-              data: portfolioData
-            }, '*')
-          }
-        }, 1000) // Give the iframe time to load
+        if (data.url) {
+          iframe.src = data.url
+          
+          // Send a message to the iframe with instructions to make elements editable
+          setTimeout(() => {
+            if (iframe.contentWindow) {
+              iframe.contentWindow.postMessage({
+                type: 'makeEditable',
+                data: portfolioData
+              }, '*')
+            }
+          }, 1000) // Give the iframe time to load
+        } else {
+          console.error('No URL returned from the API')
+          throw new Error('No URL returned from the API')
+        }
       } else {
         throw new Error(data.error || 'Unknown error')
       }
@@ -222,7 +227,10 @@ function InteractiveEditorContent({
       
       // Fallback to the old method if the new one fails
       if (iframe) {
-        iframe.src = `/api/preview-template?template=${templateId}&editable=true`
+        // Only change src if it's not already showing a template
+        if (!iframe.src || iframe.src === 'about:blank' || iframe.src === 'undefined') {
+          iframe.src = `/api/preview-template?template=${templateId}&editable=true`
+        }
       
         // Send updated data to iframe
         setTimeout(() => {
@@ -354,9 +362,12 @@ function InteractiveEditorContent({
           
           // Regenerate preview
           const iframe = iframeRef.current;
-          if (iframe) {
-            iframe.src = 'about:blank';
-            setTimeout(generatePreview, 50);
+          if (iframe && iframe.contentWindow) {
+            // Instead of setting to about:blank, just update the existing iframe
+            iframe.contentWindow.postMessage({
+              type: 'update',
+              data: {...portfolioData, skills: newSkills}
+            }, window.location.origin);
           }
         } else if (field === 'project') {
           const newProjects = [...portfolioData.projects, {
@@ -369,9 +380,12 @@ function InteractiveEditorContent({
           
           // Regenerate preview
           const iframe = iframeRef.current;
-          if (iframe) {
-            iframe.src = 'about:blank';
-            setTimeout(generatePreview, 50);
+          if (iframe && iframe.contentWindow) {
+            // Instead of setting to about:blank, just update the existing iframe
+            iframe.contentWindow.postMessage({
+              type: 'update',
+              data: {...portfolioData, projects: newProjects}
+            }, window.location.origin);
           }
         }
       } else if (type === 'remove') {
@@ -383,9 +397,12 @@ function InteractiveEditorContent({
           
           // Regenerate preview
           const iframe = iframeRef.current;
-          if (iframe) {
-            iframe.src = 'about:blank';
-            setTimeout(generatePreview, 50);
+          if (iframe && iframe.contentWindow) {
+            // Instead of setting to about:blank, just update the existing iframe
+            iframe.contentWindow.postMessage({
+              type: 'update',
+              data: {...portfolioData, skills: newSkills}
+            }, window.location.origin);
           }
         } else if (field === 'project' && typeof index === 'number') {
           const newProjects = [...portfolioData.projects];
@@ -394,9 +411,12 @@ function InteractiveEditorContent({
           
           // Regenerate preview
           const iframe = iframeRef.current;
-          if (iframe) {
-            iframe.src = 'about:blank';
-            setTimeout(generatePreview, 50);
+          if (iframe && iframe.contentWindow) {
+            // Instead of setting to about:blank, just update the existing iframe
+            iframe.contentWindow.postMessage({
+              type: 'update',
+              data: {...portfolioData, projects: newProjects}
+            }, window.location.origin);
           }
         }
       }
@@ -415,10 +435,6 @@ function InteractiveEditorContent({
     const iframe = iframeRef.current;
     if (!iframe) return;
     
-    // If we already have a generated preview, no need to generate again
-    // unless portfolioData has changed
-    if (iframe.src && iframe.src.includes('portfolios/preview-')) return;
-
     // Generate preview when component mounts or data changes
     generatePreview();
   }, [portfolioData, templateId]);
@@ -1155,6 +1171,14 @@ function InteractiveEditorContent({
           src={`/api/preview-template?template=${templateId}&editable=true`}
           className="w-full h-full border-0"
           style={{ height: `${iframeHeight}px` }}
+          onError={(e) => {
+            console.error("Iframe load error:", e);
+            // If there's an error, try reloading with the default path
+            const iframe = e.currentTarget;
+            if (iframe.src !== `/api/preview-template?template=${templateId}&editable=true`) {
+              iframe.src = `/api/preview-template?template=${templateId}&editable=true`;
+            }
+          }}
         />
       </div>
       
