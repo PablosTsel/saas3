@@ -40,7 +40,12 @@ pnpm build
 echo "Copying templates to ensure they are available in the build..."
 cp -R templates public/
 
-# Ensure permissions
+# Also copy templates to the .next/static directory to ensure they're accessible
+echo "Copying templates to .next/static directory..."
+mkdir -p .next/static
+cp -R templates .next/static/
+
+# Ensure correct permissions
 chmod -R 755 .next
 chmod -R 755 public
 

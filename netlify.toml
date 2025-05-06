@@ -10,13 +10,6 @@
 [[plugins]]
   package = "@netlify/plugin-nextjs"
 
-# Ensure templates directory is included
-[[plugins]]
-  package = "netlify-plugin-inline-source-content"
-
-  [plugins.inputs]
-    include = ["templates/**/*"]
-
 # Handle 404s properly
 [[redirects]]
   from = "/*"

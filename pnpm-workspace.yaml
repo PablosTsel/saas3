@@ -1,2 +1,7 @@
 packages:
-  - '.' 
+  - .
+ignoredBuiltDependencies:
+  - '@firebase/util'
+  - canvas
+  - protobufjs
+  - sharp
