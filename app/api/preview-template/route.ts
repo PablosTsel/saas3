@@ -297,6 +297,14 @@ function injectEditableFeatures(templateHTML: string): string {
       }
       .remove-button {
         background: rgba(239, 68, 68, 0.9);
+        position: absolute;
+        top: 4px;
+        right: 4px;
+      }
+      .add-button {
+        position: absolute;
+        top: -18px;
+        right: 0;
       }
       .upload-trigger {
         cursor: pointer;
@@ -354,10 +362,11 @@ function injectEditableFeatures(templateHTML: string): string {
       
       #skills-container, #projects-container {
         position: relative;
-        padding: 10px;
+        padding: 10px 10px 0 10px;
         border: 1px dashed rgba(99, 102, 241, 0.3);
         border-radius: 8px;
-        margin: 15px 0;
+        margin: 25px 0 15px;
+        min-height: 60px;
       }
     </style>
     
@@ -588,16 +597,21 @@ function injectEditableFeatures(templateHTML: string): string {
           // Clear existing skills
           skillsContainer.innerHTML = '';
           
-          // Add new skills
-          data.skills.forEach((skill, index) => {
+          // Add new skills (duplicate each skill to preserve marquee effects)
+          const addSkillElement = (skill, index) => {
             const skillElement = document.createElement('div');
             skillElement.classList.add('skill');
             skillElement.textContent = skill.name;
-            
+
             makeEditable(skillElement, 'skill', index);
             addRemoveButton(skillElement, 'skill', index);
-            
+
             skillsContainer.appendChild(skillElement);
+          }
+
+          data.skills.forEach((skill, index) => {
+            addSkillElement(skill, index);
+            addSkillElement(skill, index); // duplicate for animation
           });
           
           // Add the "Add Skill" button

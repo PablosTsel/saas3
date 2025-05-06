@@ -156,6 +156,10 @@ function InteractiveEditorContent({
   const [previewId, setPreviewId] = useState<string | null>(null)
   const [previewURL, setPreviewURL] = useState<string | null>(null)
   
+  // State for prompting portfolio name when missing
+  const [isNameDialogOpen, setIsNameDialogOpen] = useState<boolean>(false)
+  const [tempPortfolioName, setTempPortfolioName] = useState<string>("")
+  
   const iframeRef = useRef<HTMLIFrameElement>(null)
   const profilePictureInputRef = useRef<HTMLInputElement>(null)
   const cvInputRef = useRef<HTMLInputElement>(null)
@@ -1172,13 +1176,9 @@ function InteractiveEditorContent({
     
     // Show a toast notification
     toast.success('Changes saved successfully');
-    
-    // Force regeneration of the preview by resetting the iframe src
-    const iframe = iframeRef.current;
-    if (iframe) {
-      iframe.src = 'about:blank';
-      setTimeout(generatePreview, 50);
-    }
+
+    // Regenerate preview so the newly updated data appears immediately
+    setIframeLoading(true);
   }
   
   const handleCancel = () => {
@@ -1243,6 +1243,9 @@ function InteractiveEditorContent({
       }
       
       toast.success(`${field === 'cv' ? 'CV' : field === 'profilePicture' ? 'Profile picture' : 'Project image'} uploaded successfully`);
+
+      // Regenerate preview so the newly uploaded image appears immediately
+      setIframeLoading(true);
     } catch (error) {
       console.error('Error uploading file:', error);
       toast.error('Failed to upload file');
@@ -1254,6 +1257,14 @@ function InteractiveEditorContent({
   const handleSavePortfolio = async () => {
     if (!user) {
       toast.error("You need to be logged in to save your portfolio")
+      return
+    }
+    
+    // Validate portfolio name – require a non-empty value different from the default placeholder
+    if (!portfolioData.name.trim() || portfolioData.name.trim() === "My Portfolio") {
+      // Open dialog prompting the user to enter a portfolio name
+      setTempPortfolioName("")
+      setIsNameDialogOpen(true)
       return
     }
     
@@ -1305,8 +1316,19 @@ function InteractiveEditorContent({
             >
               <ChevronLeft className="h-4 w-4 mr-1" /> Back
             </Button>
-            <h1 className="text-xl font-bold text-gray-800 dark:text-gray-100">
-              Interactive Editor <span className="text-indigo-500">•</span> {portfolioData.name}
+            <h1 className="text-xl font-bold text-gray-800 dark:text-gray-100 flex items-center space-x-2">
+              <span>Interactive Editor</span>
+              <span className="text-indigo-500">•</span>
+              {/* Portfolio name input */}
+              <Input
+                value={portfolioData.name}
+                onChange={(e) => setPortfolioData({
+                  ...portfolioData,
+                  name: e.target.value
+                })}
+                placeholder="Portfolio Name"
+                className="w-40 sm:w-56 md:w-64 px-2 py-1 text-sm font-normal"
+              />
             </h1>
           </div>
           
@@ -1443,6 +1465,47 @@ function InteractiveEditorContent({
             </Button>
             <Button onClick={handleSaveField}>
               <Check className="h-4 w-4 mr-2" /> Save
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog prompting for missing portfolio name */}
+      <Dialog open={isNameDialogOpen} onOpenChange={setIsNameDialogOpen}>
+        <DialogContent className="sm:max-w-[400px]">
+          <DialogHeader>
+            <DialogTitle>Enter a portfolio name</DialogTitle>
+          </DialogHeader>
+
+          <div className="py-4">
+            <Input
+              value={tempPortfolioName}
+              onChange={(e) => setTempPortfolioName(e.target.value)}
+              placeholder="My Awesome Portfolio"
+            />
+          </div>
+
+          <DialogFooter className="flex justify-end space-x-2">
+            <Button variant="outline" onClick={() => setIsNameDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button
+              onClick={() => {
+                const trimmed = tempPortfolioName.trim()
+                if (!trimmed) {
+                  toast.error("Please enter a valid name for your portfolio")
+                  return
+                }
+                // Update state with the new name and close dialog
+                setPortfolioData({ ...portfolioData, name: trimmed })
+                setIsNameDialogOpen(false)
+                // Delay to ensure state is updated before saving
+                setTimeout(() => {
+                  handleSavePortfolio()
+                }, 0)
+              }}
+            >
+              <Check className="h-4 w-4 mr-2" /> Save & Continue
             </Button>
           </DialogFooter>
         </DialogContent>

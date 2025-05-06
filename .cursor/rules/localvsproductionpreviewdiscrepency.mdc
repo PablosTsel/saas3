@@ -1,0 +1,25 @@
+---
+description: Local vs Production Preview Discrepancy
+globs: 
+---
+**Problem:** Templates looked perfect in local development, but on the deployed (Netlify) site they fell back to an un-styled, bare-bones HTML showing raw SVG paths and debug overlays. This mismatch caused weeks of confusion because fixes seemed to "work locally but not in production."
+
+**Root Cause:**
+1. Local development allowed the `/api/portfolios/generate` route to write a physical `index.html` file and return its URL (`data.url`).
+2. Netlify's read-only file-system prevented file creation. The same route returned fallback data, and our frontend silently switched over to `/api/preview-template?…` (or `debug=true`) when it couldn't find `data.url`.
+3. The fallback endpoint delivered only the base template without merged CSS/JS, exposing raw SVG code and breaking layout.
+
+**Solution Implemented:**
+- Updated `generatePreview()` in `app/create-portfolio/interactive/editor/page.tsx` to also handle `data.htmlContent` from the API:
+  ```ts
+  const blob = new Blob([data.htmlContent], { type: 'text/html' });
+  const objectURL = URL.createObjectURL(blob);
+  iframe.src = objectURL;
+  ```
+- Removed every fallback to `/api/preview-template` and the `debug=true` parameter, ensuring both environments follow the exact same code-path.
+- Added cleanup (`URL.revokeObjectURL`) to avoid memory leaks and robust retry logic with user-friendly toasts.
+
+**Best Practices / Lessons Learned:**
+- Treat CI/CD hosts (Netlify, Vercel, etc.) as **read-only**; design preview APIs that return HTML content directly instead of relying on the file-system.
+- Keep the preview generation path identical for local and production to avoid environment-specific bugs.
+- Remove hidden fallbacks once the primary flow is solid—otherwise they mask real problems and deliver inconsistent UX.
