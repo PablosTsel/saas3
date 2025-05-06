@@ -72,6 +72,7 @@ interface Project {
   technologies: string[];
   githubUrl?: string;
   reportFile?: File | null;
+  imageUrl?: string; // URL for the uploaded image
 }
 
 interface Experience {
@@ -97,7 +98,9 @@ interface PortfolioData {
   phone: string;
   githubProfile?: string;
   profilePicture: File | null;
+  profilePictureUrl?: string; // URL for the uploaded profile picture
   cv: File | null;
+  cvUrl?: string; // URL for the uploaded CV
   hasCv: boolean;
   skills: Skill[];
   experience: Experience[];
@@ -124,9 +127,92 @@ export default function InteractiveEditor() {
   const [isUploading, setIsUploading] = useState<boolean>(false)
   const [isSaving, setIsSaving] = useState<boolean>(false)
   const [iframeHeight, setIframeHeight] = useState<number>(0)
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState<boolean>(false)
+  const [currentProjectIndex, setCurrentProjectIndex] = useState<number | null>(null)
   
   const iframeRef = useRef<HTMLIFrameElement>(null)
+  const profilePictureInputRef = useRef<HTMLInputElement>(null)
+  const cvInputRef = useRef<HTMLInputElement>(null)
+  const projectImageInputRef = useRef<HTMLInputElement>(null)
   
+  // Field mapping for data model
+  const fieldMapping: Record<string, keyof PortfolioData> = {
+    'fullName': 'fullName',
+    'title': 'title',
+    'smallIntro': 'smallIntro',
+    'about': 'about',
+    'email': 'email',
+    'phone': 'phone',
+    'githubProfile': 'githubProfile'
+  };
+  
+  // Function to generate portfolio preview
+  const generatePreview = async () => {
+    const iframe = iframeRef.current
+    if (!iframe) return
+    
+    try {
+      // Create a temporary ID for the preview
+      const tempId = `preview-${Math.random().toString(36).substring(2, 15)}`
+      
+      // Call the portfolio generation API
+      const response = await fetch('/api/portfolios/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          portfolioId: tempId,
+          portfolioData: {
+            ...portfolioData,
+            id: tempId
+          }
+        }),
+      })
+      
+      if (!response.ok) {
+        throw new Error('Failed to generate preview')
+      }
+      
+      const data = await response.json()
+      
+      if (data.success) {
+        // Set the iframe source to the generated portfolio
+        iframe.src = data.url
+        
+        // Send a message to the iframe with instructions to make elements editable
+        setTimeout(() => {
+          if (iframe.contentWindow) {
+            iframe.contentWindow.postMessage({
+              type: 'makeEditable',
+              data: portfolioData
+            }, '*')
+          }
+        }, 1000) // Give the iframe time to load
+      } else {
+        throw new Error(data.error || 'Unknown error')
+      }
+    } catch (error) {
+      console.error('Error generating preview:', error)
+      toast.error('Failed to generate preview. Using fallback method.')
+      
+      // Fallback to the old method if the new one fails
+      if (iframe) {
+        iframe.src = `/api/preview-template?template=${templateId}&editable=true`
+      
+        // Send updated data to iframe
+        setTimeout(() => {
+          if (iframe.contentWindow) {
+            iframe.contentWindow.postMessage({
+              type: 'update',
+              data: portfolioData
+            }, '*')
+          }
+        }, 500)
+      }
+    }
+  }
+
   // Load portfolio data when component mounts
   useEffect(() => {
     // Redirect to login if not authenticated
@@ -168,173 +254,162 @@ export default function InteractiveEditor() {
     return () => window.removeEventListener('resize', handleResize)
   }, [user, router, templateId, isPrefilled])
   
-  // Handle iframe messaging
+  // Handle messages from the iframe
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
-      // Make sure the message is from our iframe
-      if (event.origin !== window.location.origin) return
-      
-      const { type, field, index, value } = event.data
-      
+      // Ensure the message is coming from the same domain
+      if (event.origin !== window.location.origin) return;
+
+      const { type, field, index, value } = event.data;
+      console.log('Received message:', event.data);
+
       if (type === 'requestInitialData') {
-        // The iframe is requesting initial data, let's send it
-        const iframe = iframeRef.current
-        if (iframe && iframe.contentWindow) {
-          iframe.contentWindow.postMessage({
-            type: 'update',
+        // Send the current portfolio data to the iframe
+        if (iframeRef.current?.contentWindow) {
+          iframeRef.current.contentWindow.postMessage({
+            type: 'initialData',
             data: portfolioData
-          }, '*')
+          }, window.location.origin);
         }
       } else if (type === 'edit') {
-        setCurrentEditField(field)
-        setCurrentIndex(index !== undefined ? index : null)
+        // Set the current field being edited
+        setCurrentEditField(field);
         
-        // Set the current value based on provided value or from portfolioData
-        if (value) {
-          setFieldValue(value)
-        } else if (index !== undefined) {
-          // This is an array field (skills, projects, etc.)
-          if (field === 'skill') {
-            setFieldValue(portfolioData.skills[index].name)
-          } else if (field === 'project-name') {
-            setFieldValue(portfolioData.projects[index].name)
-          } else if (field === 'project-description') {
-            setFieldValue(portfolioData.projects[index].description)
+        // Determine the value to edit
+        let editValue = '';
+        
+        if (typeof index === 'number') {
+          setCurrentIndex(index);
+          // Handle array items
+          if (field === 'skill' && portfolioData.skills[index]) {
+            editValue = portfolioData.skills[index].name || '';
+          } else if (field === 'project-name' && portfolioData.projects[index]) {
+            editValue = portfolioData.projects[index].name || '';
+          } else if (field === 'project-description' && portfolioData.projects[index]) {
+            editValue = portfolioData.projects[index].description || '';
           }
         } else {
-          // This is a regular field
-          setFieldValue(portfolioData[field as keyof typeof portfolioData] as string)
+          setCurrentIndex(null);
+          // Handle regular fields
+          if (field === 'fullName') {
+            editValue = portfolioData.fullName || '';
+          } else if (field === 'title') {
+            editValue = portfolioData.title || '';
+          } else if (field === 'smallIntro') {
+            editValue = portfolioData.smallIntro || '';
+          } else if (field === 'about') {
+            editValue = portfolioData.about || '';
+          } else if (field === 'email') {
+            editValue = portfolioData.email || '';
+          } else if (field === 'phone') {
+            editValue = portfolioData.phone || '';
+          } else if (field === 'githubProfile') {
+            editValue = portfolioData.githubProfile || '';
+          }
         }
+        
+        setFieldValue(editValue);
+        
+        // Open the edit dialog
+        setIsEditDialogOpen(true);
       } else if (type === 'upload') {
-        // Trigger file upload for profile picture, CV, or project image
-        document.getElementById(`${field}-upload${index !== undefined ? '-' + index : ''}`)?.click()
+        // Trigger file upload for the field
+        if (field === 'profilePicture') {
+          profilePictureInputRef.current?.click();
+        } else if (field === 'projectImage' && typeof index === 'number') {
+          setCurrentProjectIndex(index);
+          projectImageInputRef.current?.click();
+        } else if (field === 'cv') {
+          cvInputRef.current?.click();
+        }
       } else if (type === 'add') {
-        // Add a new item (skill, project, etc.)
+        // Add a new item based on field type
         if (field === 'skill') {
-          const newSkills = [...portfolioData.skills, { name: "New Skill" }]
-          setPortfolioData({
-            ...portfolioData,
-            skills: newSkills
-          })
+          const newSkills = [...portfolioData.skills, { name: 'New Skill' }];
+          setPortfolioData({...portfolioData, skills: newSkills});
+          
+          // Regenerate preview
+          const iframe = iframeRef.current;
+          if (iframe) {
+            iframe.src = 'about:blank';
+            setTimeout(generatePreview, 50);
+          }
         } else if (field === 'project') {
-          const newProjects = [...portfolioData.projects, { 
-            name: "New Project", 
-            description: "Describe your project here", 
+          const newProjects = [...portfolioData.projects, {
+            name: 'New Project',
+            description: 'Project description',
             image: null,
-            technologies: ["Technology 1", "Technology 2"] 
-          }]
-          setPortfolioData({
-            ...portfolioData,
-            projects: newProjects
-          })
+            technologies: []
+          }];
+          setPortfolioData({...portfolioData, projects: newProjects});
+          
+          // Regenerate preview
+          const iframe = iframeRef.current;
+          if (iframe) {
+            iframe.src = 'about:blank';
+            setTimeout(generatePreview, 50);
+          }
         }
       } else if (type === 'remove') {
-        // Remove an item
-        if (field === 'skill' && index !== undefined) {
-          const newSkills = [...portfolioData.skills]
-          newSkills.splice(index, 1)
-          setPortfolioData({
-            ...portfolioData,
-            skills: newSkills
-          })
-        } else if (field === 'project' && index !== undefined) {
-          const newProjects = [...portfolioData.projects]
-          newProjects.splice(index, 1)
-          setPortfolioData({
-            ...portfolioData,
-            projects: newProjects
-          })
+        // Remove an item based on field type and index
+        if (field === 'skill' && typeof index === 'number') {
+          const newSkills = [...portfolioData.skills];
+          newSkills.splice(index, 1);
+          setPortfolioData({...portfolioData, skills: newSkills});
+          
+          // Regenerate preview
+          const iframe = iframeRef.current;
+          if (iframe) {
+            iframe.src = 'about:blank';
+            setTimeout(generatePreview, 50);
+          }
+        } else if (field === 'project' && typeof index === 'number') {
+          const newProjects = [...portfolioData.projects];
+          newProjects.splice(index, 1);
+          setPortfolioData({...portfolioData, projects: newProjects});
+          
+          // Regenerate preview
+          const iframe = iframeRef.current;
+          if (iframe) {
+            iframe.src = 'about:blank';
+            setTimeout(generatePreview, 50);
+          }
         }
       }
-    }
+    };
     
-    window.addEventListener('message', handleMessage)
-    return () => window.removeEventListener('message', handleMessage)
-  }, [portfolioData])
+    // Add the message event listener to the window, not the iframe
+    window.addEventListener('message', handleMessage);
+    
+    return () => {
+      window.removeEventListener('message', handleMessage);
+    };
+  }, [portfolioData]);
   
   // Update iframe content when portfolioData changes
   useEffect(() => {
-    const iframe = iframeRef.current
-    if (!iframe || !iframe.contentWindow) return
+    const iframe = iframeRef.current;
+    if (!iframe) return;
     
     // If we already have a generated preview, no need to generate again
     // unless portfolioData has changed
-    if (iframe.src.includes('portfolios/preview-')) return
+    if (iframe.src && iframe.src.includes('portfolios/preview-')) return;
 
-    // Create a temporary portfolio when the component mounts
-    const generatePreview = async () => {
-      try {
-        // Create a temporary ID for the preview
-        const tempId = `preview-${Math.random().toString(36).substring(2, 15)}`
-        
-        // Call the portfolio generation API
-        const response = await fetch('/api/portfolios/generate', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ 
-            portfolioId: tempId,
-            portfolioData: {
-              ...portfolioData,
-              id: tempId
-            }
-          }),
-        })
-        
-        if (!response.ok) {
-          throw new Error('Failed to generate preview')
-        }
-        
-        const data = await response.json()
-        
-        if (data.success) {
-          // Set the iframe source to the generated portfolio
-          iframe.src = data.url
-          
-          // Send a message to the iframe with instructions to make elements editable
-           setTimeout(() => {
-             if (iframe.contentWindow) {
-               iframe.contentWindow.postMessage({
-                 type: 'makeEditable',
-                 data: portfolioData
-               }, '*')
-             }
-           }, 1000) // Give the iframe time to load
-         } else {
-           throw new Error(data.error || 'Unknown error')
-         }
-       } catch (error) {
-         console.error('Error generating preview:', error)
-         toast.error('Failed to generate preview. Using fallback method.')
-         
-         // Fallback to the old method if the new one fails
-         iframe.src = `/api/preview-template?template=${templateId}&editable=true`
-         
-         // Send updated data to iframe
-         setTimeout(() => {
-           if (iframe.contentWindow) {
-             iframe.contentWindow.postMessage({
-               type: 'update',
-               data: portfolioData
-             }, '*')
-           }
-         }, 500)
-       }
-    }
-    
-    generatePreview()
-  }, [portfolioData, templateId])
+    // Generate preview when component mounts or data changes
+    generatePreview();
+  }, [portfolioData, templateId]);
   
   // Add an event listener to inject editing capabilities into the preview iframe
   useEffect(() => {
     const handleIframeLoad = () => {
       const iframe = iframeRef.current;
-      if (!iframe || !iframe.contentWindow || !iframe.contentDocument) return;
+      if (!iframe || !iframe.contentDocument || !iframe.contentDocument.body) return;
       
       // Create a script element to inject our editing functionality
-      const script = iframe.contentDocument.createElement('script');
+      const script = document.createElement('script');
       script.type = 'text/javascript';
+      
+      // Define the script content with string concatenation to avoid nesting issues
       script.textContent = `
         // Function to make an element editable
         function makeEditable(element, field, index) {
@@ -367,12 +442,255 @@ export default function InteractiveEditor() {
           });
         }
         
+        // Function to make an element trigger image upload with improved styling
+        function makeUploadTrigger(element, field, index) {
+          if (!element) return;
+          
+          // Add visual editing cue
+          element.style.position = 'relative';
+          element.style.cursor = 'pointer';
+          element.style.transition = 'outline 0.2s ease';
+          
+          // Add an upload icon and text overlay
+          const overlay = document.createElement('div');
+          overlay.style.position = 'absolute';
+          overlay.style.top = '0';
+          overlay.style.left = '0';
+          overlay.style.width = '100%';
+          overlay.style.height = '100%';
+          overlay.style.display = 'flex';
+          overlay.style.flexDirection = 'column';
+          overlay.style.alignItems = 'center';
+          overlay.style.justifyContent = 'center';
+          overlay.style.backgroundColor = 'rgba(79, 70, 229, 0.4)';
+          overlay.style.borderRadius = element.style.borderRadius || '4px';
+          overlay.style.opacity = '0';
+          overlay.style.transition = 'opacity 0.2s ease';
+          overlay.style.zIndex = '10';
+          
+          // For profile picture, use more compact styling
+          if (field === 'profilePicture') {
+            // Create a more subtle upload hint
+            const hintContainer = document.createElement('div');
+            hintContainer.style.backgroundColor = 'rgba(79, 70, 229, 0.8)';
+            hintContainer.style.color = 'white';
+            hintContainer.style.padding = '4px 8px';
+            hintContainer.style.borderRadius = '4px';
+            hintContainer.style.fontSize = '10px';
+            hintContainer.style.fontWeight = 'bold';
+            hintContainer.style.maxWidth = '80%';
+            hintContainer.style.textAlign = 'center';
+            hintContainer.style.boxShadow = '0 2px 4px rgba(0,0,0,0.2)';
+            hintContainer.textContent = 'Change Photo';
+            
+            // Camera icon using emoji for simplicity
+            const icon = document.createElement('div');
+            icon.style.fontSize = '16px';
+            icon.style.marginBottom = '2px';
+            icon.textContent = '📷';
+            
+            hintContainer.prepend(icon);
+            overlay.appendChild(hintContainer);
+          } else {
+            // For project images, use the original larger styling
+            const icon = document.createElement('div');
+            icon.style.width = '24px';
+            icon.style.height = '24px';
+            icon.style.marginBottom = '8px';
+            icon.style.background = 'rgba(255, 255, 255, 0.8)';
+            icon.style.borderRadius = '50%';
+            icon.style.display = 'flex';
+            icon.style.alignItems = 'center';
+            icon.style.justifyContent = 'center';
+            icon.textContent = '📤';
+            
+            const text = document.createElement('div');
+            text.textContent = 'Upload Project Image';
+            text.style.color = 'white';
+            text.style.fontWeight = 'bold';
+            text.style.backgroundColor = 'rgba(79, 70, 229, 0.8)';
+            text.style.padding = '4px 8px';
+            text.style.borderRadius = '4px';
+            text.style.maxWidth = '90%';
+            text.style.textAlign = 'center';
+            
+            overlay.appendChild(icon);
+            overlay.appendChild(text);
+          }
+          
+          // Handle hover effects
+          element.addEventListener('mouseover', function() {
+            overlay.style.opacity = '1';
+            element.style.outline = '2px dashed rgba(99, 102, 241, 0.8)';
+          });
+          
+          element.addEventListener('mouseout', function() {
+            overlay.style.opacity = '0';
+            element.style.outline = 'none';
+          });
+          
+          // Special case - if element is empty or has no image child,
+          // show a permanent upload hint
+          const hasImageContent = 
+              element.querySelector('img') || 
+              (element.tagName.toLowerCase() === 'img') ||
+              (element.style.backgroundImage && element.style.backgroundImage !== 'none') ||
+              element.classList.contains('has-profile-picture'); // Add this class when image is set
+          
+          if (!hasImageContent) {
+            overlay.style.opacity = '0.6'; // Always visible but translucent
+            
+            if (field === 'profilePicture') {
+              // For profile pictures, add a different permanent hint
+              element.style.backgroundColor = 'rgba(99, 102, 241, 0.1)';
+              
+              // If this is an initials-based avatar, keep it visible
+              if (element.textContent && element.textContent.length <= 2) {
+                element.classList.add('has-initials');
+              } else {
+                element.style.minHeight = '100px';
+                element.style.border = '2px dashed rgba(99, 102, 241, 0.3)';
+              }
+            } else {
+              element.style.backgroundColor = 'rgba(99, 102, 241, 0.1)';
+              element.style.minHeight = '100px';
+              element.style.border = '2px dashed rgba(99, 102, 241, 0.3)';
+            }
+          }
+          
+          // Only add the overlay if it doesn't already exist
+          if (!element.querySelector('.upload-overlay')) {
+            overlay.className = 'upload-overlay';
+            element.appendChild(overlay);
+            
+            // Make sure the position is relative for absolute positioning to work
+            if (window.getComputedStyle(element).position === 'static') {
+              element.style.position = 'relative';
+            }
+          }
+          
+          element.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            // Send message to parent window to trigger file upload
+            window.parent.postMessage({
+              type: 'upload',
+              field: field,
+              index: index
+            }, '*');
+          });
+        }
+        
+        // Function to update the profile picture with the uploaded image
+        function updateProfilePicture(imageUrl) {
+          // Find all possible profile picture elements
+          const profilePicElements = document.querySelectorAll('.profile-pic, .avatar img, .hero-image img, .about-image img');
+          let updated = false;
+          
+          profilePicElements.forEach(img => {
+            if (img.tagName.toLowerCase() === 'img') {
+              img.src = imageUrl;
+              updated = true;
+            }
+          });
+          
+          // Check for div-based avatars (like the YN element in the screenshot)
+          if (!updated) {
+            const avatarDivs = document.querySelectorAll('.avatar, div[class*="avatar"], div[class*="profile-pic"], div[style*="border-radius: 50%"], .rounded-full, .circle, .circular');
+            
+            avatarDivs.forEach(div => {
+              // Clear any text content (like initials)
+              if (div.textContent && div.textContent.length <= 2) {
+                div.textContent = '';
+              }
+              
+              // Set background image 
+              div.style.backgroundImage = \`url("\${imageUrl}")\`;
+              div.style.backgroundSize = 'cover';
+              div.style.backgroundPosition = 'center';
+              div.classList.add('has-profile-picture');
+              
+              // Remove any hint text previously added
+              const hintText = div.querySelector('.profile-pic-hint');
+              if (hintText) {
+                hintText.remove();
+              }
+              
+              updated = true;
+            });
+          }
+          
+          // If we still haven't found anything, try looking for large circular elements in the header
+          if (!updated) {
+            const headerSection = document.querySelector('header, .hero, .header');
+            if (headerSection) {
+              const possibleAvatars = headerSection.querySelectorAll('div[style*="width"][style*="height"], div[style*="border-radius"]');
+              
+              if (possibleAvatars.length > 0) {
+                // Find the largest one by width × height
+                let largestElement = possibleAvatars[0];
+                let largestArea = 0;
+                
+                possibleAvatars.forEach(el => {
+                  const style = window.getComputedStyle(el);
+                  const width = parseInt(style.width);
+                  const height = parseInt(style.height);
+                  const area = width * height;
+                  
+                  if (area > largestArea) {
+                    largestArea = area;
+                    largestElement = el;
+                  }
+                });
+                
+                // Clear any text content (like initials)
+                if (largestElement.textContent && largestElement.textContent.length <= 2) {
+                  largestElement.textContent = '';
+                }
+                
+                // Set background image
+                largestElement.style.backgroundImage = \`url("\${imageUrl}")\`;
+                largestElement.style.backgroundSize = 'cover';
+                largestElement.style.backgroundPosition = 'center';
+                largestElement.classList.add('has-profile-picture');
+                
+                updated = true;
+              }
+            }
+          }
+          
+          return updated;
+        }
+        
+        // Function to update a project image
+        function updateProjectImage(imageUrl, index) {
+          const projectElements = document.querySelectorAll('.project, .project-card');
+          if (index < projectElements.length) {
+            const projectElement = projectElements[index];
+            const imageElement = projectElement.querySelector('.project-image, .card-image, .project img');
+            
+            if (imageElement) {
+              if (imageElement.tagName.toLowerCase() === 'img') {
+                imageElement.src = imageUrl;
+              } else {
+                imageElement.style.backgroundImage = \`url("\${imageUrl}")\`;
+                imageElement.style.backgroundSize = 'cover';
+                imageElement.style.backgroundPosition = 'center';
+              }
+              imageElement.classList.add('has-image');
+              return true;
+            }
+          }
+          return false;
+        }
+        
         // Listen for messages from the parent
         window.addEventListener('message', function(event) {
           // Make sure the message is from our parent
           if (event.origin !== window.location.origin) return;
           
-          const { type, data } = event.data;
+          const { type, data, field, index, imageUrl } = event.data;
           
           if (type === 'makeEditable') {
             // Find and make elements editable
@@ -412,6 +730,116 @@ export default function InteractiveEditor() {
               makeEditable(phoneElements[0], 'phone');
             }
             
+            // Profile Picture - first try standard image elements
+            let foundProfilePic = false;
+            const profilePicElements = document.querySelectorAll('.profile-pic, .avatar img, .hero-image img, .about-image img');
+            if (profilePicElements.length > 0) {
+              // Use the first image as the profile picture
+              makeUploadTrigger(profilePicElements[0].parentElement || profilePicElements[0], 'profilePicture');
+              foundProfilePic = true;
+              
+              // If we have a profile picture URL, update the image
+              if (data && data.profilePictureUrl) {
+                profilePicElements.forEach(img => {
+                  if (img.tagName.toLowerCase() === 'img') {
+                    img.src = data.profilePictureUrl;
+                  }
+                });
+              }
+            }
+            
+            // If no standard image found, try to find div-based avatars
+            if (!foundProfilePic) {
+              // Look for circular avatars and initials containers
+              const avatarDivs = document.querySelectorAll('.avatar, div[class*="avatar"], div[class*="profile-pic"], div[style*="border-radius: 50%"], .rounded-full, .circle, .circular');
+              if (avatarDivs.length > 0) {
+                // Use the first avatar div
+                makeUploadTrigger(avatarDivs[0], 'profilePicture');
+                foundProfilePic = true;
+                
+                // If we have a profile picture URL, update the background image
+                if (data && data.profilePictureUrl) {
+                  avatarDivs[0].style.backgroundImage = \`url("\${data.profilePictureUrl}")\`;
+                  avatarDivs[0].style.backgroundSize = 'cover';
+                  avatarDivs[0].style.backgroundPosition = 'center';
+                  avatarDivs[0].classList.add('has-profile-picture');
+                  
+                  // Clear any text content (like initials)
+                  if (avatarDivs[0].textContent && avatarDivs[0].textContent.length <= 2) {
+                    avatarDivs[0].textContent = '';
+                  }
+                }
+                
+                // Add a subtle hint that appears on hover
+                const hintText = document.createElement('div');
+                hintText.className = 'profile-pic-hint';
+                hintText.textContent = 'Click to change profile picture';
+                hintText.style.position = 'absolute';
+                hintText.style.bottom = '-20px';
+                hintText.style.left = '0';
+                hintText.style.right = '0';
+                hintText.style.textAlign = 'center';
+                hintText.style.fontSize = '10px';
+                hintText.style.color = 'rgba(99, 102, 241, 0.8)';
+                hintText.style.fontWeight = 'bold';
+                hintText.style.opacity = '0';
+                hintText.style.transition = 'opacity 0.2s ease';
+                
+                avatarDivs[0].addEventListener('mouseover', function() {
+                  hintText.style.opacity = '1';
+                });
+                
+                avatarDivs[0].addEventListener('mouseout', function() {
+                  hintText.style.opacity = '0';
+                });
+                
+                avatarDivs[0].style.position = 'relative';
+                avatarDivs[0].appendChild(hintText);
+              }
+            }
+            
+            // If still no profile pic found, look for any likely candidate in the header
+            if (!foundProfilePic) {
+              // Find header or hero section
+              const headerSection = document.querySelector('header, .hero, .header');
+              if (headerSection) {
+                // Look for any large circular element
+                const possibleAvatars = headerSection.querySelectorAll('div[style*="width"][style*="height"], div[style*="border-radius"]');
+                if (possibleAvatars.length > 0) {
+                  // Find the largest one by width × height
+                  let largestElement = possibleAvatars[0];
+                  let largestArea = 0;
+                  
+                  possibleAvatars.forEach(el => {
+                    const style = window.getComputedStyle(el);
+                    const width = parseInt(style.width);
+                    const height = parseInt(style.height);
+                    const area = width * height;
+                    
+                    if (area > largestArea) {
+                      largestArea = area;
+                      largestElement = el;
+                    }
+                  });
+                  
+                  makeUploadTrigger(largestElement, 'profilePicture');
+                  
+                  // If we have a profile picture URL, update the background image
+                  if (data && data.profilePictureUrl) {
+                    largestElement.style.backgroundImage = \`url("\${data.profilePictureUrl}")\`;
+                    largestElement.style.backgroundSize = 'cover';
+                    largestElement.style.backgroundPosition = 'center';
+                    largestElement.classList.add('has-profile-picture');
+                    
+                    // Clear any text content (like initials)
+                    if (largestElement.textContent && largestElement.textContent.length <= 2) {
+                      largestElement.textContent = '';
+                    }
+                  }
+                }
+              }
+            }
+            
             // Skills
             const skillElements = document.querySelectorAll('.skill, .skill-tag');
             skillElements.forEach((skill, index) => {
@@ -419,15 +847,45 @@ export default function InteractiveEditor() {
             });
             
             // Projects
-            const projectNameElements = document.querySelectorAll('.project h3, .project-name, .project-title');
-            projectNameElements.forEach((name, index) => {
-              makeEditable(name, 'project-name', index);
+            const projectElements = document.querySelectorAll('.project, .project-card');
+            projectElements.forEach((project, index) => {
+              // Project image
+              const imageElement = project.querySelector('.project-image, .card-image, .project img');
+              if (imageElement) {
+                makeUploadTrigger(imageElement, 'projectImage', index);
+                
+                // If we have project image URLs, update them
+                if (data && data.projects && data.projects[index] && data.projects[index].imageUrl) {
+                  if (imageElement.tagName.toLowerCase() === 'img') {
+                    imageElement.src = data.projects[index].imageUrl;
+                  } else {
+                    imageElement.style.backgroundImage = \`url("\${data.projects[index].imageUrl}")\`;
+                    imageElement.style.backgroundSize = 'cover';
+                    imageElement.style.backgroundPosition = 'center';
+                  }
+                  imageElement.classList.add('has-image');
+                }
+              }
+              
+              // Project name
+              const nameElement = project.querySelector('h3, .project-name, .project-title');
+              if (nameElement) {
+                makeEditable(nameElement, 'project-name', index);
+              }
+              
+              // Project description
+              const descElement = project.querySelector('p, .project-description, .project-desc');
+              if (descElement) {
+                makeEditable(descElement, 'project-description', index);
+              }
             });
-            
-            const projectDescElements = document.querySelectorAll('.project p, .project-description, .project-desc');
-            projectDescElements.forEach((desc, index) => {
-              makeEditable(desc, 'project-description', index);
-            });
+          } else if (type === 'updateImage') {
+            // Handle image update message
+            if (field === 'profilePicture' && imageUrl) {
+              updateProfilePicture(imageUrl);
+            } else if (field === 'projectImage' && imageUrl && typeof index === 'number') {
+              updateProjectImage(imageUrl, index);
+            }
           }
         });
       `;
@@ -451,7 +909,7 @@ export default function InteractiveEditor() {
   }, []);
   
   const handleSaveField = () => {
-    if (!currentEditField) return
+    if (!currentEditField) return;
     
     // Store the old data to detect changes
     const oldPortfolioData = { ...portfolioData };
@@ -460,38 +918,47 @@ export default function InteractiveEditor() {
     if (currentIndex !== null) {
       // Update array item (skill, project, etc.)
       if (currentEditField === 'skill') {
-        const newSkills = [...portfolioData.skills]
-        newSkills[currentIndex].name = fieldValue
+        const newSkills = [...portfolioData.skills];
+        newSkills[currentIndex].name = fieldValue;
         setPortfolioData({
           ...portfolioData,
           skills: newSkills
-        })
+        });
       } else if (currentEditField === 'project-name') {
-        const newProjects = [...portfolioData.projects]
-        newProjects[currentIndex].name = fieldValue
+        const newProjects = [...portfolioData.projects];
+        newProjects[currentIndex].name = fieldValue;
         setPortfolioData({
           ...portfolioData,
           projects: newProjects
-        })
+        });
       } else if (currentEditField === 'project-description') {
-        const newProjects = [...portfolioData.projects]
-        newProjects[currentIndex].description = fieldValue
+        const newProjects = [...portfolioData.projects];
+        newProjects[currentIndex].description = fieldValue;
         setPortfolioData({
           ...portfolioData,
           projects: newProjects
-        })
+        });
       }
     } else {
       // Update regular field
-      setPortfolioData({
-        ...portfolioData,
-        [currentEditField]: fieldValue
-      })
+      if (fieldMapping[currentEditField]) {
+        setPortfolioData({
+          ...portfolioData,
+          [fieldMapping[currentEditField]]: fieldValue
+        });
+      } else {
+        // Otherwise just use the field name directly
+        setPortfolioData({
+          ...portfolioData,
+          [currentEditField]: fieldValue
+        });
+      }
     }
     
     // Reset the edit state
-    setCurrentEditField(null)
-    setCurrentIndex(null)
+    setCurrentEditField(null);
+    setCurrentIndex(null);
+    setIsEditDialogOpen(false);
     
     // Show a toast notification
     toast.success('Changes saved successfully');
@@ -499,49 +966,78 @@ export default function InteractiveEditor() {
     // Force regeneration of the preview by resetting the iframe src
     const iframe = iframeRef.current;
     if (iframe) {
-      iframe.src = 'about:blank'; // Clear the iframe
+      iframe.src = 'about:blank';
+      setTimeout(generatePreview, 50);
     }
   }
   
   const handleCancel = () => {
     setCurrentEditField(null)
     setCurrentIndex(null)
+    setIsEditDialogOpen(false)
   }
   
-  // Add an uploadFile function to handle file uploads
+  // Handle file upload for images and update preview
   const handleFileUpload = async (file: File, field: 'cv' | 'projectImage' | 'profilePicture', projectIndex?: number) => {
-    setIsUploading(true)
+    setIsUploading(true);
     
     try {
+      // Create a local URL for the file for immediate preview
+      const fileUrl = URL.createObjectURL(file);
+      
       if (field === 'profilePicture') {
         setPortfolioData({
           ...portfolioData,
-          profilePicture: file
-        })
+          profilePicture: file,
+          profilePictureUrl: fileUrl // Add this URL for rendering
+        });
+        
+        // Send message to update the profile picture in the iframe
+        const iframe = iframeRef.current;
+        if (iframe && iframe.contentWindow) {
+          iframe.contentWindow.postMessage({
+            type: 'updateImage',
+            field: 'profilePicture',
+            imageUrl: fileUrl
+          }, '*');
+        }
       } else if (field === 'cv') {
         setPortfolioData({
           ...portfolioData,
           cv: file,
-          hasCv: true
-        })
+          hasCv: true,
+          cvUrl: fileUrl // Add this URL for rendering
+        });
       } else if (field === 'projectImage' && typeof projectIndex === 'number') {
-        const newProjects = [...portfolioData.projects]
+        const newProjects = [...portfolioData.projects];
         newProjects[projectIndex] = { 
           ...newProjects[projectIndex], 
-          image: file 
-        }
+          image: file,
+          imageUrl: fileUrl // Add this URL for rendering
+        };
         setPortfolioData({
           ...portfolioData,
           projects: newProjects
-        })
+        });
+        
+        // Send message to update the project image in the iframe
+        const iframe = iframeRef.current;
+        if (iframe && iframe.contentWindow) {
+          iframe.contentWindow.postMessage({
+            type: 'updateImage',
+            field: 'projectImage',
+            index: projectIndex,
+            imageUrl: fileUrl
+          }, '*');
+        }
       }
       
-      toast.success(`${field === 'cv' ? 'CV' : field === 'profilePicture' ? 'Profile picture' : 'Project image'} uploaded successfully`)
+      toast.success(`${field === 'cv' ? 'CV' : field === 'profilePicture' ? 'Profile picture' : 'Project image'} uploaded successfully`);
     } catch (error) {
-      console.error('Error uploading file:', error)
-      toast.error('Failed to upload file')
+      console.error('Error uploading file:', error);
+      toast.error('Failed to upload file');
     } finally {
-      setIsUploading(false)
+      setIsUploading(false);
     }
   }
   
@@ -640,46 +1136,43 @@ export default function InteractiveEditor() {
       
       {/* File Upload Inputs (hidden) */}
       <input 
+        ref={profilePictureInputRef}
         type="file" 
-        id="profilePicture-upload" 
         accept="image/*" 
         className="hidden" 
         onChange={(e) => {
           if (e.target.files?.[0]) {
-            handleFileUpload(e.target.files[0], 'profilePicture')
+            handleFileUpload(e.target.files[0], 'profilePicture');
           }
         }}
       />
       
       <input 
+        ref={cvInputRef}
         type="file" 
-        id="cv-upload" 
         accept=".pdf,.doc,.docx" 
         className="hidden" 
         onChange={(e) => {
           if (e.target.files?.[0]) {
-            handleFileUpload(e.target.files[0], 'cv')
+            handleFileUpload(e.target.files[0], 'cv');
           }
         }}
       />
       
-      {portfolioData.projects.map((_, index) => (
-        <input 
-          key={`project-image-${index}`}
-          type="file" 
-          id={`projectImage-upload-${index}`} 
-          accept="image/*" 
-          className="hidden" 
-          onChange={(e) => {
-            if (e.target.files?.[0]) {
-              handleFileUpload(e.target.files[0], 'projectImage', index)
-            }
-          }}
-        />
-      ))}
+      <input 
+        ref={projectImageInputRef}
+        type="file" 
+        accept="image/*" 
+        className="hidden" 
+        onChange={(e) => {
+          if (e.target.files?.[0] && currentProjectIndex !== null) {
+            handleFileUpload(e.target.files[0], 'projectImage', currentProjectIndex);
+          }
+        }}
+      />
       
       {/* Edit Dialog */}
-      <Dialog open={currentEditField !== null} onOpenChange={(open) => !open && handleCancel()}>
+      <Dialog open={isEditDialogOpen} onOpenChange={(open) => !open && handleCancel()}>
         <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
             <DialogTitle>
@@ -725,4 +1218,4 @@ export default function InteractiveEditor() {
       </Dialog>
     </div>
   )
-} 
+}

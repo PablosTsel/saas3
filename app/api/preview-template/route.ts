@@ -508,9 +508,25 @@ export async function GET(request: NextRequest) {
         return `<span id="github-profile">${match}</span>`;
       });
       
-      // Replace profile picture
+      // Enhanced profile picture replacement - make sure to create a container that's easy to target
       templateHTML = templateHTML.replace(/<img[^>]*(?:class="[^"]*(?:profile|avatar)[^"]*"|alt="[^"]*(?:profile|avatar)[^"]*")[^>]*src="([^"]+)"[^>]*>/gi, 
-        '<div id="profile-picture" class="profile-pic-container"><img src="$1" class="profile-pic" alt="Profile" /></div>');
+        '<div id="profile-picture" class="profile-pic-container" style="position: relative;"><img src="$1" class="profile-pic" alt="Profile Picture" style="width: 100%; height: 100%; object-fit: cover;" /></div>');
+      
+      // If we can't find a profile picture, look for any img tag within a header or hero section
+      if (!templateHTML.includes('id="profile-picture"')) {
+        templateHTML = templateHTML.replace(/<header[^>]*>([\s\S]*?)<\/header>/gi, (match, content) => {
+          // Check if there's already a profile picture
+          if (match.includes('id="profile-picture"')) return match;
+          
+          // Look for an image in the header that might be a profile picture
+          const imgMatch = content.match(/<img[^>]*src="([^"]+)"[^>]*>/i);
+          if (imgMatch) {
+            return match.replace(imgMatch[0], 
+              `<div id="profile-picture" class="profile-pic-container" style="position: relative;"><img src="${imgMatch[1]}" class="profile-pic" alt="Profile Picture" style="width: 100%; height: 100%; object-fit: cover;" /></div>`);
+          }
+          return match;
+        });
+      }
       
       // Replace CV download link
       templateHTML = templateHTML.replace(/<a[^>]*(?:class="[^"]*(?:cv|resume)[^"]*"|href="[^"]*\.pdf")[^>]*>(.*?)<\/a>/gi, 
@@ -536,25 +552,32 @@ export async function GET(request: NextRequest) {
           '$1$2<div id="projects-container" class="projects-container">$3</div>$4');
       }
       
-      // Replace individual project items
-      templateHTML = templateHTML.replace(/<(div|article)[^>]*class="[^"]*(?:project|card)[^"]*"[^>]*>([\s\S]*?)<\/\1>/gi, 
-        '<div class="project">$2</div>');
-      
-      // Replace project names
-      templateHTML = templateHTML.replace(/<h3[^>]*>(.*?)<\/h3>/gi, 
-        '<h3 class="project-name">$1</h3>');
-      
-      // Replace project descriptions
-      templateHTML = templateHTML.replace(/<p[^>]*class="[^"]*(?:project-description|description|project-desc)[^"]*"[^>]*>(.*?)<\/p>/gi, 
-        '<p class="project-description">$1</p>');
-      
-      // If no specific project-description found, try to target paragraphs within project divs
-      templateHTML = templateHTML.replace(/(<div[^>]*class="project"[^>]*>[\s\S]*?)(<p[^>]*>)(.*?)(<\/p>)/gi, 
-        '$1<p class="project-description">$3</p>');
-      
-      // Replace project images
-      templateHTML = templateHTML.replace(/<img[^>]*class="[^"]*(?:project|card)-img[^"]*"[^>]*src="([^"]+)"[^>]*>/gi, 
-        '<div class="project-image"><img src="$1" class="w-full h-full object-cover" alt="Project" /></div>');
+      // Replace individual project items with proper structure for image uploads
+      templateHTML = templateHTML.replace(/<(div|article)[^>]*class="[^"]*(?:project|card)[^"]*"[^>]*>([\s\S]*?)<\/\1>/gi, (match, tag, content) => {
+        // Check if this project already has a project-image class
+        if (content.includes('class="project-image"')) return match;
+        
+        // Look for an image in the project card
+        const imgMatch = content.match(/<img[^>]*src="([^"]+)"[^>]*>/i);
+        if (imgMatch) {
+          // Replace the image with our structured version
+          const newContent = content.replace(imgMatch[0], 
+            `<div class="project-image" style="position: relative; height: 200px; overflow: hidden;">
+              <img src="${imgMatch[1]}" class="w-full h-full object-cover" alt="Project" style="width: 100%; height: 100%; object-fit: cover;" />
+            </div>`);
+          return `<div class="project">${newContent}</div>`;
+        } else {
+          // If no image found, add a placeholder
+          return `<div class="project">
+            <div class="project-image" style="position: relative; height: 200px; overflow: hidden; background: rgba(99, 102, 241, 0.1);">
+              <div style="display: flex; justify-content: center; align-items: center; height: 100%;">
+                <span style="color: rgba(99, 102, 241, 0.5);">No Image</span>
+              </div>
+            </div>
+            ${content}
+          </div>`;
+        }
+      });
     }
     
     // Return the HTML template

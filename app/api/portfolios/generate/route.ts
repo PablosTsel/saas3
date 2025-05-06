@@ -195,17 +195,17 @@ export async function POST(request: NextRequest) {
         console.log('Using direct portfolio data for preview');
         portfolioData = directPortfolioData as Portfolio;
       } else {
-        // Fetch portfolio data from Firestore
-        const { portfolio, error } = await getPortfolioById(portfolioId);
-        
-        if (error || !portfolio) {
-          console.error(`Error fetching portfolio data: ${error}`);
-          return NextResponse.json({ error: error || 'Portfolio not found' }, { status: 404 });
-        }
+      // Fetch portfolio data from Firestore
+      const { portfolio, error } = await getPortfolioById(portfolioId);
+      
+      if (error || !portfolio) {
+        console.error(`Error fetching portfolio data: ${error}`);
+        return NextResponse.json({ error: error || 'Portfolio not found' }, { status: 404 });
+      }
 
-        // Cast portfolio to our interface
+      // Cast portfolio to our interface
         portfolioData = portfolio as unknown as Portfolio;
-        console.log(`Successfully retrieved portfolio data for: ${portfolioData.name}`);
+      console.log(`Successfully retrieved portfolio data for: ${portfolioData.name}`);
       }
       
       // Debug values to check what's happening with email and phone fields
@@ -215,6 +215,20 @@ export async function POST(request: NextRequest) {
       if (portfolioData.phone?.includes('+34 606 97 06 31') && !portfolioData.email) {
         console.log('Detected phone number but no email - applying fix for pablos.tselioudis@gmail.com');
         portfolioData.email = 'pablos.tselioudis@gmail.com';
+      }
+      
+      // Check for image URLs
+      if (portfolioData.profilePictureUrl) {
+        console.log('Using profile picture URL from upload:', portfolioData.profilePictureUrl);
+      }
+      
+      // If we have image URLs in projects, use them
+      if (portfolioData.projects) {
+        portfolioData.projects.forEach((project, index) => {
+          if (project.imageUrl) {
+            console.log(`Using project ${index} image URL from upload:`, project.imageUrl);
+          }
+        });
       }
 
       // Get template information
