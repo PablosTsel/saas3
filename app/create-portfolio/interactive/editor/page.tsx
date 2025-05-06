@@ -176,6 +176,8 @@ function InteractiveEditorContent({
     const iframe = iframeRef.current
     if (!iframe) return
     
+    setIframeLoading(true)
+    
     try {
       // Use a consistent ID for the preview during editing session instead of creating a new one each time
       // We'll store it in useState so it persists across renders
@@ -184,7 +186,7 @@ function InteractiveEditorContent({
         setPreviewId(newPreviewId)
       }
       
-      console.log(`Generating preview with ID: ${previewId || 'not set yet'}`)
+      console.log(`Generating preview with ID: ${previewId || 'not set yet'} and template: ${templateId}`)
       
       // Call the portfolio generation API
       const response = await fetch('/api/portfolios/generate', {
@@ -202,14 +204,17 @@ function InteractiveEditorContent({
       })
       
       if (!response.ok) {
-        throw new Error('Failed to generate preview')
+        console.error('Generate preview response not OK:', await response.text())
+        throw new Error(`Failed to generate preview: ${response.status} ${response.statusText}`)
       }
       
       const data = await response.json()
+      console.log('Generate preview response:', data)
       
       if (data.success) {
         // Set the iframe source to the generated portfolio
         if (data.url) {
+          console.log(`Setting iframe src to: ${data.url}`)
           iframe.src = data.url
           
           // Send a message to the iframe with instructions to make elements editable
@@ -226,28 +231,52 @@ function InteractiveEditorContent({
           throw new Error('No URL returned from the API')
         }
       } else {
+        console.error('Generate preview error:', data.error)
         throw new Error(data.error || 'Unknown error')
       }
     } catch (error) {
       console.error('Error generating preview:', error)
-      toast.error('Failed to generate preview. Using fallback method.')
       
-      // Fallback to the old method if the new one fails
-      if (iframe) {
-        // Only change src if it's not already showing a template
-        if (!iframe.src || iframe.src === 'about:blank' || iframe.src === 'undefined') {
-          iframe.src = `/api/preview-template?template=${templateId}&editable=true&debug=true`
-        }
-      
-        // Send updated data to iframe
+      // If we've tried less than 3 times, retry
+      if (loadAttempts < 3) {
+        console.log(`Retrying preview generation (attempt ${loadAttempts + 1}/3)...`)
+        setLoadAttempts(prev => prev + 1)
+        
+        // Wait a bit before retrying
         setTimeout(() => {
-          if (iframe.contentWindow) {
-            iframe.contentWindow.postMessage({
-              type: 'update',
-              data: portfolioData
-            }, '*')
+          // Use a consistent approach that works in both local and production
+          if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
+            console.log('Using direct portfolio URL approach for local development')
+            // For local development, this approach works best
+            generatePreview()
+          } else {
+            console.log('Using API template approach for production')
+            // For production, use the API approach that's proven to work
+            const iframe = iframeRef.current
+            if (iframe) {
+              iframe.src = `/api/preview-template?template=${templateId}&editable=true`
+            }
           }
-        }, 500)
+        }, 1000)
+      } else {
+        // After 3 failed attempts, use the backup method
+        toast.error('Failed to generate preview using primary method. Using backup approach.')
+        
+        // Fallback to the direct template API approach
+        if (iframe) {
+          iframe.src = `/api/preview-template?template=${templateId}&editable=true`
+          
+          // Send updated data to iframe after it loads
+          iframe.onload = () => {
+            setIframeLoading(false)
+            if (iframe.contentWindow) {
+              iframe.contentWindow.postMessage({
+                type: 'update',
+                data: portfolioData
+              }, '*')
+            }
+          }
+        }
       }
     }
   }
@@ -437,7 +466,7 @@ function InteractiveEditorContent({
     };
   }, [portfolioData]);
   
-  // Update iframe content when portfolioData changes
+  // Update iframe content when portfolioData changes or when component mounts
   useEffect(() => {
     const iframe = iframeRef.current;
     if (!iframe) return;
@@ -446,6 +475,13 @@ function InteractiveEditorContent({
     // Generate preview when component mounts or data changes
     generatePreview();
   }, [portfolioData, templateId]);
+  
+  // Initial load - generate preview when component first mounts
+  useEffect(() => {
+    console.log("Component mounted, initializing preview with template:", templateId);
+    generatePreview();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   
   // Add a loading state for the iframe
   const [iframeLoading, setIframeLoading] = useState(true);
@@ -1301,15 +1337,20 @@ function InteractiveEditorContent({
         )}
         <iframe
           ref={iframeRef}
-          src={`/api/preview-template?template=${templateId}&editable=true&debug=true`}
+          src="about:blank" 
           className="w-full h-full border-0"
           style={{ height: `${iframeHeight}px` }}
           onError={(e) => {
             console.error("Iframe load error:", e);
-            // If there's an error, try reloading with the debug flag
             const iframe = e.currentTarget;
-            if (iframe.src !== `/api/preview-template?template=${templateId}&editable=true&debug=true`) {
-              iframe.src = `/api/preview-template?template=${templateId}&editable=true&debug=true`;
+            
+            // If there's an error, try the production-compatible approach
+            if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
+              // For local development, regenerate using the portfolios/generate endpoint
+              setTimeout(generatePreview, 500);
+            } else {
+              // For production, use the API approach directly without debug flag
+              iframe.src = `/api/preview-template?template=${templateId}&editable=true`;
             }
           }}
         />
