@@ -153,6 +153,7 @@ function InteractiveEditorContent({
   const [iframeHeight, setIframeHeight] = useState<number>(0)
   const [isEditDialogOpen, setIsEditDialogOpen] = useState<boolean>(false)
   const [currentProjectIndex, setCurrentProjectIndex] = useState<number | null>(null)
+  const [previewId, setPreviewId] = useState<string | null>(null)
   
   const iframeRef = useRef<HTMLIFrameElement>(null)
   const profilePictureInputRef = useRef<HTMLInputElement>(null)
@@ -176,8 +177,14 @@ function InteractiveEditorContent({
     if (!iframe) return
     
     try {
-      // Create a temporary ID for the preview
-      const tempId = `preview-${Math.random().toString(36).substring(2, 15)}`
+      // Use a consistent ID for the preview during editing session instead of creating a new one each time
+      // We'll store it in useState so it persists across renders
+      if (!previewId) {
+        const newPreviewId = `preview-${Math.random().toString(36).substring(2, 15)}`
+        setPreviewId(newPreviewId)
+      }
+      
+      console.log(`Generating preview with ID: ${previewId || 'not set yet'}`)
       
       // Call the portfolio generation API
       const response = await fetch('/api/portfolios/generate', {
@@ -186,10 +193,10 @@ function InteractiveEditorContent({
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ 
-          portfolioId: tempId,
+          portfolioId: previewId || 'preview-temp',
           portfolioData: {
             ...portfolioData,
-            id: tempId
+            id: previewId || 'preview-temp'
           }
         }),
       })
@@ -229,7 +236,7 @@ function InteractiveEditorContent({
       if (iframe) {
         // Only change src if it's not already showing a template
         if (!iframe.src || iframe.src === 'about:blank' || iframe.src === 'undefined') {
-          iframe.src = `/api/preview-template?template=${templateId}&editable=true`
+          iframe.src = `/api/preview-template?template=${templateId}&editable=true&debug=true`
         }
       
         // Send updated data to iframe
@@ -435,15 +442,61 @@ function InteractiveEditorContent({
     const iframe = iframeRef.current;
     if (!iframe) return;
     
+    console.log("Generating preview with template ID:", templateId);
     // Generate preview when component mounts or data changes
     generatePreview();
   }, [portfolioData, templateId]);
   
+  // Clean up old previews when the component mounts or when previewId changes
+  useEffect(() => {
+    // Only clean up if we have a previewId
+    if (previewId) {
+      // Call our cleanup API
+      fetch('/api/portfolios/cleanup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ excludeId: previewId }),
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            console.log(`Cleanup: ${data.message}`);
+          } else {
+            console.error('Cleanup failed:', data.error);
+          }
+        })
+        .catch(error => {
+          console.error('Error during cleanup:', error);
+        });
+      
+      // Add a cleanup function to run when component unmounts
+      return () => {
+        // When the component unmounts, we can also clean up the current preview
+        // if the user didn't save it
+        fetch('/api/portfolios/cleanup', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ excludeId: null }), // clean everything
+        }).catch(error => {
+          console.error('Error during final cleanup:', error);
+        });
+      };
+    }
+  }, [previewId]);
+  
   // Add an event listener to inject editing capabilities into the preview iframe
   useEffect(() => {
     const handleIframeLoad = () => {
+      console.log("Iframe loaded, injecting editing capabilities");
       const iframe = iframeRef.current;
-      if (!iframe || !iframe.contentDocument || !iframe.contentDocument.body) return;
+      if (!iframe || !iframe.contentDocument || !iframe.contentDocument.body) {
+        console.error("Iframe content not accessible", iframe?.src);
+        return;
+      }
       
       // Create a script element to inject our editing functionality
       const script = document.createElement('script');
@@ -1099,6 +1152,15 @@ function InteractiveEditorContent({
         return
       }
       
+      // Clean up preview files since we've saved the portfolio permanently
+      await fetch('/api/portfolios/cleanup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ excludeId: null }), // clean everything
+      })
+      
       // Portfolio created successfully
       toast.success("Portfolio created successfully!")
       
@@ -1168,15 +1230,15 @@ function InteractiveEditorContent({
       <div className="flex-1 overflow-hidden">
         <iframe
           ref={iframeRef}
-          src={`/api/preview-template?template=${templateId}&editable=true`}
+          src={`/api/preview-template?template=${templateId}&editable=true&debug=true`}
           className="w-full h-full border-0"
           style={{ height: `${iframeHeight}px` }}
           onError={(e) => {
             console.error("Iframe load error:", e);
             // If there's an error, try reloading with the default path
             const iframe = e.currentTarget;
-            if (iframe.src !== `/api/preview-template?template=${templateId}&editable=true`) {
-              iframe.src = `/api/preview-template?template=${templateId}&editable=true`;
+            if (iframe.src !== `/api/preview-template?template=${templateId}&editable=true&debug=true`) {
+              iframe.src = `/api/preview-template?template=${templateId}&editable=true&debug=true`;
             }
           }}
         />

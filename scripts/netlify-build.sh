@@ -36,14 +36,33 @@ echo -e "@firebase/util\ncanvas\nprotobufjs\nsharp" | pnpm approve-builds --pars
 echo "Building application with approved scripts..."
 pnpm build
 
-# Copy templates to the public directory
+# Copy templates to all necessary directories 
 echo "Copying templates to ensure they are available in the build..."
+
+# 1. Copy to public directory
+echo "Copying templates to public directory..."
 cp -R templates public/
 
-# Also copy templates to the .next/static directory to ensure they're accessible
+# 2. Copy to .next/static directory
 echo "Copying templates to .next/static directory..."
 mkdir -p .next/static
 cp -R templates .next/static/
+
+# 3. Copy to .next/server/app/api directory for API routes
+echo "Copying templates to .next/server directory for API routes..."
+mkdir -p .next/server/app/api
+cp -R templates .next/server/app/api/
+
+# 4. Copy to root of .next directory
+echo "Copying templates to .next root directory..."
+cp -R templates .next/
+
+# 5. Also inject into standalone output directory (Netlify specific)
+echo "Copying templates to standalone directory..."
+if [ -d ".next/standalone" ]; then
+  mkdir -p .next/standalone/templates
+  cp -R templates/* .next/standalone/templates/
+fi
 
 # Ensure correct permissions
 chmod -R 755 .next
