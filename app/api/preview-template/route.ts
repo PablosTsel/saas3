@@ -21,19 +21,74 @@ function findTemplatePath(templateId: string): string | null {
     path.join(process.cwd(), '.next', 'server', 'app', 'api', 'templates', templateId, 'index.html'),
     // Try standalone directory
     path.join(process.cwd(), '.next', 'standalone', 'templates', templateId, 'index.html'),
+    // Try standalone/public directory
+    path.join(process.cwd(), '.next', 'standalone', 'public', 'templates', templateId, 'index.html'),
+    // Try one level up
+    path.join(process.cwd(), '..', 'templates', templateId, 'index.html'),
+    path.join(process.cwd(), '..', 'public', 'templates', templateId, 'index.html'),
+    // Also try template.html instead of index.html
+    path.join(process.cwd(), 'public', 'templates', templateId, 'template.html'),
+    path.join(process.cwd(), 'templates', templateId, 'template.html'),
   ]
   
-  console.log(`Looking for template: ${templateId}`)
+  console.log(`Looking for template: ${templateId} (cwd: ${process.cwd()})`)
+  
+  // Store found files to debug
+  const existingFiles = [];
   
   for (const templatePath of possiblePaths) {
     console.log(`Checking path: ${templatePath}`)
-    if (fs.existsSync(templatePath)) {
-      console.log(`✅ Found template at: ${templatePath}`)
-      return templatePath
+    try {
+      if (fs.existsSync(templatePath)) {
+        console.log(`✅ Found template at: ${templatePath}`)
+        existingFiles.push(templatePath);
+        return templatePath
+      }
+    } catch (error) {
+      console.error(`Error checking path ${templatePath}:`, error);
     }
   }
   
-  console.log(`❌ Template not found: ${templateId}`)
+  // If we didn't return yet, also try to list directories to help with debugging
+  try {
+    const publicDir = path.join(process.cwd(), 'public');
+    const templatesDir = path.join(publicDir, 'templates');
+    
+    console.log('Available directories:');
+    if (fs.existsSync(publicDir)) {
+      console.log('- public/ exists');
+      const publicContents = fs.readdirSync(publicDir);
+      console.log(`  Contents: ${publicContents.join(', ')}`);
+      
+      if (fs.existsSync(templatesDir)) {
+        console.log('- public/templates/ exists');
+        const templatesContents = fs.readdirSync(templatesDir);
+        console.log(`  Available templates: ${templatesContents.join(', ')}`);
+        
+        // If the requested template directory exists, list its contents
+        const specificTemplateDir = path.join(templatesDir, templateId);
+        if (fs.existsSync(specificTemplateDir)) {
+          console.log(`- public/templates/${templateId}/ exists`);
+          const templateContents = fs.readdirSync(specificTemplateDir);
+          console.log(`  Contents: ${templateContents.join(', ')}`);
+        } else {
+          console.log(`- public/templates/${templateId}/ does NOT exist`);
+        }
+      } else {
+        console.log('- public/templates/ does NOT exist');
+      }
+    } else {
+      console.log('- public/ does NOT exist');
+    }
+  } catch (error) {
+    console.error('Error listing directories:', error);
+  }
+  
+  console.log(`❌ Template not found: ${templateId}`);
+  if (existingFiles.length > 0) {
+    console.log(`However, found these template files: ${existingFiles.join(', ')}`);
+  }
+  
   return null
 }
 
@@ -111,13 +166,61 @@ export async function GET(request: NextRequest) {
     // Load CSS and JS resources
     const { cssContent, jsContent } = loadTemplateResources(templateId, templatePath)
     
-    // Inline CSS and JS directly into the HTML
-    if (cssContent) {
-      templateHTML = templateHTML.replace(/<link[^>]*href="css\/styles\.css"[^>]*>/i, `<style>\n${cssContent}\n</style>`)
+    // Ensure the template has proper HTML structure
+    if (!templateHTML.includes('<head>')) {
+      templateHTML = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${templateId}</title>
+</head>
+<body>
+  ${templateHTML}
+</body>
+</html>`;
     }
     
+    // Check if the HTML already has essential head elements
+    if (!templateHTML.includes('<meta charset=') && !templateHTML.includes('<meta http-equiv="Content-Type"')) {
+      templateHTML = templateHTML.replace('<head>', `<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">`);
+    }
+    
+    // Prepare CSS content - if no CSS was found, add a default minimal stylesheet
+    const finalCssContent = cssContent || `
+      body { 
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; 
+        line-height: 1.6;
+        color: #333;
+        margin: 0;
+        padding: 0;
+      }
+      h1, h2, h3 { margin-top: 0; }
+      a { color: #5468ff; text-decoration: none; }
+      a:hover { text-decoration: underline; }
+      .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+    `;
+    
+    // Inline CSS directly into the HTML - ensure we handle the case where there's no <link> tag
+    if (templateHTML.includes('<link') && templateHTML.includes('css')) {
+      // Replace link tag with inline style
+      templateHTML = templateHTML.replace(/<link[^>]*href="[^"]*css[^"]*"[^>]*>/i, `<style>\n${finalCssContent}\n</style>`);
+    } else {
+      // No link tag found, so add the style directly to the head
+      templateHTML = templateHTML.replace('</head>', `<style>\n${finalCssContent}\n</style>\n</head>`);
+    }
+    
+    // Inline JS if available - ensure we handle the case where there's no <script> tag
     if (jsContent) {
-      templateHTML = templateHTML.replace(/<script[^>]*src="js\/script\.js"[^>]*><\/script>/i, `<script>\n${jsContent}\n</script>`)
+      if (templateHTML.includes('<script') && templateHTML.includes('js')) {
+        // Replace script tag with inline script
+        templateHTML = templateHTML.replace(/<script[^>]*src="[^"]*\.js[^"]*"[^>]*><\/script>/i, `<script>\n${jsContent}\n</script>`);
+      } else {
+        // No script tag found, so add the script directly before closing body
+        templateHTML = templateHTML.replace('</body>', `<script>\n${jsContent}\n</script>\n</body>`);
+      }
     }
     
     // Add debug information if requested
@@ -128,6 +231,7 @@ export async function GET(request: NextRequest) {
           <p>CSS: ${cssContent ? '✅' : '❌'}</p>
           <p>JS: ${jsContent ? '✅' : '❌'}</p>
           <p>Path: ${templatePath}</p>
+          <button onclick="this.parentNode.style.display='none'" style="background: #5468ff; border: none; color: white; padding: 2px 5px; cursor: pointer; margin-top: 5px;">Close</button>
         </div>
       `;
       templateHTML = templateHTML.replace('</body>', `${debugInfo}</body>`);
@@ -725,22 +829,50 @@ function loadTemplateResources(templateId: string, templatePath: string): { cssC
   let jsContent = '';
   
   try {
-    // Try to load CSS
-    const cssPath = path.join(templateDir, 'css', 'styles.css');
-    if (fs.existsSync(cssPath)) {
-      cssContent = fs.readFileSync(cssPath, 'utf-8');
-      console.log(`✅ Loaded CSS for template ${templateId}`);
-    } else {
-      console.log(`❌ CSS file not found for template ${templateId}`);
+    // Try to load CSS - check multiple possible locations
+    const possibleCssPaths = [
+      path.join(templateDir, 'css', 'styles.css'),
+      path.join(templateDir, 'css', 'style.css'),
+      path.join(templateDir, '..', 'css', 'styles.css'),
+      path.join(templateDir, '..', 'css', 'style.css'),
+      // Add public path possibilities
+      path.join(process.cwd(), 'public', 'templates', templateId, 'css', 'styles.css'),
+      path.join(process.cwd(), 'public', 'templates', templateId, 'css', 'style.css')
+    ];
+    
+    for (const cssPath of possibleCssPaths) {
+      if (fs.existsSync(cssPath)) {
+        cssContent = fs.readFileSync(cssPath, 'utf-8');
+        console.log(`✅ Loaded CSS from: ${cssPath}`);
+        break;
+      }
     }
     
-    // Try to load JS
-    const jsPath = path.join(templateDir, 'js', 'script.js');
-    if (fs.existsSync(jsPath)) {
-      jsContent = fs.readFileSync(jsPath, 'utf-8');
-      console.log(`✅ Loaded JS for template ${templateId}`);
-    } else {
-      console.log(`❌ JS file not found for template ${templateId}`);
+    if (!cssContent) {
+      console.log(`❌ CSS file not found for template ${templateId} after checking multiple paths`);
+    }
+    
+    // Try to load JS - check multiple possible locations
+    const possibleJsPaths = [
+      path.join(templateDir, 'js', 'script.js'),
+      path.join(templateDir, 'js', 'main.js'),
+      path.join(templateDir, '..', 'js', 'script.js'),
+      path.join(templateDir, '..', 'js', 'main.js'),
+      // Add public path possibilities
+      path.join(process.cwd(), 'public', 'templates', templateId, 'js', 'script.js'),
+      path.join(process.cwd(), 'public', 'templates', templateId, 'js', 'main.js')
+    ];
+    
+    for (const jsPath of possibleJsPaths) {
+      if (fs.existsSync(jsPath)) {
+        jsContent = fs.readFileSync(jsPath, 'utf-8');
+        console.log(`✅ Loaded JS from: ${jsPath}`);
+        break;
+      }
+    }
+    
+    if (!jsContent) {
+      console.log(`❌ JS file not found for template ${templateId} after checking multiple paths`);
     }
   } catch (error) {
     console.error(`Error loading resources for template ${templateId}:`, error);

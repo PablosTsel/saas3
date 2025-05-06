@@ -447,6 +447,69 @@ function InteractiveEditorContent({
     generatePreview();
   }, [portfolioData, templateId]);
   
+  // Add a loading state for the iframe
+  const [iframeLoading, setIframeLoading] = useState(true);
+  const [loadAttempts, setLoadAttempts] = useState(0);
+
+  // Handle iframe loading state
+  useEffect(() => {
+    const iframe = iframeRef.current;
+    if (!iframe) return;
+    
+    const handleLoad = () => {
+      console.log("Iframe loaded successfully");
+      setIframeLoading(false);
+      
+      // Give the iframe a moment to fully render before applying editable features
+      setTimeout(() => {
+        if (iframe.contentWindow) {
+          iframe.contentWindow.postMessage({
+            type: 'makeEditable',
+            data: portfolioData
+          }, '*');
+        }
+      }, 300);
+    };
+    
+    const handleError = (e: any) => {
+      console.error("Iframe load error:", e);
+      
+      // If we've tried less than 3 times, retry with increasing delay
+      if (loadAttempts < 3) {
+        const retryDelay = (loadAttempts + 1) * 1000; // 1s, 2s, 3s
+        console.log(`Retrying iframe load in ${retryDelay/1000}s (attempt ${loadAttempts + 1}/3)...`);
+        
+        setTimeout(() => {
+          setLoadAttempts(prev => prev + 1);
+          setIframeLoading(true);
+          
+          // If there's an error, retry with the debug flag
+          if (iframe.src !== `/api/preview-template?template=${templateId}&editable=true&debug=true`) {
+            iframe.src = `/api/preview-template?template=${templateId}&editable=true&debug=true`;
+          } else {
+            // If already using debug URL, reload it
+            iframe.src = 'about:blank';
+            setTimeout(() => {
+              iframe.src = `/api/preview-template?template=${templateId}&editable=true&debug=true`;
+            }, 100);
+          }
+        }, retryDelay);
+      } else {
+        // After 3 attempts, stop trying and show an error state
+        setIframeLoading(false);
+        toast.error("Failed to load template. Please try a different template or refresh the page.");
+      }
+    };
+    
+    iframe.addEventListener('load', handleLoad);
+    iframe.addEventListener('error', handleError);
+    
+    return () => {
+      iframe.removeEventListener('load', handleLoad);
+      iframe.removeEventListener('error', handleError);
+    };
+  }, [templateId, portfolioData, loadAttempts]);
+  
   // Clean up old previews when the component mounts or when previewId changes
   useEffect(() => {
     // Only clean up if we have a previewId
@@ -1227,7 +1290,15 @@ function InteractiveEditorContent({
       </header>
       
       {/* Iframe Container */}
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1 overflow-hidden relative">
+        {iframeLoading && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-900 z-10">
+            <div className="animate-spin h-12 w-12 border-4 border-indigo-500 border-t-transparent rounded-full mb-4"></div>
+            <p className="text-gray-700 dark:text-gray-300 font-medium">
+              Loading template{loadAttempts > 0 ? ` (attempt ${loadAttempts + 1}/4)` : ''}...
+            </p>
+          </div>
+        )}
         <iframe
           ref={iframeRef}
           src={`/api/preview-template?template=${templateId}&editable=true&debug=true`}
@@ -1235,7 +1306,7 @@ function InteractiveEditorContent({
           style={{ height: `${iframeHeight}px` }}
           onError={(e) => {
             console.error("Iframe load error:", e);
-            // If there's an error, try reloading with the default path
+            // If there's an error, try reloading with the debug flag
             const iframe = e.currentTarget;
             if (iframe.src !== `/api/preview-template?template=${templateId}&editable=true&debug=true`) {
               iframe.src = `/api/preview-template?template=${templateId}&editable=true&debug=true`;

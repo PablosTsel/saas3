@@ -1,71 +1,71 @@
 #!/bin/bash
 
-# Ensure directories exist
+# Exit on error
+set -e
+
+echo "Starting Netlify build process..."
+
+# Ensure necessary directories exist
 mkdir -p .next
-mkdir -p public/portfolios
+mkdir -p public/templates
 
-# Ensure .npmrc file has the necessary configurations
-echo "Updating .npmrc configurations for Netlify build..."
-cat > .npmrc << EOF
-public-hoist-pattern[]=*types*
-# Allow build scripts for these dependencies
-enable-pre-post-scripts=true
-# Explicitly approved build scripts
-auto-install-peers=true
-node-linker=hoisted
-# Force allow scripts for these packages that Netlify was blocking
-unsafe-perm=true
-allow-scripts=true
-allow-scripts["@firebase/util"]=true
-allow-scripts["canvas"]=true
-allow-scripts["protobufjs"]=true
-allow-scripts["sharp"]=true
-EOF
-
-# Run the build
-echo "Running build with pnpm..."
-# Use non-interactive mode with -y flag to auto-confirm prompts
-# Use additional flags to bypass script approval prompts
-pnpm install --store=.pnpm-store --frozen-lockfile -y --unsafe-perm
-
-# If needed, explicitly approve the builds that were causing issues
-echo "Approving build scripts for specific packages..."
-echo -e "@firebase/util\ncanvas\nprotobufjs\nsharp" | pnpm approve-builds --parser=bash || true
+# Install dependencies (use -y to auto-confirm prompts)
+echo "Installing dependencies..."
+pnpm install -y
 
 # Build the application
-echo "Building application with approved scripts..."
+echo "Building application..."
 pnpm build
 
-# Copy templates to all necessary directories 
-echo "Copying templates to ensure they are available in the build..."
+# List template directories for debugging
+echo "Template directories:"
+ls -la templates/ || echo "No templates directory at root"
+ls -la public/templates/ || echo "No templates directory in public"
 
-# 1. Copy to public directory
-echo "Copying templates to public directory..."
-cp -R templates public/
+# Make sure templates are copied to all needed locations
+echo "Copying templates to necessary locations..."
 
-# 2. Copy to .next/static directory
-echo "Copying templates to .next/static directory..."
-mkdir -p .next/static
-cp -R templates .next/static/
-
-# 3. Copy to .next/server/app/api directory for API routes
-echo "Copying templates to .next/server directory for API routes..."
-mkdir -p .next/server/app/api
-cp -R templates .next/server/app/api/
-
-# 4. Copy to root of .next directory
-echo "Copying templates to .next root directory..."
-cp -R templates .next/
-
-# 5. Also inject into standalone output directory (Netlify specific)
-echo "Copying templates to standalone directory..."
-if [ -d ".next/standalone" ]; then
-  mkdir -p .next/standalone/templates
-  cp -R templates/* .next/standalone/templates/
+# First ensure the templates/ directory content is copied to public/templates/
+if [ -d "templates" ]; then
+  echo "Copying templates/ to public/templates/"
+  cp -r templates/* public/templates/ || echo "Warning: Failed to copy from templates/ to public/templates/"
 fi
 
-# Ensure correct permissions
+# Then copy templates to .next directory
+echo "Copying templates to .next/"
+mkdir -p .next/templates
+cp -r public/templates/* .next/templates/ || echo "Warning: Failed to copy templates to .next/"
+
+# Copy to .next/static
+echo "Copying templates to .next/static/"
+mkdir -p .next/static/templates
+cp -r public/templates/* .next/static/templates/ || echo "Warning: Failed to copy templates to .next/static/"
+
+# Copy to .next/server
+echo "Copying templates to .next/server/app/api/templates/"
+mkdir -p .next/server/app/api/templates
+cp -r public/templates/* .next/server/app/api/templates/ || echo "Warning: Failed to copy templates to .next/server/"
+
+# If standalone directory exists, copy there too
+if [ -d ".next/standalone" ]; then
+  echo "Copying templates to .next/standalone/"
+  mkdir -p .next/standalone/templates
+  cp -r public/templates/* .next/standalone/templates/ || echo "Warning: Failed to copy templates to .next/standalone/"
+  
+  # Also to standalone/public
+  echo "Copying templates to .next/standalone/public/templates/"
+  mkdir -p .next/standalone/public/templates
+  cp -r public/templates/* .next/standalone/public/templates/ || echo "Warning: Failed to copy templates to .next/standalone/public/"
+fi
+
+# List what's copied for debugging
+echo "Copied templates:"
+ls -la public/templates/ || echo "Warning: public/templates/ not found"
+ls -la .next/templates/ || echo "Warning: .next/templates/ not found"
+
+# Set appropriate permissions
+echo "Setting permissions..."
 chmod -R 755 .next
 chmod -R 755 public
 
-echo "Build completed successfully!" 
+echo "Build process completed successfully!" 
