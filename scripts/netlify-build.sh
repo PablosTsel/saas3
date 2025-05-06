@@ -9,10 +9,10 @@ echo "Starting Netlify build process..."
 mkdir -p .next
 mkdir -p public/templates
 
-# Install dependencies (without interactive prompts)
+# Install dependencies with the simplest command possible
 echo "Installing dependencies..."
-# pnpm doesn't support -y flag, use --no-interactive instead
-pnpm install --no-interactive
+# Remove all flags, just use the basic command
+pnpm install
 
 # Build the application
 echo "Building application..."
